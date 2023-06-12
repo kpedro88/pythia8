@@ -473,8 +473,9 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
 
       //  Couplings of incoming (anti)fermion. Combine with kinematics.
       int idAbs     = process.at(i1).idAbs();
-      double li     = 0.5 * (vfZp.at(idAbs) + afZp.at(idAbs));
-      double ri     = 0.5 * (vfZp.at(idAbs) - afZp.at(idAbs));
+      assert(idAbs<20);
+      double li     = 0.5 * (vfZp[idAbs] + afZp.[idAbs]);
+      double ri     = 0.5 * (vfZp[idAbs] - afZp.[idAbs]);
       wt            = li*li * fGK135 + ri*ri * fGK253;
       wtMax         = 4. * s3now * s4now * (li*li + ri*ri)
                     * (xiT + xiU - xjTU);
