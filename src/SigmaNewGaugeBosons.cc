@@ -7,6 +7,7 @@
 // leptoquark simulation classes.
 
 #include "Pythia8/SigmaNewGaugeBosons.h"
+#include <cassert>
 
 namespace Pythia8 {
 
