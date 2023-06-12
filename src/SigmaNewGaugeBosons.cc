@@ -367,8 +367,8 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
   // Default values, in- and out-flavours in process.
   double wt    = 1.;
   double wtMax = 1.;
-  int idInAbs  = process[3].idAbs();
-  int idOutAbs = process[6].idAbs();
+  int idInAbs  = process.at(3).idAbs();
+  int idOutAbs = process.at(6).idAbs();
 
   // Angular weight for outgoing fermion pair.
   if (iResBeg == 5 && iResEnd == 5 && (idOutAbs <= maxZpGen
@@ -378,18 +378,18 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
     double ei  = couplingsPtr->ef(idInAbs);
     double vi  = couplingsPtr->vf(idInAbs);
     double ai  = couplingsPtr->af(idInAbs);
-    double vpi = vfZp[idInAbs];
-    double api = afZp[idInAbs];
+    double vpi = vfZp.at(idInAbs);
+    double api = afZp.at(idInAbs);
     int idOutAbs4 = (idOutAbs < 4000000) ? idOutAbs : idOutAbs - 4000000;
     double ef  = couplingsPtr->ef(idOutAbs4);
     double vf  = couplingsPtr->vf(idOutAbs4);
     double af  = couplingsPtr->af(idOutAbs4);
-    double vpf = vfZp[idOutAbs4];
-    double apf = afZp[idOutAbs4];
+    double vpf = vfZp.at(idOutAbs4);
+    double apf = afZp.at(idOutAbs4);
 
     // Phase space factors. (One power of beta left out in formulae.)
-    double mr1 = pow2(process[6].m()) / sH;
-    double mr2 = pow2(process[7].m()) / sH;
+    double mr1 = pow2(process.at(6).m()) / sH;
+    double mr2 = pow2(process.at(7).m()) / sH;
     double ps  = sqrtpos(pow2(1. - mr1 - mr2) - 4. * mr1 * mr2);
     double mrAvg = 0.5 * (mr1 + mr2) - 0.25 * pow2(mr1 - mr2);
 
@@ -410,11 +410,11 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
       + 4. * vpi * api * ZpNorm * vpf * apf );
 
     // Flip asymmetry for in-fermion + out-antifermion.
-    if (process[3].id() * process[6].id() < 0) coefAsym = -coefAsym;
+    if (process.at(3).id() * process.at(6).id() < 0) coefAsym = -coefAsym;
 
     // Reconstruct decay angle and weight for it.
-    double cosThe = (process[3].p() - process[4].p())
-      * (process[7].p() - process[6].p()) / (sH * ps);
+    double cosThe = (process.at(3).p() - process.at(4).p())
+      * (process.at(7).p() - process.at(6).p()) / (sH * ps);
     wt    = coefTran * (1. + pow2(cosThe))
        + coefLong * (1. - pow2(cosThe)) + 2. * coefAsym * cosThe;
     wtMax = 2. * (coefTran + abs(coefAsym));
@@ -422,8 +422,8 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
 
   // Angular weight for Z' -> W+ W-.
   else if (iResBeg == 5 && iResEnd == 5 && idOutAbs == 24) {
-    double mr1 = pow2(process[6].m()) / sH;
-    double mr2 = pow2(process[7].m()) / sH;
+    double mr1 = pow2(process.at(6).m()) / sH;
+    double mr2 = pow2(process.at(7).m()) / sH;
     double ps  = sqrtpos(pow2(1. - mr1 -mr2) - 4. * mr1 * mr2);
     double cCos2 = - (1./16.) * ps*ps * (1. - 2. * mr1 - 2. * mr2
       + mr1*mr1 + mr2*mr2 + 10. * mr1 * mr2);
@@ -431,8 +431,8 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
       * (1. - 2. * mr1 - 2. * mr2 + pow2(mr1 - mr2));
 
     // Reconstruct decay angle and weight for it.
-    double cosThe = (process[3].p() - process[4].p())
-      * (process[7].p() - process[6].p()) / (sH * ps);
+    double cosThe = (process.at(3).p() - process.at(4).p())
+      * (process.at(7).p() - process.at(6).p()) / (sH * ps);
     wt    = cFlat + cCos2 * cosThe*cosThe;
     wtMax = cFlat + max(0., cCos2);
   }
@@ -442,11 +442,11 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
 
     // Order so that fbar(1) f(2) -> f'(3) fbar'(4) f"(5) fbar"(6).
     // with f' fbar' from W- and f" fbar" from W+.
-    int i1 = (process[3].id() < 0) ? 3 : 4;
+    int i1 = (process.at(3).id() < 0) ? 3 : 4;
     int i2 = 7 - i1;
-    int i3 = (process[8].id() > 0) ? 8 : 9;
+    int i3 = (process.at(8).id() > 0) ? 8 : 9;
     int i4 = 17 - i3;
-    int i5 = (process[10].id() > 0) ? 10 : 11;
+    int i5 = (process.at(10).id() > 0) ? 10 : 11;
     int i6 = 21 - i5;
     if (process[6].id() > 0) {swap(i3, i5); swap(i4, i6);}
 
@@ -457,12 +457,12 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
       setupProd( process, i1, i2, i3, i4, i5, i6);
 
       // tHat and uHat of fbar f -> W- W+, and their squared masses.
-      int iNeg     = (process[6].id() < 0) ? 6 : 7;
+      int iNeg     = (process.at(6).id() < 0) ? 6 : 7;
       int iPos     = 13 - iNeg;
-      double tHres = (process[i1].p() - process[iNeg].p()).m2Calc();
-      double uHres = (process[i1].p() - process[iPos].p()).m2Calc();
-      double s3now = process[iNeg].m2();
-      double s4now = process[iPos].m2();
+      double tHres = (process.at(i1).p() - process.at(iNeg).p()).m2Calc();
+      double uHres = (process.at(i1).p() - process.at(iPos).p()).m2Calc();
+      double s3now = process.at(iNeg).m2();
+      double s4now = process.at(iPos).m2();
 
       // Kinematics combinations (norm(x) = |x|^2).
       double fGK135 = norm(fGK( 1, 2, 3, 4, 5, 6) - fGK( 1, 2, 5, 6, 3, 4) );
@@ -472,24 +472,24 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
       double xjTU   = xjGK( tHres, uHres, s3now, s4now);
 
       //  Couplings of incoming (anti)fermion. Combine with kinematics.
-      int idAbs     = process[i1].idAbs();
-      double li     = 0.5 * (vfZp[idAbs] + afZp[idAbs]);
-      double ri     = 0.5 * (vfZp[idAbs] - afZp[idAbs]);
+      int idAbs     = process.at(i1).idAbs();
+      double li     = 0.5 * (vfZp.at(idAbs) + afZp.at(idAbs));
+      double ri     = 0.5 * (vfZp.at(idAbs) - afZp.at(idAbs));
       wt            = li*li * fGK135 + ri*ri * fGK253;
       wtMax         = 4. * s3now * s4now * (li*li + ri*ri)
                     * (xiT + xiU - xjTU);
 
     // Decay distribution like in f fbar -> h^0 -> W+ W-.
     } else {
-      double p35  = 2. * process[i3].p() * process[i5].p();
-      double p46  = 2. * process[i4].p() * process[i6].p();
+      double p35  = 2. * process.at(i3).p() * process.at(i5).p();
+      double p46  = 2. * process.at(i4).p() * process.at(i6).p();
       wt          = 16. * p35 * p46;
       wtMax       = sH2;
     }
   }
 
   // Angular weight in top decay by standard routine.
-  else if (process[process[iResBeg].mother1()].idAbs() == 6)
+  else if (process.at(process.at(iResBeg).mother1()).idAbs() == 6)
     return weightTopDecay( process, iResBeg, iResEnd);
 
   // Angular weight for fourth generation or excited fermions not implemented.
