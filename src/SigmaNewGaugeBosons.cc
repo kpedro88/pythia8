@@ -378,14 +378,16 @@ double Sigma1ffbar2gmZZprime::weightDecay( Event& process, int iResBeg,
     double ei  = couplingsPtr->ef(idInAbs);
     double vi  = couplingsPtr->vf(idInAbs);
     double ai  = couplingsPtr->af(idInAbs);
-    double vpi = vfZp.at(idInAbs);
-    double api = afZp.at(idInAbs);
+    assert(idInAbs<20);
+    double vpi = vfZp[idInAbs];
+    double api = afZp[idInAbs];
     int idOutAbs4 = (idOutAbs < 4000000) ? idOutAbs : idOutAbs - 4000000;
     double ef  = couplingsPtr->ef(idOutAbs4);
     double vf  = couplingsPtr->vf(idOutAbs4);
     double af  = couplingsPtr->af(idOutAbs4);
-    double vpf = vfZp.at(idOutAbs4);
-    double apf = afZp.at(idOutAbs4);
+    assert(idOutAbs4<20);
+    double vpf = vfZp[idOutAbs4];
+    double apf = afZp[idOutAbs4];
 
     // Phase space factors. (One power of beta left out in formulae.)
     double mr1 = pow2(process.at(6).m()) / sH;
