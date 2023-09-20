@@ -411,6 +411,7 @@ bool SLHAinterface::initSLHA(Settings& settings,
           continue;
         }
         particleDataPtr->m0(id,mass);
+		if(id==1000011) std::cout << "step 0: m0 = " << tmpPtr->m0() << "; mMin = " << tmpPtr->mMin() << "; mMax = " << tmpPtr->mMax() << std::endl;
         idModified[id] = true;
         importMass.push_back(id);
         // If the mMin and mMax cutoffs on Breit-Wigner tails were not already
@@ -421,6 +422,7 @@ bool SLHAinterface::initSLHA(Settings& settings,
           particleDataPtr->findParticle(id)->setMMinNoChange( mass/2. );
         if (!particleDataPtr->hasChangedMMax(id))
           particleDataPtr->findParticle(id)->setMMaxNoChange( 3.*mass/2. );
+		if(id==1000011) std::cout << "step 1: m0 = " << tmpPtr->m0() << "; mMin = " << tmpPtr->mMin() << "; mMax = " << tmpPtr->mMax() << std::endl;
       }
     };
     // Give summary of any imported/ignored MASS entries, and state reason
@@ -519,6 +521,7 @@ bool SLHAinterface::initSLHA(Settings& settings,
       double mMax = m0 + min(5*widRes , m0/2.);
       particlePtr->setMMaxNoChange(mMax);
     }
+	if(idRes==1000011) std::cout << "step 2: m0 = " << particlePtr->m0() << "; mMin = " << particlePtr->mMin() << "; mMax = " << particlePtr->mMax() << std::endl;
 
     // Set lifetime for displaced vertex calculations (convert GeV^-1 to mm).
     if (widRes > 0.) {
@@ -723,8 +726,10 @@ bool SLHAinterface::initSLHA(Settings& settings,
         // mMin: lower cutoff on Breit-Wigner; see above.
         // Increase minimum if needed to ensure at least one channel on shell
         double mMin = max(mSumMin, particlePtr->mMin());
+		if(id==1000011) std::cout << "step 3a: mSumMin = " << mSumMin << "; ptr->mMin = " << particlePtr->mMin() << "; mMin = " << mMin << std::endl;
         particlePtr->setMMin(mMin);
       }
+	if(id==1000011) std::cout << "step 3: m0 = " << particlePtr->m0() << "; mMin = " << particlePtr->mMin() << "; mMax = " << particlePtr->mMax() << std::endl;
     }
   }
 
