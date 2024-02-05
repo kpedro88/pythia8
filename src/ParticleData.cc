@@ -353,6 +353,10 @@ void ParticleDataEntry::initBWmass() {
   }
   mThr = (bRatSum == 0.) ? 0. : mThrSum / bRatSum;
 
+  bool debug = idSave==999999 or idSave==999998;
+  if(debug) std::cout << "DEBUG ParticleData: idSave = " << idSave << std::endl;
+  if(debug) std::cout << "mThr = mThrSum / bRatSum = " << mThrSum << " / " << bRatSum << " = " << mThr << std::endl;
+  if(debug) std::cout << "NARROWMASS = " << NARROWMASS << ", mThr + NARROWMASS = " << mThr + NARROWMASS << ", m0Save = " << m0Save << ", isResonanceSave = " << isResonanceSave << ", cond = " << (mThr + NARROWMASS > m0Save && !isResonanceSave) << std::endl;
   // Switch off Breit-Wigner if very close to threshold.
   if (mThr + NARROWMASS > m0Save && !isResonanceSave) {
     modeBWnow = 0;

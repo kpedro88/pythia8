@@ -6,6 +6,9 @@
 // Function definitions (not found in the header) for the
 // ParticleDecays class.
 
+#include <algorithm>
+#include <iterator>
+
 #include "Pythia8/ParticleDecays.h"
 
 namespace Pythia8 {
@@ -145,6 +148,9 @@ bool ParticleDecays::decay( int iDec, Event& event) {
   idProd.push_back( idDec );
   mProd.push_back( decayer.m() );
 
+  bool debug = idProd[0]==999999;
+  if(debug) std::cout << "DEBUG ParticleDecays: idProd[0] = " << idProd[0] << std::endl;
+
   // Check for oscillations B0 <-> B0bar or B_s0 <-> B_s0bar.
   bool hasOscillated = (abs(idDec) == 511 || abs(idDec) == 531)
     ? oscillateB(decayer) : false;
@@ -210,6 +216,8 @@ bool ParticleDecays::decay( int iDec, Event& event) {
       keepPartons = (meMode > 90 && meMode <= 100);
       mult = channel.multiplicity();
 
+      if(debug) std::cout << "  iTryChannel = " << iTryChannel << ", meMode = " << meMode << ", keepPartons = " << keepPartons << ", mult = " << mult << std::endl;
+
       // Allow up to ten tries for each channel (e.g with different masses).
       bool foundMode = false;
       iProd.resize(1);
@@ -233,7 +241,15 @@ bool ParticleDecays::decay( int iDec, Event& event) {
         }
 
         // Decays into partons usually translate into hadrons.
-        if (hasPartons && !keepPartons && !pickHadrons()) continue;
+        bool cond1 = hasPartons && !keepPartons && !pickHadrons();
+        if(debug) {
+          std::cout << "    iTryMode = " << iTryMode << ", idProd = ";
+          std::copy(idProd.begin(),idProd.end(),std::ostream_iterator<int>(std::cout,","));
+          std::cout << " mProd = ";
+          std::copy(mProd.begin(),mProd.end(),std::ostream_iterator<double>(std::cout,","));
+          std::cout << " cond1 = " << cond1;
+        }
+        if (cond1) continue;
 
         // Need to set colour flow if explicit decay to partons.
         cols.resize(0);
@@ -242,12 +258,15 @@ bool ParticleDecays::decay( int iDec, Event& event) {
           cols.push_back(0);
           acols.push_back(0);
         }
-        if (hasPartons && keepPartons && !setColours(event)) continue;
+        bool cond2 = hasPartons && keepPartons && !setColours(event);
+        if(debug) std::cout << ", cond2 = " << cond2 << std::endl;
+        if (cond2) continue;
 
         // Check that enough phase space for decay.
         if (mult > 1) {
           double mDiff = mProd[0];
           for (int i = 1; i <= mult; ++i) mDiff -= mProd[i];
+          if(debug) std::cout << "      mDiff = " << mDiff << ", mDiff < mSafety = " << (mDiff < mSafety) << std::endl;
           if (mDiff < mSafety) continue;
         }
 
@@ -255,6 +274,7 @@ bool ParticleDecays::decay( int iDec, Event& event) {
         foundMode = true;
         break;
       }
+      if(debug) std::cout << "    foundMode = " << foundMode << std::endl;
       if (!foundMode) continue;
 
       // Store decay products in the event record.
@@ -286,6 +306,7 @@ bool ParticleDecays::decay( int iDec, Event& event) {
       foundChannel = true;
       break;
     }
+    if(debug) std::cout << "  foundChannel = " << foundChannel << std::endl;
 
     // If the decay worked, then mark mother decayed and store daughters.
     if (foundChannel) {
@@ -295,8 +316,10 @@ bool ParticleDecays::decay( int iDec, Event& event) {
     // Else remove unused daughters and return failure.
     } else {
       if (hasStored) event.popBack(mult);
+      ostringstream osWarn;
+      osWarn << "for id = " << idDec;
       infoPtr->errorMsg("Error in ParticleDecays::decay: "
-        "failed to find workable decay channel");
+        "failed to find workable decay channel "+osWarn.str());
       return false;
     }
 
