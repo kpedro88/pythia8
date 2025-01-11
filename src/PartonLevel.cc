@@ -1,5 +1,5 @@
 // PartonLevel.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 // Hard diffraction added by Christine Rasmussen.
@@ -28,9 +28,10 @@ const int PartonLevel::NTRY = 10;
 // Main routine to initialize the parton-level generation process.
 
 bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
-  TimeShowerPtr timesPtrIn, SpaceShowerPtr spacePtrIn, RHadrons* rHadronsPtrIn,
-  MergingHooksPtr mergingHooksPtrIn, PartonVertexPtr partonVertexPtrIn,
-  StringIntPtr stringInteractionsPtrIn,  bool useAsTrial ) {
+  TimeShowerPtr timesPtrIn, SpaceShowerPtr spacePtrIn,
+  RHadronsPtr rHadronsPtrIn, MergingHooksPtr mergingHooksPtrIn,
+  PartonVertexPtr partonVertexPtrIn, StringIntPtr stringInteractionsPtrIn,
+  bool useAsTrial ) {
 
   // Store other input pointers.
   beamHadAPtr           = beamAPtr;
@@ -54,6 +55,8 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
                     || settings.flag("SoftQCD:singleDiffractiveAX");
   bool doDD          = settings.flag("SoftQCD:doubleDiffractive");
   bool doCD          = settings.flag("SoftQCD:centralDiffractive");
+  bool zeroAXB       = settings.mode("SigmaDiffractive:mode") == 1
+                    && settings.flag("SigmaTotal:zeroAXB");
   doNonDiff          = doSQ || doND;
   doDiffraction      = doSQ || doSD || doDD || doCD;
   doHardDiff         = settings.flag("Diffraction:doHard");
@@ -255,8 +258,8 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
     doMPISDB = multiSDB.init( doMPIinit, 2, beamPomAPtr,
       tmpBeamB, partonVertexPtr, (beamBisGamma || beamBhasGamma) );
   }
-  if (doCD || doSQ) doMPICD = multiCD.init( doMPIinit, 3, beamPomAPtr,
-    beamPomBPtr, partonVertexPtr);
+  if ((doCD || doSQ) && !zeroAXB) doMPICD = multiCD.init( doMPIinit, 3,
+    beamPomAPtr, beamPomBPtr, partonVertexPtr);
   if (!remnants.init( partonVertexPtr, colourReconnectionPtr)) return false;
   resonanceDecays.init();
   if (colourReconnectionPtr) colourReconnectionPtr->init();

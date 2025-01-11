@@ -1,9 +1,9 @@
 // main151.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Author: Christian T Preuss <preuss@uni-wuppertal.de>
+// Authors: Christian T Preuss <preuss@uni-wuppertal.de>
 
 // Keywords: MC@NLO; aMC@NLO; MadGraph5_aMC@NLO
 

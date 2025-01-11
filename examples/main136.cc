@@ -1,22 +1,23 @@
 // main136.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Author: Christian T Preuss <preuss@uni-wuppertal.de>
+// Authors: Christian T Preuss <preuss@uni-wuppertal.de>
 
-// Keywords: HDF5 file; lheh5; hepmc
+// Keywords: HDF5 file; LHEH5; hepmc
 
 // This program (main136.cc) illustrates how a HDF5 event file can be
 // used by Pythia8. See main134.cc for how to use LHE files instead.
 // Example usage is:
-//     ./main136 main136.cmnd ttbar.hdf5 main136.hepmc
+//     ./main136 -c main136.cmnd -i ttbar.hdf5 -o main136.hepmc
 
 #include "Pythia8/Pythia.h"
 
 // To use v2 of LHAHDF5, include "Pythia8Plugins/LHAHDF5v2.h" instead.
 //#include "Pythia8Plugins/LHAHDF5v2.h"
 #include "Pythia8Plugins/LHAHDF5.h"
+#include "Pythia8Plugins/InputParser.h"
 #ifndef HEPMC2
 #include "Pythia8Plugins/HepMC3.h"
 #else
@@ -31,17 +32,19 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
-  // Input sanity check
-  if (argc < 4) {
-    cout << "ERROR: Not enough arguments provided" << endl << endl
-         << "Usage:\n\t" << argv[0]
-         << "  COMMAND.cmnd INPUT.hdf5 OUTPUT.hepmc [OFFSET]"
-         << endl << endl;
-    return EXIT_FAILURE;
-  }
+  // Set up command line options.
+  InputParser ip("Illustrates how a HDF5 event file can be used by Pythia8.",
+    {"./main136 -c main136.cmnd -i ttbar.hdf5 -o main136.hepmc"});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
+  ip.require("o", "Specify HepMC output filename.", {"-out"});
+  ip.require("i", "Specify HDF5 input filename.", {"-in"});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Check whether input file exists.
-  string cmndFile = argv[1];
+  string cmndFile = ip.get<string>("c");
   ifstream isCmnd(cmndFile);
   if (!isCmnd) {
     cerr << " File " << cmndFile << " was not found. \n"
@@ -50,16 +53,13 @@ int main(int argc, char* argv[]) {
   }
 
   // Check whether event file exists.
-  string hdf5File = argv[2];
+  string hdf5File = ip.get<string>("i");
   ifstream isH5(hdf5File);
   if (!isH5) {
     cerr << " File " << hdf5File << " was not found. \n"
          << " Program stopped! " << endl;
     return EXIT_FAILURE;
   }
-
-  // HepMC file.
-  string hepMCFile = argv[3];
 
   // Optionally: skip events.
   size_t eventOffset = (argc > 4) ? atoi(argv[4]) : 0;
@@ -88,6 +88,7 @@ int main(int argc, char* argv[]) {
   //   make_shared<LHAupH5v2>(&file, eventOffset, readSize, true);
 
   // HepMC.
+  string hepMCFile = ip.get<string>("o");
   Pythia8::Pythia8ToHepMC toHepMC(hepMCFile);
   toHepMC.set_print_inconsistency(false);
 

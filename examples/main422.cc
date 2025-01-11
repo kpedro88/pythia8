@@ -1,5 +1,5 @@
 // main422.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -22,6 +22,8 @@
 
 using namespace Pythia8;
 
+//==========================================================================
+
 int main() {
 
   Pythia pythia;
@@ -37,7 +39,7 @@ int main() {
   // cross sections in Pythia within some tolerance.
   pythia.readString("HeavyIon:SigFitErr = "
                     "0.02,0.02,0.1,0.05,0.05,0.0,0.1,0.0");
-  // These parameters are typicall suitable for sqrt(S_NN)=5TeV
+  // These parameters are typicall suitable for sqrt(S_NN) = 5 TeV.
   pythia.readString("HeavyIon:SigFitDefPar = 2.15,17.24,0.33");
   // A simple genetic algorithm is run for 20 generations to fit the
   // parameters.
@@ -164,7 +166,6 @@ int main() {
   wounded /= sumw;
   ofs << "\n# " << wounded.getTitle() << endl;
   wounded.table(ofs);
-
 
   // Print out the centrality binned eta distributions and delete the
   // heap-allocate histograms.

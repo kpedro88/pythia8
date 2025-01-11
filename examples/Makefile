@@ -1,5 +1,5 @@
 # Makefile is a part of the PYTHIA event generator.
-# Copyright (C) 2024 Torbjorn Sjostrand.
+# Copyright (C) 2025 Torbjorn Sjostrand.
 # PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 # Please respect the MCnet Guidelines, see GUIDELINES for details.
 # Author: Philip Ilten, September 2014.
@@ -46,6 +46,7 @@ ifeq ($(RIVET_USE),true)
     endif
   endif
   RIVET_OPTS+= $(RIVET_FLAGS) $(CXX_COMMON:c++11=$(RIVET_CSTD)) $(CXX_DTAGS)
+  RIVET_OPTS+= -DRIVET
 endif
 
 # Define additional dependency options.
@@ -94,6 +95,15 @@ ifeq ($(ROOT_USE),true)
 	$(ROOT_BIN)rootcint -f $@ -DPY8ROOT -I$(PREFIX_INCLUDE) $^
 else
 	$(error Error: $@ requires ROOT)
+endif
+
+# YODA histogramming. Requires YODA v. 2.0.0 or above.
+main114: $(PYTHIA) $$@.cc
+ifeq ($(YODA_USE),true)
+	$(CXX) $@.cc -o $@ $(CXX_COMMON:c++11=c++17)\
+	 $(YODA_INCLUDE) $(YODA_LIB)
+else
+	$(error Error: $@ requires YODA2)
 endif
 
 # HEPMC2 or HEPMC3 (use HEPMC3 if both).

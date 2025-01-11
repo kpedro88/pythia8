@@ -1,5 +1,5 @@
 // BeamSetup.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -366,6 +366,7 @@ bool BeamSetup::initFrame() {
     // Special option with variable incoming projectile.
     doVarEcm       = flag("Beams:allowVariableEnergy");
     allowIDAswitch = flag("Beams:allowIDAswitch");
+    idAList        = mvec("Beams:idAList");
     if (allowIDAswitch && !doVarEcm) {
       loggerPtr->ABORT_MSG(
         "allowed idA switch also requires Beams:allowVariableEnergy = on");
@@ -1173,6 +1174,47 @@ PDFPtr BeamSetup::getPDFPtr(int idIn, int sequence, string beam,
     istringstream pStream(pWord);
     int pSet = 0;
     pStream >> pSet;
+
+    // Use preferred PDF source.
+    if (settingsPtr != nullptr) {
+      int pMode = settingsPtr->mode("Tune:preferLHAPDF");
+      if (pMode != 0 && pSet > 0 && pSet < 25) {
+
+        // Map of internal to LHAPDF5 and LHAPDF6.
+        vector<pair<string, string> > pMap {
+          make_pair("", ""),
+          make_pair("cteq5l.LHgrid", ""),
+          make_pair("MRST2007lomod.LHgrid", "MRST2007lomod"),
+          make_pair("MRSTMCal.LHgrid", "MRSTMCal"),
+          make_pair("MSTW2008lo68cl.LHgrid", "MSTW2008lo68cl"),
+          make_pair("MSTW2008nlo68cl.LHgrid", "MSTW2008nlo68cl"),
+          make_pair("cteq61.LHpdf", "cteq61"),
+          make_pair("cteq6ll.LHpdf", "cteq6l1"),
+          make_pair("cteq66.LHgrid", "CTEQ66.00"),
+          make_pair("CT09MC1.LHgrid", "CT09MC1"),
+          make_pair("CT09MC2.LHgrid", "CT09MC2"),
+          make_pair("CT09MCS.LHgrid", "CT09MCS"),
+          make_pair("", "NNPDF23_lo_as_0130_qed"),
+          make_pair("", "NNPDF23_lo_as_0119_qed"),
+          make_pair("NNPDF23_nlo_as_0119_qed.LHgrid",
+            "NNPDF23_nlo_as_0119_qed"),
+          make_pair("NNPDF23_nnlo_as_0119_qed.LHgrid",
+            "NNPDF23_nnlo_as_0119_qed"),
+          make_pair("", "NNPDF31_lo_as_0130"),
+          make_pair("", "NNPDF31_lo_as_0118"),
+          make_pair("", "NNPDF31_nlo_as_0118_luxqed"),
+          make_pair("", "NNPDF31_nnlo_as_0118_luxqed"),
+          make_pair("", "NNPDF31sx_nlonllx_as_0118_LHCb_luxqed"),
+          make_pair("", "NNPDF31sx_nnlonllx_as_0118_LHCb_luxqed"),
+          make_pair("", ""),
+          make_pair("", "")
+        };
+        pSet = 0;
+        if      (pMode == 1) pWord = "LHAPDF5:" + pMap[pSet + 1].first;
+        else if (pMode == 2) pWord = "LHAPDF6:" + pMap[pSet + 1].second;
+        else if (pMode == 3) pWord = "LHALHAGrid1:" + pMap[pSet + 1].second;
+      }
+    }
 
     // Use internal LHAgrid1 implementation for LHAPDF6 files.
     if (pSet == 0 && pWord.length() > 9

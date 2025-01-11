@@ -4,11 +4,12 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main162.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Author: Christian T Preuss &lt;preuss@uni-wuppertal.de&gt;
+// Authors:
+//            <a href="mailto:preuss@uni-wuppertal.de">Christian T Preuss</a>
 
 // Keywords:
 //            <a href="../ExampleKeywords.html#merging">Merging</a>
@@ -21,10 +22,11 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 
 // It illustrates how to do merging, see the Matrix Element
 // Merging page in the online manual. An example command is
-//     ./main162 main162ckkwl.cmnd
+//     ./main162 -c main162ckkwl.cmnd
 // where main162ckkwl.cmnd supplies the commands.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 
 using namespace Pythia8;
 
@@ -34,18 +36,21 @@ using namespace Pythia8;
 
 int main(int argc, char** argv) {
 
-  // Check that correct number of command-line arguments is given.
-  if (argc != 2) {
-    cerr &lt;&lt; &quot; Error: no run card provided&quot; &lt;&lt; endl;
-    cerr &lt;&lt; endl &lt;&lt; &quot; Usage:&quot;
-         &lt;&lt; &quot;\n &quot; &lt;&lt; argv[0] &lt;&lt; &quot; &lt;input.cmnd&gt; \n&quot; &lt;&lt; endl;
-    return EXIT_FAILURE;
-  }
+  // Set up command line options.
+  InputParser ip(&quot;Illustrates how to do merging.&quot;,
+    {&quot;./main162 -c main162ckkwl.cmnd&quot;,
+        &quot;./main162 -c main162mess.cmnd&quot;,
+        &quot;./main162 -c main162nl3.cmnd&quot;,
+        &quot;./main162 -c main162umeps.cmnd&quot;,
+        &quot;./main162 -c main162unlops.cmnd&quot;});
+  ip.require(&quot;c&quot;, &quot;Use this user-written command file.&quot;, {&quot;-cmnd&quot;});
 
-  // Name of the input file.
-  string cmndFile = argv[1];
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Generator.
+  string cmndFile = ip.get&lt;string&gt;(&quot;c&quot;);
   Pythia pythia;
   pythia.readFile(cmndFile);
 

@@ -1,18 +1,19 @@
 // main162.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Author: Christian T Preuss <preuss@uni-wuppertal.de>
+// Authors: Christian T Preuss <preuss@uni-wuppertal.de>
 
 // Keywords: merging; CKKW-L; MESS; UMEPS; NL3; UNLOPS; NLO;
 
 // It illustrates how to do merging, see the Matrix Element
 // Merging page in the online manual. An example command is
-//     ./main162 main162ckkwl.cmnd
+//     ./main162 -c main162ckkwl.cmnd
 // where main162ckkwl.cmnd supplies the commands.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 
 using namespace Pythia8;
 
@@ -22,18 +23,21 @@ using namespace Pythia8;
 
 int main(int argc, char** argv) {
 
-  // Check that correct number of command-line arguments is given.
-  if (argc != 2) {
-    cerr << " Error: no run card provided" << endl;
-    cerr << endl << " Usage:"
-         << "\n " << argv[0] << " <input.cmnd> \n" << endl;
-    return EXIT_FAILURE;
-  }
+  // Set up command line options.
+  InputParser ip("Illustrates how to do merging.",
+    {"./main162 -c main162ckkwl.cmnd",
+        "./main162 -c main162mess.cmnd",
+        "./main162 -c main162nl3.cmnd",
+        "./main162 -c main162umeps.cmnd",
+        "./main162 -c main162unlops.cmnd"});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
 
-  // Name of the input file.
-  string cmndFile = argv[1];
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Generator.
+  string cmndFile = ip.get<string>("c");
   Pythia pythia;
   pythia.readFile(cmndFile);
 

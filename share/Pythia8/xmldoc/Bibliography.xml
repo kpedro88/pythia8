@@ -223,6 +223,9 @@ at TeV Colliders, Les Houches, France, 21 May - 1 Jun 2001
 <refit>Buc19</refit> 
 <dd>A. Buckley et al., arXiv:1912.08005 [hep-ph]</dd> 
  
+<refit>Buc23</refit> 
+<dd>A. Buckley et al., 2312.15070 [hep-ph]</dd> 
+ 
 <refit>But14</refit> 
 <dd>J. Butterworth et al., arXiv:1405.1067 [hep-ph]</dd> 
  
@@ -436,6 +439,9 @@ P. Torrielli, Phys.Lett. B701 (2011) 427 [arXiv:1104.5613 [hep-ph]]</dd>
 <refit>H1P07</refit> 
 <dd>H1 Collaboration, A. Aktas et al., JHEP 0710 (2007) 042 
 [arXiv:0708.3217 [hep-ex]]</dd> 
+ 
+<refit>Hel24</refit> 
+<dd>I. Helenius, J. Laulainen and C.T. Preuss, arXiv:2410.20950 [hep-ph]</dd> 
  
 <refit>Hew88</refit> 
 <dd>J.L. Hewett and S. Pakvasa, Phys. Rev. D37 (1988) 3165</dd> 
@@ -726,4 +732,4 @@ J. Phys. G33 (2006) 1</dd>
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

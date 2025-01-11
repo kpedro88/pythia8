@@ -1,5 +1,5 @@
 # main295.py is a part of the PYTHIA event generator.
-# Copyright (C) 2024 Torbjorn Sjostrand.
+# Copyright (C) 2025 Torbjorn Sjostrand.
 # PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 # Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -8,6 +8,8 @@
 # Keywords: matching; madgraph; aMC@NLO; python;
 
 # This example is equivalent with main153.cc, but written in Python.
+# The full Python interface must be generated to use this example,
+# "cd plugins/python && ./generate --full && cd -".
 
 # An example where the hard process (p p -> mu+ mu-) is automatically
 # produced externally with MadGraph 5, read in, and the remainder of

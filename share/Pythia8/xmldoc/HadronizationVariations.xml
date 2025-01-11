@@ -22,7 +22,13 @@ Be particularly aware that the code will not warn you, in case you have
 no statistical coverage for the values you are attempting to reweight to. 
 Use with caution. 
  
-<wvec name="VariationFrag:List" default="{}"> 
+<flag name="VariationFrag:flav" default="off"> 
+For the fragmentation flavor variations, it is possible to perform 
+post-hoc reweighting without running the in-situ variations below. To 
+enable post-hoc flavor reweighting, switch this flag on. 
+</flag> 
+ 
+<wvec name="VariationFrag:list" default="{}"> 
 Vector of uncertainty-variation strings defining groups of parameter 
 variations for string fragmentation. The groups are separated by commas, 
 and the elements of the group are separated by spaces, where the first 
@@ -82,4 +88,4 @@ states.</li>
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

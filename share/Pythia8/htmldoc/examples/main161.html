@@ -4,7 +4,7 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main161.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -20,12 +20,13 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 
 // This program illustrates how to do CKKW-L merging, see the Matrix Element
 // Merging page in the online manual. An example command is
-//     ./main161 main161.cmnd w+_production_lhc_0.lhe histout161.dat
+//     ./main161 -c main161.cmnd -i w+_production_lhc_0.lhe -o histout161.dat
 // where main161.cmnd supplies the commands, w+_production_lhc_0.lhe
 // provides the input LHE events, and histout161.dat is the output
 // file. This example requires FastJet.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 
 using namespace Pythia8;
 
@@ -259,26 +260,26 @@ double MyMergingHooks::myKTdurham(const Particle&amp; RadAfterBranch,
 
 int main( int argc, char* argv[] ){
 
-  // Check that correct number of command-line arguments
-  if (argc != 4) {
-    cerr &lt;&lt; &quot; Unexpected number of command-line arguments. \n You are&quot;
-         &lt;&lt; &quot; expected to provide the arguments \n&quot;
-         &lt;&lt; &quot; 1. Input file for settings \n&quot;
-         &lt;&lt; &quot; 2. Full name of the input LHE file (with path) \n&quot;
-         &lt;&lt; &quot; 3. Path for output histogram files \n&quot;
-         &lt;&lt; &quot; Program stopped. &quot; &lt;&lt; endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip(&quot;Illustrates how to do CKKW-L merging.&quot;,
+    {&quot;./main161 -c main161.cmnd -i w+_production_lhc_0.lhe &quot;
+        &quot;-o histout161.dat&quot;});
+  ip.require(&quot;c&quot;, &quot;Use this user-written command file.&quot;, {&quot;-cmnd&quot;});
+  ip.require(&quot;o&quot;, &quot;Path for output histogram files.&quot;, {&quot;-out&quot;});
+  ip.require(&quot;i&quot;, &quot;Full name of the input LHE file (with path).&quot;, {&quot;-in&quot;});
 
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
+
+  // Grab the options.
+  string cFile = ip.get&lt;string&gt;(&quot;c&quot;);
+  string iPath = ip.get&lt;string&gt;(&quot;i&quot;);
+  string oPath = ip.get&lt;string&gt;(&quot;o&quot;);
+
+  // Create Pythia.
   Pythia pythia;
-
-  // Input parameters:
-  //  1. Input file for settings
-  //  2. Path to input LHE file
-  //  3. Output histogram path
-  pythia.readFile(argv[1]);
-  string iPath = string(argv[2]);
-  string oPath = string(argv[3]);
+  pythia.readFile(cFile);
 
   // Number of events
   int nEvent = pythia.mode(&quot;Main:numberOfEvents&quot;);

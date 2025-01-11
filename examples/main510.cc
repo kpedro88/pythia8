@@ -1,5 +1,5 @@
 // main510.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -14,6 +14,9 @@
 
 #include "Pythia8/Pythia.h"
 using namespace Pythia8;
+
+// Avoid division by zero when calculating cosTheta.
+const double PABSMIN = 1e-10;
 
 //==========================================================================
 
@@ -50,8 +53,9 @@ int main() {
   double alphaHV = 0.2;
 
   // a and b (scaled) parameter in fragmentation function.
-  double aLund   = 0.3;     // default 0.3; larger means more particles
-  double bLund   = 0.8;     // default 0.8: larger means fewer particles
+  double aLund     = 0.68;    // default 0.68; larger means more particles
+  double bLund     = 0.98;    // default 0.98: larger means fewer particles
+  double sigmaLund = 0.335;   // default 0.335; larger means broader pT
 
   // Allow or not ISR of photons off incoming e+e-
   bool allowISR  = true;
@@ -83,8 +87,14 @@ int main() {
     mgampiv  = 10.;
     alphaHV  = 0.15;
     nFlav    = 4;
-    aLund    = 0.12;
-    bLund    = 2.0;
+    // Example of (unrealistic?) changed fragmentation parameters.
+    aLund     = 0.12;
+    bLund     = 2.0;
+    sigmaLund = 0.35;
+    // Rescale b and sigma, based on ratio m(rho_HV) / m(rho_QCD).
+    double rescale = mgampiv / 0.775;
+    bLund         /= pow2(rescale);
+    sigmaLund     *= rescale;
   }
 
   //------------------------------------------------------------------------
@@ -159,8 +169,12 @@ int main() {
     pythia.readString("HiddenValley:fragment = on");
     pythia.settings.mode("HiddenValley:nFlav", nFlav);
     pythia.settings.parm("HiddenValley:probVector", probVec);
-    pythia.settings.parm("HiddenValley:aLund", aLund);
-    pythia.settings.forceParm("HiddenValley:bmqv2", bLund);
+    if (supersel == 2) {
+      pythia.readString("HiddenValley:setabsigma = 2");
+      pythia.settings.parm("HiddenValley:aLund", aLund);
+      pythia.settings.parm("HiddenValley:bLund", bLund);
+      pythia.settings.parm("HiddenValley:sigmaLund", sigmaLund);
+    }
   }
 
   //------------------------------------------------------------------------
@@ -356,7 +370,7 @@ int main() {
     // Remove particles near beampipe.
     double cosTheNow;
     for (int i = 0; i < event.size(); ++i) if (event[i].isFinal()) {
-      cosTheNow = abs(event[i].pz()) / event[i].pAbs();
+      cosTheNow = abs(event[i].pz()) / max(PABSMIN, event[i].pAbs());
       if (cosTheNow > cosTheBeam) event[i].statusNeg();
     }
 
@@ -381,8 +395,9 @@ int main() {
       double eLepton = event[i].e();
       double eIsol   = 0.;
       for (int j = 0; j < event.size(); ++j)
-      if (j != i && event[j].isFinal()
-      && costheta( event[i].p(), event[j].p() ) > cosTheIsol) {
+        if (j != i && event[j].isFinal() && event[i].pAbs2() != 0
+          && event[j].pAbs2() != 0
+          && costheta( event[i].p(), event[j].p() ) > cosTheIsol) {
         if (event[j].isCharged()) ++nChIsol;
         else {
           iNeutral.push_back(j);
@@ -478,7 +493,7 @@ int main() {
       for (int j = 0; j < jade.size(); ++j) {
         mJ = jade.p(j).mCalc();
         mJetH.fill( mJ);
-        costheBeam = abs( jade.p(j).pz()) / jade.p(j).pAbs();
+        costheBeam = abs( jade.p(j).pz()) / max(PABSMIN, jade.p(j).pAbs());
         cosTheBeamAllH.fill( costheBeam);
         if (mJ > mJetMin) cosTheBeamMassH.fill( costheBeam);
         for (int k = 0; k < j; ++k) {

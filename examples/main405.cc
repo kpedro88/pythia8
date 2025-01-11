@@ -1,5 +1,5 @@
 // main405.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -59,6 +59,7 @@ int main() {
 
   // VINCIA settings
   pythia.readString("PartonShowers:model   = 2");
+  pythia.readString("Vincia:tune           = 0");
   pythia.readString("Vincia:helicityShower = on");
   pythia.readString("Vincia:ewMode         = 3");
 

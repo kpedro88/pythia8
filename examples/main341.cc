@@ -1,5 +1,5 @@
 // main341.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -69,23 +69,11 @@ int main() {
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
     if (!pythia.next()) continue;
 
-    // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
-    Vec4 pProton = event[1].p();
-    Vec4 peIn    = event[4].p();
-    Vec4 peOut   = event[6].p();
-    Vec4 pPhoton = peIn - peOut;
-
-    // Q2, W2, Bjorken x, y.
-    double Q2    = - pPhoton.m2Calc();
-    double W2    = (pProton + pPhoton).m2Calc();
-    double x     = Q2 / (2. * pProton * pPhoton);
-    double y     = (pProton * pPhoton) / (pProton * peIn);
-
     // Fill kinematics histograms.
-    Qhist.fill( sqrt(Q2) );
-    Whist.fill( sqrt(W2) );
-    xhist.fill( x );
-    yhist.fill( y );
+    Qhist.fill( sqrt(pythia.info.Q2DIS()) );
+    Whist.fill( pythia.info.WDIS() );
+    xhist.fill( pythia.info.xDIS() );
+    yhist.fill( pythia.info.yDIS() );
     pTehist.fill( event[6].pT() );
 
     // pT spectrum of partons being radiated in shower.

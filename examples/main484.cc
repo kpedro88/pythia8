@@ -1,5 +1,5 @@
 // main484.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -8,13 +8,14 @@
 
 // Keywords: cosmic ray cascade; switch beam; switch collision energy
 
-// This example is based on work from Eur. Phys. J. C82 (2022) 21 and
-// arXiv:2108.03481 [hep-ph]. main484 should be equivalent with
-// main483, but with collisions and decays now handled by the
-// PythiaCascade class, which streamlines the main program.  The
-// stepwise addition to the event record is also more transparent.
-// Reminder: for vertex Vec4 the components are labelled (px, py, pz,
-// e), but actually represent (x, y, z, t) values.
+// This example demonstrates the production of atmospheric showers.
+// It is based on the model and studies in Eur. Phys. J. C82 (2022) 21
+// (arXiv:2108.03481 [hep-ph]), notably for hadron-nitrogen collisions.
+// It should be equivalent with main483, but with collisions and decays
+// handled by the PythiaCascade class, which streamlines the main program.
+// The stepwise addition to the event record is also more transparent.
+// Reminder: for vertex Vec4 the components are labelled (px, py, pz, e),
+// but actually represent (x, y, z, t) values.
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/PythiaCascade.h"
@@ -92,7 +93,13 @@ int main() {
   double pPri = 1e6;
 
   // Number of events per case. Only do a few since each shower is so big.
-  int nEvent = 5;
+  int nEvent = 100;
+
+  // Minimal hadron-hadron collision CM-frame energy allowed in the cascade.
+  // Is not needed for PythiaCascade on its own, but is for comparisons
+  // with Angantyr in main483.cc, since Angantyr cannot go below 10 GeV.
+  bool matchAngantyr = false;
+  double eCMMin = (matchAngantyr) ? 10.5 : 0.;
 
   // Set maximum size on the event record, to limit runaway code.
   int maxSize = 2000000;
@@ -103,8 +110,9 @@ int main() {
   PythiaCascade pythiaCascade;
   Rndm& rndm = pythiaCascade.rndm();
   double mp = pythiaCascade.particleData().m0(2212);
+
   // If any of the underlying Pythia objects failed to initialize,
-  // return with error.
+  // exit with error.
   if (!pythiaCascade.init(pPri + mp)) return 1;
 
   // Event record for full cascade evolution.
@@ -126,9 +134,9 @@ int main() {
   // Begin loops over cases and events.
   for (int iCase = 0; iCase < nCases; ++iCase)
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
+    Configuration& config = configurations[iCase];
 
     // Four-momentum of incoming initiator.
-    Configuration& config = configurations[iCase];
     double pxPri = 0.;
     double pyPri = pPri * sin(config.zenithAngle);
     double pzPri = pPri * cos(config.zenithAngle);
@@ -149,14 +157,17 @@ int main() {
     // Loop over particles (usually hadrons) in the main event record.
     for (int iHad = 1; iHad < eventMain.size(); ++iHad) {
       Particle& hadNow = eventMain[iHad];
-      int idNow        = hadNow.id();
-      Vec4 pNow        = hadNow.p();
-      double mNow      = hadNow.m();
-      double eNow      = hadNow.e();
-      bool mustDecayNow    = false;
 
       // Skip already fragmented/decayed or upwards-moving particles.
       if (!hadNow.isFinal() || hadNow.pz() > 0.) continue;
+
+      // Projectile properties.
+      int idNow         = hadNow.id();
+      Vec4 pNow         = hadNow.p();
+      double mNow       = hadNow.m();
+      double eNow       = hadNow.e();
+      bool mustDecayNow = false;
+      double eCMNow     = (pNow + Vec4(0, 0, 0, mp)).mCalc();
 
       // Find decay vertex for unstable hadrons. (Below ground if no decay.)
       Vec4 vDec = hadNow.canDecay() ? hadNow.vDec() : Vec4( 0., 0., -1., 0.);
@@ -164,7 +175,8 @@ int main() {
 
       // Low energy hadrons should not interact with medium.
       // Decay non-hadrons or low-energy ones if decay happens above ground.
-      if (!hadNow.isHadron() || eNow - mNow < config.eKinMin) {
+      if (!hadNow.isHadron() || eNow - mNow < config.eKinMin
+        || eCMNow < eCMMin) {
         if (canDecayNow) mustDecayNow = true;
         else continue;
       }
@@ -197,8 +209,8 @@ int main() {
 
       // Calculate potential interaction vertex, depending on medium.
       Vec4 vInt( 0., 0., -1., 0.);
+      Vec4 dirNow = pNow / pNow.pAbs();
       if (!mustDecayNow) {
-        Vec4 dirNow = pNow / pNow.pAbs();
         // Exponential atmosphere.
         if (config.doExponential) {
           double zNow  = hadNow.zProd();

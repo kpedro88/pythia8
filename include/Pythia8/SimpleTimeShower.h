@@ -1,5 +1,5 @@
 // SimpleTimeShower.h is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -130,7 +130,8 @@ public:
     int nBranchMax = 0) override;
 
   // Top-level routine for QED radiation in hadronic decay to two leptons.
-  virtual int showerQED( int i1, int i2, Event& event, double pTmax) override;
+  virtual int showerQED( int i1, int i2, Event& event, double pTmax = -1.)
+    override;
 
   // Prepare process-level event for shower + interleaved resonance decays.
   // Usage: prepareProcess( process, event, iPos).

@@ -28,6 +28,23 @@ also scale in this way. The width of the <ei>pT</ei> spectrum, given by
     &kappa;<sub>eff</sub>/&kappa;<sub>0</sub>. 
 </eq> 
  
+ 
+The diquark production probability <code>StringFlav:probQQtoQ</code> 
+scales according to 
+<eq> 
+    P'(qq:q)=&alpha;'(P(qq:q)/&alpha;)<sup>&kappa;<sub>eff</sub></sup>, 
+</eq> 
+ 
+and <ei>&alpha;'</ei> is <ei>&alpha;</ei> recalculated given 
+<ei>&kappa;<sub>eff</sub></ei>. 
+ 
+We allow different parameters to set <ei>k<sub>p</sub></ei> depending 
+on what the effective string tension is scaling. In principle if the 
+close-packing mechanism were exact, <code>enhanceStrange</code>, 
+<code>enhanceStrange</code>, and <code>enhanceStrange</code> would be 
+equal, however we have built in extra degrees of freedom in the model. 
+ 
+ 
 <b>Note:</b> for the purpose of close-packing, string overlaps are 
 determined according to rapidity measured along the z axis. This 
 should be quite appropriate for multi-string 
@@ -38,17 +55,10 @@ interesting but would require a generalisation of the current
 implementation. 
  
 <flag name="ClosePacking:doClosePacking" default="off"> 
-If switched on then the two following parameters modify either 
-<code>StringPT:sigma</code> or <code>StringPT:temperature</code>, 
-respectively. Normally only one of the options below would be used, 
-but technically both are allowed and then combine multiplicatively. 
+Turns on the close-packing model. 
 </flag> 
  
-<parm name="ClosePacking:tension" default="0.08" min="0.0"> 
-<ei>k<sub>p</sub></ei> parameter above. 
-</parm> 
- 
-<parm name="ClosePacking:tensionRatio" default="0.5" min="0.0" max="1.0"> 
+<parm name="ClosePacking:fluxRatio" default="0.5" min="0.0" max="1.0"> 
 <ei>k<sub>q</sub>/k<sub>p</sub></ei> ratio. 
 </parm> 
  
@@ -56,43 +66,29 @@ but technically both are allowed and then combine multiplicatively.
 <ei>p<sub>T0</sub></ei> parameter above. 
 </parm> 
  
-<parm name="ClosePacking:facPT" default="1.0" min="0.0"> 
-Allows scaling of close-packing effect on <ei>pT</ei> by introducing 
-<eq> 
-    R<sub>pT</sub> = facPT<sup>2</sup> 
-    (&kappa;<sub>eff</sub>/&kappa;<sub>0</sub> - 1) + 1, 
-</eq> 
-such that 
-<eq> 
-    &sigma;'<sup>2</sup> = &sigma;<sup>2</sup> * R<sub>pT</sub>. 
-</eq> 
-</parm> 
- 
-<flag name="ClosePacking:qqKappa" default="off"> 
-Controls whether to increase the diquark probability 
-<code>StringFlav:probQQtoQ</code> which takes the form <ei>P(qq:q) = 
-&alpha; * P(ud0) / P(u)</ei>, where <ei>&alpha;</ei> is dependent on 
+<parm name="ClosePacking:enhanceStrange" default="0.08" min="0.0"> 
+<ei>k<sub>p</sub></ei> parameter above used for scaling 
 <code>StringFlav:probStoUD</code>, <code>StringFlav:probSQtoQQ</code> 
-and <code>StringFlav:probQQ1toQQ0</code> (see further 
-<ref>Bie14</ref>). This scales the diquark probability due to the 
-diquark constituent mass relative to u/d quarks.  This scaling doesn't 
-necessarily translate to the popcorn mechanism for diquark creation. 
-</flag> 
- 
-<parm name="ClosePacking:facQQ" default="1.0" min="0.0"> 
-Allows scaling of close-packing effect on 
-<code>StringFlav:probQQtoQ</code> by introducing 
-<eq> 
-    R<sub>QQ</sub> = facQQ<sup>2</sup> 
-    (&kappa;<sub>eff</sub>/&kappa;<sub>0</sub> - 1) + 1, 
-</eq> 
-where <code>StringFlav:probQQtoQ</code> is scaled by 
-<eq> 
-    P'(qq:q)=&alpha;'(P(qq:q)/&alpha;)<sup>1/R<sub>QQ</sub></sup>, 
-</eq> 
-and <ei>&alpha;'</ei> is <ei>&alpha;</ei> recalculated given 
-<ei>&kappa;<sub>eff</sub></ei>. 
+and <code>StringFlav:probQQ1toQQ0</code>. 
 </parm> 
+ 
+<parm name="ClosePacking:enhancePT" default="0.5" min="0.0"> 
+<ei>k<sub>p</sub></ei> parameter above used for scaling 
+<code>StringPT:sigma</code>. 
+</parm> 
+ 
+<parm name="ClosePacking:enhanceDiquark" default="0.5" min="0.0"> 
+<ei>k<sub>p</sub></ei> parameter above used for scaling 
+<code>StringFlav:probQQtoQ</code>. 
+</parm> 
+ 
+<flag name="ClosePacking:doEnhanceDiquark" default="on"> 
+As probQQtoQ is scaled by &kappa; by &alpha;' regardless of 
+<code>ClosePacking:enhanceDiquark</code> value, here we allow 
+the scaling of probQQtoQ with an effective &kappa; to be switched off 
+altogether to capture the ambiguity in the scaling of probQQtoQ given 
+the popcorn mechanism for diquark creation. 
+</flag> 
  
 Parameters <code>ClosePacking:expNSP</code> and 
 <code>ClosePacking:expMPI</code> are typically used for the thermal 
@@ -140,11 +136,11 @@ for a given colour configuration, the probability
     (1-f<sub>p</sub>)<sup>n<sub>p</sub>/9</sup>) P(qq:q). 
 </eq> 
  
-<parm name="ClosePacking:qqFacQ" default="0.5" min="0." max="1.0"> 
+<parm name="ClosePacking:baryonSup" default="0.5" min="0." max="1.0"> 
 <ei>f<sub>q</sub></ei> parameter above. 
 </parm> 
  
-<parm name="ClosePacking:qqFacP" default="0." min="0." max="1.0"> 
+<parm name="ClosePacking:parallelBaryonSup" default="0." min="0." max="1.0"> 
 <ei>f<sub>p</sub></ei> parameter above. 
 </parm> 
  

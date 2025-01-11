@@ -1,5 +1,5 @@
 // main164.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -7,7 +7,7 @@
 
 // Keywords: matching; merging; leading order; NLO; powheg; madgraph; aMC@NLO;
 //           CKKW-L; UMEPS; NL3; UNLOPS; FxFx; MLM;
-//           userhooks; LHE file; hepmc; rivet
+//           userhooks; LHE file; HDF5 file; LHEH5; hepmc; rivet
 
 // This program illustrates how to do run PYTHIA with LHEF input, allowing a
 // sample-by-sample generation of
@@ -19,11 +19,12 @@
 // see the respective sections in the online manual for details.
 //
 // An example command is
-//     ./main164 main164ckkwl.cmnd
+//     ./main164 -c main164ckkwl.cmnd
 // where main164ckkwl.cmnd supplies the commands.
 // This example requires HepMC2 or HepMC3 and optionally RIVET.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 #if defined(HEPMC3)
 #include "Pythia8Plugins/HepMC3.h"
 #elif defined(HEPMC2)
@@ -52,17 +53,25 @@ using namespace Pythia8;
 
 int main(int argc, char** argv){
 
-  // Check that correct number of command-line arguments
-  if (argc != 2) {
-    cerr << " Unexpected number of command-line arguments ("
-         << argc-1 << ")" << endl << endl
-         << " Usage:" << endl
-         << " " << argv[0] << " <input.cmnd>" << endl << endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip("Illustrates how to do matching and merging.",
+    {"./main164 -c main164ckkwl.cmnd",
+        "./main164 -c main164amcatnlo.cmnd",
+        "./main164 -c main164fxfx.cmnd",
+        "./main164 -c main164mlm.cmnd",
+        "./main164 -c main164umeps.cmnd",
+        "./main164 -c main164mess.cmnd",
+        "./main164 -c main164unlops.cmnd",
+        "./main164 -c main164dis.cmnd",
+        "./main164 -c main164powheg.cmnd",});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Input file.
-  string cmndFile = argv[1];
+  string cmndFile = ip.get<string>("c");
 
   // Generator.
   Pythia pythia;
@@ -132,8 +141,10 @@ int main(int argc, char** argv){
       if (showerModel == 1 || showerModel == 3) {
         pythia.readString("SpaceShower:pTmaxMatch = 2");
         pythia.readString("TimeShower:pTmaxMatch = 2");
-      } else if (showerModel == 2)
+      } else if (showerModel == 2) {
+        pythia.readString("Vincia:tune = 0");
         pythia.readString("Vincia:pTmaxMatch = 2");
+      }
     }
     // Set MPI to start at the kinematical limit.
     if (pwhgVetoModeMPI > 0)

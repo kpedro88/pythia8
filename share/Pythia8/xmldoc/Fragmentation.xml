@@ -491,48 +491,21 @@ and the leftover momentum of the first two treated legs falls below
 junction rest frame). 
 </parm> 
  
-<flag name="StringFragmentation:pearlFragmentation" default="off"> 
-Optionally allow to use a gluon approximation for pearl-on-a-string 
-junction topologies. Pearl-on-a-string is a junction topology such 
-that the junction gets stuck to a soft endpoint parton. In these cases 
-for light quarks, the propagation of the <ei>pT</ei> is similar to a 
-soft gluon kink, and can be fragmented by approximating the pearl as a 
-gluon. 
-</flag> 
- 
-<parm name="StringFragmentation:pearlProbFactor" default="4" min="1"> 
-The gluon approximation for pearl-on-a-string cases is chosen 
-probabilistically. This parameter, <ei>f_pearl</ei>, modifies the 
-probability distribution used and has the general form of 
-<eq> 
-    prob(x) = 1 / (1 + (4<ei>&Delta;v</ei>)<sup>f<sub>pearl</sub></sup>). 
-</eq> 
-Here <ei>&Delta;v</ei>, which varies between 0 and 1/2, is a measure 
-of the total deceleration the pearl (ie the soft parton) experiences 
-over a time characteristic of hadronization (here given by the 
-<code>pNormJunction</code> parameter above). 
-</parm> 
- 
-<flag name="StringFragmentation:strangeJunctions" default="off"> 
+<flag name="StringFragmentation:doStrangeJunctions" default="off"> 
 Switching this parameter on allows strangeness enhancement for string breaks 
 next to a junction. 
 </flag> 
  
-<parm name="StringFragmentation:strangeJuncFactor" default="0.5" min="0." 
+<parm name="StringFragmentation:enhanceStrangeJunction" default="0.5" min="0." 
       max="1.0"> 
-This parameter, <ei>s_J</ei>, scales how much strangeness enhancement 
-around a junction by modifying the probability 
+This parameter, <ei>s<sub>J</sub></ei>, scales how much strangeness 
+enhancement around a junction by modifying the probability 
 <code>StringFlav:probStoUD</code>, 
 <eq> 
     P'(s:u/d) = P(s:u/d)<sup>(1 - s_J)</sup>. 
 </eq> 
 </parm> 
  
-<parm name="StringFragmentation:strangePearlFactor" default="0.5" min="0." 
-      max="1.0"> 
-Allow a different strangeness enhancement around a pearl junction. 
-</parm> 
- 
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

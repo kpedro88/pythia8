@@ -9,6 +9,7 @@ Beams:LHEF      = main407.lhe
 
 ! Parton Shower Model Selection: 1) Pythia; 2) Vincia.
 PartonShowers:model   = 2
+Vincia:Tune = 0                     ! Use default Vincia tune.
 
 ! Weak Shower settings for Pythia's Weak Shower.
 TimeShower:weakShower = on

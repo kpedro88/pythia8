@@ -1,5 +1,5 @@
 // HeavyIons.h is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -194,6 +194,7 @@ public:
   bool setUserHooksPtr(PythiaObject sel, UserHooksPtr userHooksPtrIn);
 
   // Set beam kinematics.
+  bool setKinematicsCM();
   bool setKinematics(double eCMIn) override;
   bool setKinematics(double eAIn, double eBIn) override;
   bool setKinematics(double, double, double, double, double, double) override;
@@ -216,6 +217,10 @@ public:
   // Get the underlying subcollision model.
   const SubCollisionModel& subCollisionModel() const {
     return *collPtr.get(); }
+
+  SubCollisionModel* subCollPtr() {
+    return collPtr.get();
+  }
 
   // Get the underlying impact parameter generator.
   const ImpactParameterGenerator impactParameterGenerator() const {
@@ -282,6 +287,7 @@ protected:
   bool addEL(const SubCollisionSet& subCollsIn, list<EventInfo>& subEventsIn);
   void addELsecond(const SubCollisionSet& subCollsIn);
 
+  void resetEvent();
   bool buildEvent(list<EventInfo>& subEventsIn);
 
   bool setupFullCollision(EventInfo& ei, const SubCollision& coll,

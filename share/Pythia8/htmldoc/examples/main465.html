@@ -4,12 +4,12 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main465.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
 // Authors:
-//            <a href="mailto:marius.m.utheim@jyu.fi">Marius Utheim</a>
+//            Marius Utheim
 
 // Keywords:
 //            <a href="../ExampleKeywords.html#rescattering">Rescattering</a>
@@ -20,11 +20,23 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 // Calculate and plot resonance cross sections for the specified process.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 using namespace Pythia8;
 
 //==========================================================================
 
 int main(int argc, char* argv[]) {
+
+  // Set up command line options.
+  InputParser ip(&quot;Calculate resonance cross section for specified process.&quot;,
+    {&quot;./main465 -a 2212 -b 2212&quot;});
+  ip.add(&quot;a&quot;, &quot;0&quot;, &quot;ID for beam A.&quot;, {&quot;-ida&quot;});
+  ip.add(&quot;b&quot;, &quot;0&quot;, &quot;ID for beam B.&quot;, {&quot;-idb&quot;});
+  ip.add(&quot;n&quot;, &quot;300&quot;, &quot;Number of bins.&quot;, {&quot;-nbins&quot;});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Initialize Pythia.
   Pythia pythia;
@@ -34,16 +46,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  int idA = argc == 3 ? atoi(argv[1]) : pythia.mode(&quot;Main:spareMode1&quot;);
-  int idB = argc == 3 ? atoi(argv[2]) : pythia.mode(&quot;Main:spareMode2&quot;);
+  int idA = ip.get&lt;int&gt;(&quot;a&quot;);
+  int idB = ip.get&lt;int&gt;(&quot;b&quot;);
+  if (idA == 0) idA = pythia.mode(&quot;Main:spareMode1&quot;);
+  if (idB == 0) idB = pythia.mode(&quot;Main:spareMode2&quot;);
   double eMin = pythia.parm(&quot;Main:spareParm1&quot;);
   double eMax = pythia.parm(&quot;Main:spareParm2&quot;);
   if (eMin &lt; pythia.particleData.m0(idA) + pythia.particleData.m0(idB)) {
     eMin = pythia.particleData.m0(idA) + pythia.particleData.m0(idB);
     cout &lt;&lt; &quot;Warning, setting eMin to nominal mass sum of &quot; &lt;&lt; eMin &lt;&lt; &quot;.\n&quot;;
   }
-
-  int nBin = 300;
+  int nBin = ip.get&lt;int&gt;(&quot;n&quot;);
 
   // Get possible resonances.
   set&lt;int&gt; resonances = pythia.hadronWidths.getResonances(idA, idB);

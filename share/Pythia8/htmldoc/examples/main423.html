@@ -4,7 +4,7 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main423.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -17,28 +17,28 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 //            <a href="../ExampleKeywords.html#centrality">Centrality</a>
 //            <a href="../ExampleKeywords.html#angantyr">Angantyr</a>
 
-// This test program will generate Pb-Pb collisions at
-// sqrt(S_NN)=2.76TeV using the Angantyr model for Heavy Ion
-// collisions. The analysis will divide the event in centrality
-// classes using the same observable as was used for p-Pb in the ATLAS
-// analysis in arXiv:1508.00848 [hep-ex] (see main422.cc). The
-// centrality classes are same as in the ALICE analysis in
-// arXiv:1012.1657 [nucl-ex] although the actual observable used is
-// not the same. Histograms of multiplicity distributions are measured
-// for each centrality percentile.
+// This test program will generate Pb-Pb collisions at sqrt(s_NN) = 2.76 TeV
+// using the Angantyr model for Heavy Ion collisions. The analysis will
+// divide the event in centrality classes using the same observable as was
+// used for p-Pb in the ATLAS analysis in arXiv:1508.00848 [hep-ex]
+// (see main422.cc). The centrality classes are same as in the ALICE analysis
+// in arXiv:1012.1657 [nucl-ex] although the actual observable used is not
+// the same. Histograms of multiplicity distributions are measured for each
+// for centrality percentile.
 
-// Note that heavy ion collisions are computationally quite CPU
-// intensive and generating a single event will take around a second
-// on a reasonable desktop. To get reasonable statistics, this program
-// will take a couple of hours to run.
+// Note that heavy ion collisions are computationally quite CPU-intensive
+// and generating a single event will take around a second on a reasonable
+// desktop. To get reasonable statistics, this program will take a couple
+// of hours to run.
 
 #include &quot;Pythia8/Pythia.h&quot;
 
-// You need to include this to get access to the HIInfo object for
-// HeavyIons.
+// You need to include this to get access to the HIInfo object for HeavyIons.
 #include &quot;Pythia8/HeavyIons.h&quot;
 
 using namespace Pythia8;
+
+//==========================================================================
 
 int main() {
 
@@ -179,7 +179,6 @@ int main() {
   }
 
   // The run is over, so we write out some statistics.
-
 
   // Now, we just have to normalize and prtint out the histograms. We
   // choose to print the histograms to a file that can be read by

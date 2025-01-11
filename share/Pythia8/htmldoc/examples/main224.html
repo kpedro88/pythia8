@@ -4,7 +4,7 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main224.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -25,6 +25,7 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 
 // Pythia includes.
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 #ifdef HEPMC3
 #include &quot;Pythia8Plugins/HepMC3.h&quot;
 #endif
@@ -41,98 +42,49 @@ using namespace Pythia8;
 
 //==========================================================================
 
-void printHelp() {
-  cout &lt;&lt; &quot;\n&quot;
-    &lt;&lt; &quot;Simple standardized executable for the Pythia+Dire event &quot;
-    &lt;&lt; &quot;generator.\n\n&quot;
-    &lt;&lt; &quot;Usage:\n\n&quot;
-    &lt;&lt; &quot;main224 [option] &lt;optionValue&gt; [option] &lt;optionValue&gt; ...\n\n&quot;
-    &lt;&lt; &quot;Examples:\n\n&quot;
-    &lt;&lt; &quot;main224 --nevents 50 --setting \&quot;WeakSingleBoson:ffbar2gmZ = on\&quot;\n&quot;
-    &lt;&lt; &quot;main224 --input main224.cmnd --hepmc_output myfile.hepmc\n\n&quot;
-    &lt;&lt; &quot;Options:\n\n&quot;
-    &lt;&lt; &quot;  --visualize_event       :&quot;
-    &lt;&lt; &quot; Saves one event for visualization of event generation steps.\n&quot;
-    &lt;&lt; &quot;  --nevents N             :&quot;
-    &lt;&lt; &quot; Generate N events (overwrites default value and\n&quot;
-    &lt;&lt; &quot;                           &quot;
-    &lt;&lt; &quot; number of events in input settings file).\n&quot;
-    &lt;&lt; &quot;  --nthreads N            :&quot;
-    &lt;&lt; &quot; Use N threads, takes effect only if Dire was configured\n&quot;
-    &lt;&lt; &quot;                            with OpenMP\n&quot;
-    &lt;&lt; &quot;  --input FILENAME        :&quot;
-    &lt;&lt; &quot; Use file FILENAME to read &amp; use Pythia settings.\n&quot;
-    &lt;&lt; &quot;                            Multiple input files are allowed.\n&quot;
-    &lt;&lt; &quot;  --hepmc_output FILENAME :&quot;
-    &lt;&lt; &quot; Store generated events in HepMC file FILENAME.\n&quot;
-    &lt;&lt; &quot;  --lhef_output FILENAME :&quot;
-    &lt;&lt; &quot; Store generated events in LHEF  file FILENAME.\n&quot;
-    &lt;&lt; &quot;  --setting VALUE         :&quot;
-    &lt;&lt; &quot; Use the Pythia/Dire setting VALUE for event generation, e.g.\n&quot;
-    &lt;&lt; &quot;                            --setting Beams:eCM=100.0\n&quot;
-    &lt;&lt; &quot;                            --setting \&quot;Beams:idA = -11\&quot;\n&quot;
-    &lt;&lt; &quot;                            --setting \&quot;PartonLevel:MPI = off\&quot;\n&quot;
-    &lt;&lt; &quot;                           &quot;
-    &lt;&lt; &quot; possible Pythia/Dire settings can be found in the\n&quot;
-    &lt;&lt; &quot;                            respective online manuals\n\n&quot;
-    &lt;&lt; endl;
-}
-
-//==========================================================================
-
 int main( int argc, char* argv[] ) {
 
-  // Get command-line arguments.
-  vector&lt;string&gt; arguments;
-  for (int i = 0; i &lt; argc; ++i) {
-    arguments.push_back(string(argv[i]));
-    if (arguments.back() == &quot;--visualize_event&quot;)
-      arguments.push_back(&quot; &quot;);
-  }
-
-  // Print help.
-  if ( find(arguments.begin(), arguments.end(), &quot;--help&quot;) != arguments.end()
-    || find(arguments.begin(), arguments.end(), &quot;-h&quot;)     != arguments.end()
-    || arguments.size()&lt;2) {
-    printHelp();
-    return 0;
-  }
-
-  // Parse command-line arguments.
-  // Input file.
-  vector&lt;string&gt;::iterator it
-     = std::find(arguments.begin(),arguments.end(),&quot;--input&quot;);
-  string input  = (it != arguments.end()) ? *(it+1) : &quot;&quot;;
-  // Output hepmc file.
-  it = std::find(arguments.begin(),arguments.end(),&quot;--hepmc_output&quot;);
-  string hepmc_output = (it != arguments.end()) ? *(it+1) : &quot;&quot;;
-  // Output lhe file.
-  it = std::find(arguments.begin(),arguments.end(),&quot;--lhef_output&quot;);
-  string lhef_output = (it != arguments.end()) ? *(it+1) : &quot;&quot;;
-  // Number of events to generate.
-  it = std::find(arguments.begin(),arguments.end(),&quot;--nevents&quot;);
-  int nevents = (it != arguments.end()) ? atoi((*(it+1)).c_str()) : -1;
+  // Set up command line options.
+  InputParser ip(&quot;Visualize an event with graphivz.&quot;,
+    {&quot;./main224 --nevents 50 --setting \&quot;WeakSingleBoson:ffbar2gmZ=on\&quot;&quot;,
+        &quot;./main224 --input main224.cmnd --hepmc_output myfile.hepmc&quot;});
+  ip.add(&quot;v&quot;, &quot;false&quot;, &quot;Saves an event for visialization.&quot;,
+    {&quot;-visualize_event&quot;});
+  ip.add(&quot;n&quot;, &quot;-1&quot;, &quot;Number of events to generate.&quot;,
+    {&quot;-nevents&quot;});
 #ifdef OPENMP
-  // Number of threads.
-  it = std::find(arguments.begin(),arguments.end(),&quot;--nthreads&quot;);
-  int nThreads = (it != arguments.end()) ? atoi((*(it+1)).c_str()) : 1;
+  ip.add(&quot;j&quot;, &quot;1&quot;, &quot;Number of threads to use if OpenMP enabled.&quot;,
+    {&quot;-nthreads&quot;});
 #endif
-  // The visualize_event flag,
-  it = std::find(arguments.begin(),arguments.end(),&quot;--visualize_event&quot;);
-  bool visualize_event     = (it != arguments.end());
+  ip.add(&quot;c&quot;, &quot;&quot;, &quot;Input files for settings, can use multiple times.&quot;,
+    {&quot;-input&quot;});
+  ip.add(&quot;m&quot;, &quot;&quot;, &quot;Store generated events in HepMC file.&quot;,
+    {&quot;-hepmc_output&quot;});
+  ip.add(&quot;l&quot;, &quot;&quot;, &quot;Store generated events in LHEF file.&quot;,
+    {&quot;-lhef_output&quot;});
+  ip.add(&quot;s&quot;, &quot;&quot;, &quot;Settings to be read by Pythia, can use multiple times.&quot;,
+    {&quot;-setting&quot;});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
+
+  string input             = ip.get&lt;string&gt;(&quot;c&quot;);
+  string hepmc_output      = ip.get&lt;string&gt;(&quot;m&quot;);
+  string lhef_output       = ip.get&lt;string&gt;(&quot;l&quot;);
+  int nevents              = ip.get&lt;int&gt;(&quot;n&quot;);
+#ifdef OPENMP
+  int nThreads             = ip.get&lt;int&gt;(&quot;j&quot;);;
+#endif
+  bool visualize_event     = ip.get&lt;bool&gt;(&quot;v&quot;);
   string visualize_output  = (input == &quot;&quot;) ? &quot;event&quot; : &quot;event-&quot; + input;
   replace(visualize_output.begin(), visualize_output.end(), &apos;/&apos;, &apos;-&apos;);
 
   vector&lt;Pythia*&gt; pythiaPtr;
 
   // Read input files.
-  vector&lt;string&gt; input_file;
-  int countInput(0);
-  for (int i = 0; i &lt; int(arguments.size()); ++i)
-    if (arguments[i] == &quot;--input&quot; &amp;&amp; i+1 &lt;= int(arguments.size())-1) {
-      input_file.push_back(arguments[i+1]);
-      countInput++;
-    }
+  vector&lt;string&gt; input_file = ip.getVector&lt;string&gt;(&quot;c&quot;);
+  int countInput(input_file.size());
   if (input_file.size() &lt; 1) input_file.push_back(&quot;&quot;);
 
   // For several settings files as input, check that they use
@@ -227,32 +179,28 @@ int main( int argc, char* argv[] ) {
     &lt;&lt;     &quot;manual)&quot; &lt;&lt; endl;
 
   // Read command line settings.
+  vector&lt;string&gt; settings = ip.getVector&lt;string&gt;(&quot;s&quot;);
   int countSettings(0);
-  for (int i = 0; i &lt; int(arguments.size()); ++i) {
-    if (arguments[i] == &quot;--setting&quot; &amp;&amp; i+1 &lt;= int(arguments.size())-1) {
-      string setting = arguments[i+1];
-      replace(setting.begin(), setting.end(), &apos;&quot;&apos;, &apos; &apos;);
+  for (int i = 0; i &lt; (int)settings.size(); ++i) {
+    string setting = settings[i];
+    replace(setting.begin(), setting.end(), &apos;&quot;&apos;, &apos; &apos;);
 
-      // Skip Dire settings at this stage.
-      if (setting.find(&quot;Dire&quot;) != string::npos) continue;
-      if (setting.find(&quot;Enhance&quot;) != string::npos) continue;
+    // Skip Dire settings at this stage.
+    if (setting.find(&quot;Dire&quot;) != string::npos) continue;
+    if (setting.find(&quot;Enhance&quot;) != string::npos) continue;
 
-      for (int j = 0; j &lt; int(pythiaPtr.size()); ++j) {
-        pythiaPtr[j]-&gt;readString(setting);
-        countSettings++;
-      }
-
+    for (int j = 0; j &lt; int(pythiaPtr.size()); ++j) {
+      pythiaPtr[j]-&gt;readString(setting);
+      countSettings++;
     }
   }
 
   // Read command line settings again and overwrite file settings.
-  for (int i = 0; i &lt; int(arguments.size()); ++i) {
-    if (arguments[i] == &quot;--setting&quot; &amp;&amp; i+1 &lt;= int(arguments.size())-1) {
-      string setting = arguments[i+1];
-      replace(setting.begin(), setting.end(), &apos;&quot;&apos;, &apos; &apos;);
-      for (int j = 0; j &lt; int(pythiaPtr.size()); ++j)
-        pythiaPtr[j]-&gt;readString(setting);
-    }
+  for (int i = 0; i &lt; (int)settings.size(); ++i) {
+    string setting = settings[i];
+    replace(setting.begin(), setting.end(), &apos;&quot;&apos;, &apos; &apos;);
+    for (int j = 0; j &lt; int(pythiaPtr.size()); ++j)
+      pythiaPtr[j]-&gt;readString(setting);
   }
 
   if( countInput == 0 &amp;&amp; countSettings == 0 ) {

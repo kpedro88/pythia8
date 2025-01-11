@@ -30,6 +30,7 @@ PartonLevel:Remnants = on
 
 ! VINCIA settings
 PartonShowers:Model = 2
+Vincia:tune    = 0
 Vincia:doII    = on
 Vincia:doIF    = on
 Vincia:doFF    = on

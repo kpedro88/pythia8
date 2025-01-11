@@ -1,5 +1,5 @@
 // main161.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -9,12 +9,13 @@
 
 // This program illustrates how to do CKKW-L merging, see the Matrix Element
 // Merging page in the online manual. An example command is
-//     ./main161 main161.cmnd w+_production_lhc_0.lhe histout161.dat
+//     ./main161 -c main161.cmnd -i w+_production_lhc_0.lhe -o histout161.dat
 // where main161.cmnd supplies the commands, w+_production_lhc_0.lhe
 // provides the input LHE events, and histout161.dat is the output
 // file. This example requires FastJet.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 
 using namespace Pythia8;
 
@@ -248,26 +249,26 @@ double MyMergingHooks::myKTdurham(const Particle& RadAfterBranch,
 
 int main( int argc, char* argv[] ){
 
-  // Check that correct number of command-line arguments
-  if (argc != 4) {
-    cerr << " Unexpected number of command-line arguments. \n You are"
-         << " expected to provide the arguments \n"
-         << " 1. Input file for settings \n"
-         << " 2. Full name of the input LHE file (with path) \n"
-         << " 3. Path for output histogram files \n"
-         << " Program stopped. " << endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip("Illustrates how to do CKKW-L merging.",
+    {"./main161 -c main161.cmnd -i w+_production_lhc_0.lhe "
+        "-o histout161.dat"});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
+  ip.require("o", "Path for output histogram files.", {"-out"});
+  ip.require("i", "Full name of the input LHE file (with path).", {"-in"});
 
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
+
+  // Grab the options.
+  string cFile = ip.get<string>("c");
+  string iPath = ip.get<string>("i");
+  string oPath = ip.get<string>("o");
+
+  // Create Pythia.
   Pythia pythia;
-
-  // Input parameters:
-  //  1. Input file for settings
-  //  2. Path to input LHE file
-  //  3. Output histogram path
-  pythia.readFile(argv[1]);
-  string iPath = string(argv[2]);
-  string oPath = string(argv[3]);
+  pythia.readFile(cFile);
 
   // Number of events
   int nEvent = pythia.mode("Main:numberOfEvents");

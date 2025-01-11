@@ -1,5 +1,5 @@
 // TimeShower.h is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -68,13 +68,17 @@ public:
   // Usage: shower( iBeg, iEnd, event, pTmax, nBranchMax).
   virtual int shower( int , int , Event& , double , int = 0) {return 0;}
 
-  // Top-level routine for QED radiation in hadronic decay to two leptons.
+  // Top-level routine for QED radiation in hadronic decays.
   // Usage: showerQED( i1, i2, event, pTmax).
-  virtual int showerQED( int , int , Event& , double ) {return 0;}
+  virtual int showerQED( int , int , Event& , double = -1.) {return 0;}
 
   // Optional method to add QED showers after remnants have been added
   // but before hadronisation. (Called from PartonLevel.)
   virtual int showerQEDafterRemnants(Event&) { return 0; }
+
+  // Optional method to add QED showers after all hadron decays have been
+  // treated, as an alternative to handling QED showers inside each decay.
+  virtual int showerQEDafterDecays( int , int , Event&) { return 0; }
 
   // Prepare process-level event for shower + interleaved resonance decays.
   // Usage: prepareProcess( process, event, iPos).

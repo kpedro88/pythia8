@@ -1,5 +1,5 @@
 // ColourReconnection.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -1213,7 +1213,7 @@ void ColourReconnection::singleJunction(const ColourDipolePtr& dip1,
 
 // ------------------------------------------------------------------
 
-// Form pseuparticle of a given dipole (or junction system).
+// Form pseudoparticle of a given dipole (or junction system).
 
 void ColourReconnection::makePseudoParticle(ColourDipolePtr& dip, int status,
   bool setupDone) {
@@ -2240,7 +2240,15 @@ void ColourReconnection::addJunctionIndices(const Event & event, const int col,
 
     for (int i = 0;i < 3;++i) {
       if (iTempPars[i] >= 0) iPar.insert(iTempPars[i]);
-      else addJunctionIndices(event, cols[i], iPar, usedJuncs);
+      else {
+        // Avoid infinite loop bouncing back and fort between a junction and
+        // an antijunction.
+        if (cols[i] == col) {
+          loggerPtr->WARNING_MSG("skipping junction-junction connection");
+          continue;
+        }
+        addJunctionIndices(event, cols[i], iPar, usedJuncs);
+      }
     }
   }
 

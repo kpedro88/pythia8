@@ -1,9 +1,9 @@
 // main404.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Authors: Marius Utheim <marius.r.utheim@jyu.fi>
+// Authors: Marius Utheim
 //          Peter Skands <peter.skands@monash.edu>
 
 // Keywords: Vincia; Dire; parallelism
@@ -56,7 +56,8 @@ int main() {
     // Settings specific to second run
     if (iRun == 2) {
       // Switch to VINCIA shower model
-      pythia.readString("PartonShowers:Model = 2");
+      pythia.readString("PartonShowers:model = 2");
+      pythia.readString("Vincia:tune = 0");
       // Output in parallel is not possible.
       pythia.readString("Print:verbosity = 0");
     }

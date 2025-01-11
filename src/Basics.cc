@@ -1,5 +1,5 @@
 // Basics.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -561,19 +561,12 @@ void Vec4::rotbst(const RotBstMatrix& M) {
 //--------------------------------------------------------------------------
 
 // Function to calculate energy in the rest frame of other particle given
-// by input 4-momentum.
+// by input 4-momentum. Use that p1 * p2 = E1 * m2 in rest frame of 2.
 
 double Vec4::eInFrame(const Vec4& pIn) const {
 
-  if (abs(pIn.tt) < Vec4::TINY) return tt;
-  const double betaX = -pIn.xx / pIn.tt;
-  const double betaY = -pIn.yy / pIn.tt;
-  const double betaZ = -pIn.zz / pIn.tt;
-  const double beta2 = betaX * betaX + betaY * betaY + betaZ * betaZ;
-  if (beta2 >= 1.) return tt;
-  const double gamma = 1. / sqrt(1. - beta2);
-  const double prod1 = betaX * xx + betaY * yy + betaZ * zz;
-  return gamma * (tt + prod1);
+  if (abs(pIn.tt) < Vec4::TINY || pIn.mCalc() < Vec4::TINY) return tt;
+  return (pIn.tt * tt - pIn.xx * xx - pIn.yy * yy - pIn.zz * zz) / pIn.mCalc();
 
 }
 
@@ -657,14 +650,16 @@ Vec4 cross4(const Vec4& a, const Vec4& b, const Vec4& c) {
 
 //--------------------------------------------------------------------------
 
-// Opening angle between two three-vectors.
+// Opening angle (on unit sphere) between two three-vectors.
 
 double theta(const Vec4& v1, const Vec4& v2) {
-  double cthe = (v1.xx * v2.xx + v1.yy * v2.yy + v1.zz * v2.zz)
-    / sqrt( (v1.xx*v1.xx + v1.yy*v1.yy + v1.zz*v1.zz)
-    * (v2.xx*v2.xx + v2.yy*v2.yy + v2.zz*v2.zz) );
-  cthe = max(-1., min(1., cthe));
-  return acos(cthe);
+
+  // Normally use cos(theta) to extract theta.
+  double cthe = costheta( v1, v2);
+  if (cthe < 0.9999) return acos(cthe);
+  // For nearby vectors use sine instead, to improve precision.
+  return asin( sintheta( v1, v2) );
+
 }
 
 //--------------------------------------------------------------------------
@@ -677,6 +672,22 @@ double costheta(const Vec4& v1, const Vec4& v2) {
     * (v2.xx*v2.xx + v2.yy*v2.yy + v2.zz*v2.zz) );
   cthe = max(-1., min(1., cthe));
   return cthe;
+
+}
+
+//--------------------------------------------------------------------------
+
+// Sine of opening angle between two three-vectors, using cross product.
+
+double sintheta(const Vec4& v1, const Vec4& v2) {
+
+  // Squared cross product gives sin^2(theta).
+  double sin2the = ( pow2(v1.yy*v2.zz - v1.zz*v2.yy)
+    + pow2(v1.zz*v2.xx - v1.xx*v2.zz) + pow2(v1.xx*v2.yy - v1.yy*v2.xx) )
+    / ( (v1.xx*v1.xx + v1.yy*v1.yy + v1.zz*v1.zz)
+    * (v2.xx*v2.xx + v2.yy*v2.yy + v2.zz*v2.zz) );
+  return sqrtpos(sin2the);
+
 }
 
 //--------------------------------------------------------------------------
@@ -881,11 +892,12 @@ void RotBstMatrix::rot(const Vec4& p) {
 
 // Boost with velocity vector (betaX, betaY, betaZ).
 
-void RotBstMatrix::bst(double betaX, double betaY, double betaZ) {
+void RotBstMatrix::bst(double betaX, double betaY, double betaZ,
+  double gamma) {
 
   // Set up boost matrix.
-  double gm = 1. / sqrt( max( TINY, 1. - betaX*betaX - betaY*betaY
-    - betaZ*betaZ ) );
+  double gm = (gamma < 1.) ? 1. / sqrt( max( TINY, 1. - betaX*betaX
+    - betaY*betaY - betaZ*betaZ ) ) : gamma;
   double gf = gm*gm / (1. + gm);
   double Mbst[4][4] = {
     { gm,           gm*betaX,           gm*betaY,          gm*betaZ },
@@ -1432,7 +1444,7 @@ ostream& operator<<(ostream& os, const Hist& h) {
   else os << fixed << setprecision(prec);
   if (!doErr) os << pad << "RMS  =" << setw(10) << xRMS;
   else {
-    os << pad << "RMS  =" << setw(10) << xRMS;
+    os << pad << "RMS =" << setw(10) << xRMS;
     double xRMSErr = h.getXRMSErr(false);
     if (doExp || xRMSErr > 10 * abs(xRMS)) os << setprecision(1);
     os << " +-" << setw(7) << xRMSErr;

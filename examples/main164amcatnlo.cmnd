@@ -34,7 +34,7 @@ Main:Rivet                  = on
 Rivet:output                = main164amcatnlo.yoda
 Rivet:analyses              = {MC_XS,MC_WEIGHTS}
 
-! Subruns for CKKW-L merging.
+! Subruns for NLO matching with aMC@NLO events.
 Main:numberOfSubruns        = 1
 Main:subrun                 = 0
 Beams:LHEF                  = zProduction_Mcatnlo.lhe.gz

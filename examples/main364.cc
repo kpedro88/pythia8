@@ -1,5 +1,5 @@
 // main364.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -14,22 +14,20 @@
 // of the final state electron and pion is then plotted.
 
 // The syntax to run this example is:
-//     ./main364 <EvtGen decay file> <EvtGen particle data> <PYTHIA8DATA>
+//     ./main364 -d <EvtGen decay file> -p <EvtGen particle data>
+//               -x <PYTHIA8DATA>
 //               <flag to use EvtGen>
 
 // This example has only been tested with EvtGen version 1.3.0. The
 // EvtGen package is designed to use Pythia 8 for any decays that it
 // cannot perform. For this to be possible, EvtGen must be linked
-// against the Pythia 8 shared library. To build EvtGen 1.3.0 with
-// Pythia 8.2 the "-llhapdfdummy" library requirement must be
-// removed. Prior to running "./configure" for EvtGen this can be
-// accomplished via:
-//     sed -i "s/-llhapdfdummy//g" configure
-// To modify how this example program is compiled (i.e to remove
-// linking against the EvtGenExternal library) change the main364 rule
-// in the Makefile of this directory.
+// against the Pythia 8 shared library. To modify how this example
+// program is compiled (i.e to remove linking against the
+// EvtGenExternal library) change the main364 rule in the Makefile of
+// this directory.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 #include "Pythia8Plugins/EvtGen.h"
 using namespace Pythia8;
 
@@ -37,18 +35,24 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
-  // Check arguments.
-  if (argc != 5) {
-    cerr << " Unexpected number of command-line arguments. \n You are"
-         << " expected to provide the arguments \n"
-         << " 1. EvtGen decay file (e.g. DECAY_2010.DEC) \n"
-         << " 2. EvtGen particle data (e.g. evt.pdl) \n"
-         << " 3. PYTHIA8DATA path \n"
-         << " 4. Flag to use EvtGen (true or false) \n"
-         << " Program stopped. " << endl;
-    return 1;
-  }
-  bool use(string(argv[4]) == "true");
+  // Set up command line options.
+  InputParser ip("Optionally perform decays with EvtGen.",
+    {"./main364 -d <EvtGen decay file> -p <EvtGen particle data>"
+        "\n\t          -x <PYTHIA8DATA> -e"});
+  ip.require("d", "EvtGen decay file (e.g. DECAY_2010.DEC).", {"-dec"});
+  ip.require("p", "EvtGen particle data (e.g. evt.pdl).", {"-pdl"});
+  ip.require("x", "PYTHIA8DATA path.", {"-xml"});
+  ip.add("e", "false", "Flag to use EvtGen.");
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
+
+  // Get the options.
+  string dec = ip.get<string>("d");
+  string pdl = ip.get<string>("p");
+  string xml = ip.get<string>("x");
+  bool use = ip.get<bool>("e");
 
   // Intialize Pythia.
   Pythia pythia;
@@ -70,8 +74,8 @@ int main(int argc, char* argv[]) {
   // Initialize EvtGen.
   EvtGenDecays *evtgen = 0;
   if (use) {
-    setenv("PYTHIA8DATA", argv[3], 1);
-    evtgen = new EvtGenDecays(&pythia, argv[1], argv[2]);
+    setenv("PYTHIA8DATA", xml.c_str(), 1);
+    evtgen = new EvtGenDecays(&pythia, dec, pdl);
     evtgen->readDecayFile("main364.dec");
   }
 

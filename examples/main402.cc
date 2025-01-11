@@ -1,5 +1,5 @@
 // main402.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -60,6 +60,7 @@ int main() {
     if (iRun == 2) {
       // Switch to VINCIA shower model
       pythia.readString("PartonShowers:Model = 2");
+      pythia.readString("Vincia:tune = 0");
     }
     // Initialise generator for this run
     if(!pythia.init()) {continue;}

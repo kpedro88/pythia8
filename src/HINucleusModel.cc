@@ -1,5 +1,5 @@
 // HINucleusModel.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -74,7 +74,7 @@ void NucleusModel::initPtr(int idIn, bool isProjIn, Info& infoIn) {
 // Set the id of the produced particle.
 
 void NucleusModel::setParticle(int idIn) {
-  idSave = idIn;
+  idNSave = idSave = idIn;
   mSave  = infoPtr->particleDataPtr->m0(idSave);
   int decomp = abs(idSave);
   ISave = decomp%10;
@@ -92,6 +92,9 @@ void NucleusModel::setParticle(int idIn) {
     ASave = 0;
     ZSave = 0;
   }
+  mNSave = mSave/max(ASave, 1);
+  if ( A() > 1 ) idNSave = idSave < 0? -2212: 2212;
+  initGeometry();
 }
 
 //--------------------------------------------------------------------------
@@ -229,14 +232,32 @@ bool WoodsSaxonModel::init() {
   // Initialize hard core.
   initHardCore();
 
+  // Initialize Radius and other parameters.
+  initGeometry();
+  // Calculate the overestimates.
+
+  overestimates();
+
+  return NucleusModel::init();
+
+}
+
+//--------------------------------------------------------------------------
+
+// Initialize Radius and other parameters.
+
+bool WoodsSaxonModel::initGeometry() {
+  if (A() == 0) return true;
+
   // In the basic Woods-Saxon model we get parameters directly from settings.
   RSave = settingsPtr->parm(isProj ? "HeavyIonA:WSR" : "HeavyIonB:WSR");
   aSave = settingsPtr->parm(isProj ? "HeavyIonA:WSa" : "HeavyIonB:WSa");
 
-  // Calculate the overestimates.
-  overestimates();
-  return NucleusModel::init();
+  return true;
+
 }
+
+//--------------------------------------------------------------------------
 
 // Place a nucleon inside a nucleus.
 Vec4 WoodsSaxonModel::generateNucleon() const {
@@ -331,23 +352,35 @@ vector<Nucleon> WoodsSaxonModel::generate() const {
 bool GLISSANDOModel::init() {
   if ( A() == 0 ) return true;
 
-  // Initialize hard core.
+  // Initialize hard core, and other parameters.
   initHardCore();
-
-  // There are no parameters to be read.
-  if (useHardCore) {
-    RSave = (1.1*pow(double(A()),1.0/3.0) -
-             0.656*pow(double(A()),-1.0/3.0))*femtometer;
-    aSave = 0.459*femtometer;
-  } else {
-    RSave = (1.12*pow(double(A()),1.0/3.0) -
-             0.86*pow(double(A()),-1.0/3.0))*femtometer;
-    aSave = 0.54*femtometer;
-  }
+  initGeometry();
 
   // Calculate overestimates.
   overestimates();
   return NucleusModel::init();
+
+}
+
+//--------------------------------------------------------------------------
+
+// Initialize radius and other parameters.
+
+bool GLISSANDOModel::initGeometry() {
+  if ( A() == 0 ) return true;
+
+  // There are no parameters to be read. R and a are in units of femtometer.
+  if (useHardCore) {
+    RSave = (1.1*pow(double(A()),1.0/3.0) -
+             0.656*pow(double(A()),-1.0/3.0));
+    aSave = 0.459;
+  } else {
+    RSave = (1.12*pow(double(A()),1.0/3.0) -
+             0.86*pow(double(A()),-1.0/3.0));
+    aSave = 0.54;
+  }
+
+  return true;
 
 }
 

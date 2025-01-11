@@ -1,5 +1,5 @@
 // Pythia.h is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -10,8 +10,8 @@
 #define Pythia8_Pythia_H
 
 // Version number defined for use in macros and for consistency checks.
-#define PYTHIA_VERSION 8.312
-#define PYTHIA_VERSION_INTEGER 8312
+#define PYTHIA_VERSION 8.313
+#define PYTHIA_VERSION_INTEGER 8313
 
 // Header files for the Pythia class and for what else the user may need.
 #include "Pythia8/Analysis.h"
@@ -95,15 +95,18 @@ public:
   bool checkVersion();
 
   // Read in one update for a setting or particle data from a single line.
-  bool readString(string, bool warn = true, int subrun = SUBRUNDEFAULT);
+  bool readString(string line, bool warn = true, int subrun = SUBRUNDEFAULT) {
+    return isConstructed ? settings.readString(line, warn, subrun) : false;}
 
   // Read in updates for settings or particle data from user-defined file.
   bool readFile(string fileName, bool warn = true,
-    int subrun = SUBRUNDEFAULT);
+    int subrun = SUBRUNDEFAULT) {
+    return isConstructed ? settings.readFile(fileName, warn, subrun) : false;}
   bool readFile(string fileName, int subrun) {
     return readFile(fileName, true, subrun);}
   bool readFile(istream& is = cin, bool warn = true,
-    int subrun = SUBRUNDEFAULT);
+    int subrun = SUBRUNDEFAULT) {
+    return isConstructed ? settings.readFile(is, warn, subrun) : false;}
   bool readFile(istream& is, int subrun) {
     return readFile(is, true, subrun);}
 
@@ -157,6 +160,14 @@ public:
       uhv->hooks.push_back(userHooksPtr); userHooksPtr = uhv; }
     uhv->hooks.push_back(userHooksPtrIn); return true;}
 
+  // Possibility to insert a user hook.
+  bool insertUserHooksPtr( int idx, UserHooksPtr userHooksPtrIn) {
+    if ( !userHooksPtrIn || !userHooksPtr ) return false;
+    shared_ptr<UserHooksVector> uhv =
+      dynamic_pointer_cast<UserHooksVector>(userHooksPtr);
+    if ( !uhv || idx < 0 || idx > (int)uhv->hooks.size() ) return false;
+    uhv->hooks.insert(uhv->hooks.begin() + idx, userHooksPtrIn); return true;}
+
   // Possibility to pass in pointer for full merging class.
   bool setMergingPtr( MergingPtr mergingPtrIn)
     { mergingPtr = mergingPtrIn; return true;}
@@ -183,6 +194,15 @@ public:
     { sigmaPtrs.push_back(sigmaPtrIn);
       phaseSpacePtrs.push_back(phaseSpacePtrIn); return true;}
 
+  // Possibility to insert further pointers to allow for multiple
+  // cross sections.
+  bool insertSigmaPtr( int idx, SigmaProcessPtr sigmaPtrIn,
+    PhaseSpacePtr phaseSpacePtrIn = nullptr)
+    { if (idx < 0 || idx > (int)sigmaPtrs.size()) return false;
+      sigmaPtrs.insert(sigmaPtrs.begin() + idx, sigmaPtrIn);
+      phaseSpacePtrs.insert(phaseSpacePtrs.begin() + idx, phaseSpacePtrIn);
+      return true;}
+
   // Possibility to pass in pointer for external resonance.
   bool setResonancePtr( ResonanceWidthsPtr resonancePtrIn)
     { resonancePtrs.resize(0);
@@ -192,9 +212,31 @@ public:
   bool addResonancePtr( ResonanceWidthsPtr resonancePtrIn)
     { resonancePtrs.push_back( resonancePtrIn); return true;}
 
+  // Possibility to insert further pointers to allow for multiple resonances.
+  bool insertResonancePtr( int idx, ResonanceWidthsPtr resonancePtrIn)
+  { if (idx < 0 || idx > (int)resonancePtrs.size()) return false;
+    resonancePtrs.insert( resonancePtrs.begin() + idx, resonancePtrIn);
+    return true;}
+
   // Possibility to pass in pointer for external showers.
   bool setShowerModelPtr( ShowerModelPtr showerModelPtrIn)
     { showerModelPtr = showerModelPtrIn; return true;}
+
+  // Possibility to pass in pointer for external fragmentation model.
+  bool setFragmentationPtr( FragmentationModelPtr fragmentationPtrIn)
+    { fragPtrs.resize(0);
+      fragPtrs.push_back( fragmentationPtrIn); return true;}
+
+  // Possibility to allow for multiple external fragmentation models.
+  bool addFragmentationPtr( FragmentationModelPtr fragmentationPtrIn)
+    { fragPtrs.push_back( fragmentationPtrIn); return true;}
+
+  // Possibility to insert external fragmentation model, in specific position.
+  bool insertFragmentationPtr( int idx,
+    FragmentationModelPtr fragmentationPtrIn)
+  { if (idx < 0 || idx > (int)fragPtrs.size()) return false;
+    fragPtrs.insert( fragPtrs.begin() + idx, fragmentationPtrIn);
+    return true;}
 
   // Possibility to pass in pointer for modelling of heavy ion collisions.
   bool setHeavyIonsPtr( HeavyIonsPtr heavyIonsPtrIn)
@@ -475,6 +517,9 @@ private:
   TimeShowerPtr  timesPtr = {};
   SpaceShowerPtr spacePtr = {};
 
+  // Pointers to fragmentation models.
+  vector<FragmentationModelPtr> fragPtrs = {};
+
   // Pointer to assign space-time vertices during parton evolution.
   PartonVertexPtr partonVertexPtr;
 
@@ -508,20 +553,17 @@ private:
   NucleonExcitations nucleonExcitations = {};
   SigmaCombined      sigmaCmb = {};
 
+  // The fragmentation pointer is used in low energy processes and HadronLevel.
+  LundFragmentationPtr fragPtr{};
+
   // The RHadrons class is used both at PartonLevel and HadronLevel.
-  RHadrons   rHadrons = {};
+  RHadronsPtr rHadronsPtr{};
 
   // Flags for handling generation of heavy ion collisons.
   bool        hasHeavyIons = {}, doHeavyIons = {};
 
   // Write the Pythia banner, with symbol and version information.
   void banner();
-
-  // Check for lines in file that mark the beginning of new subrun.
-  int readSubrun(string line, bool warn = true);
-
-  // Check for lines that mark the beginning or end of commented section.
-  int readCommented(string line);
 
   // Check that combinations of settings are allowed; change if not.
   void checkSettings();

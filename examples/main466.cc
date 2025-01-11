@@ -1,9 +1,9 @@
 // main466.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Authors: Marius Utheim <marius.m.utheim@jyu.fi>
+// Authors: Marius Utheim
 
 // Keywords: hadron widths
 
@@ -11,22 +11,22 @@
 // Useful if resonances are added or particle properties are changed.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 using namespace Pythia8;
 
 //==========================================================================
 
 int main(int argc, char* argv[]) {
 
-  // Get precision from command line, if provided.
-  int precision = (argc == 2) ? atoi(argv[1]) : 50;
-  if ((argc != 1 && argc != 2) || precision <= 1) {
-    cerr << " Unexpected number of command-line arguments. \n"
-         << " You are expected to either provide the precision as an \n"
-         << " integer (precision >= 2), or no argument to indicate the \n"
-         << " default value (50). \n"
-         << " Program stopped! " << endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip("Create parameterization tables for hadron widths.",
+    {"./main465 -a 2212 -b 2212"});
+  ip.add("p", "50", "Precision, provided as integer.", {"-precision"});
+  ip.add("o", "main466.dat", "Output file for the widths.", {"-out"});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Initialize Pythia.
   Pythia pythia;
@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 
   // Perform parameterization.
   HadronWidths& hadronWidths = pythia.hadronWidths;
-  hadronWidths.parameterizeAll(precision);
-  hadronWidths.save("HadronWidths.dat");
+  hadronWidths.parameterizeAll(ip.get<int>("p"));
+  hadronWidths.save(ip.get<string>("o"));
 
   // Done.
   return 0;

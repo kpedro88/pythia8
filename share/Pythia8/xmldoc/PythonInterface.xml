@@ -59,11 +59,14 @@ will return all the available classes and methods in the interface.
 <code>HeavyIons</code>, <code>PartonVertex</code></li> 
  
 <li>analysis tools: <code>Hist</code>, <code>HistPlot</code>, 
-<code>SlowJet</code>, <code>SlowJetHook</code></li> <li>kinematic 
-functions: <code>m</code>, <code>m2</code>, <code>dot3</code>, 
-<code>cross3</code>, <code>cross4</code>, <code>theta</code>, 
-<code>costheta</code>, <code>phi</code>, <code>cosphi</code>, 
-<code>RRapPhi</code>, <code>REtaPhi</code></li> 
+<code>CellJet</code>, <code>ClusterJet</code>, <code>SlowJet</code>, 
+<code>SlowJetHook</code>, <code>Sphericity</code>, 
+<code>Thrust</code></li> 
+ 
+<li>kinematic functions: <code>m</code>, <code>m2</code>, 
+<code>dot3</code>, <code>cross3</code>, <code>cross4</code>, 
+<code>theta</code>, <code>costheta</code>, <code>phi</code>, 
+<code>cosphi</code>, <code>RRapPhi</code>, <code>REtaPhi</code></li> 
 </ul> 
  
 There are some idiosyncrasies when working with standard template 
@@ -214,4 +217,4 @@ interface is as follows.
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

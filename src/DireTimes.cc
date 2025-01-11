@@ -1,5 +1,5 @@
 // DireTimes.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Stefan Prestel, Torbjorn Sjostrand.
+// Copyright (C) 2025 Stefan Prestel, Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -492,6 +492,10 @@ int DireTimes::shower( int iBeg, int iEnd, Event& event, double pTmax,
 // Intentionally only does photon radiation, i.e. no photon branchings.
 
 int DireTimes::showerQED( int i1, int i2, Event& event, double pTmax) {
+
+  // Check that the shower can handle the case presented.
+  if (i2 - i1 + 1 != 2 && !event[i1].isLepton() && !event[i2].isLepton())
+    return -1;
 
   // Add new system, automatically with two empty beam slots.
   int iSys = partonSystemsPtr->addSys();

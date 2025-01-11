@@ -21,6 +21,9 @@ Main:timesAllowErrors = 10
 ! 1:simple shower, 2:VINCIA, 3:DIRE.
 PartonShowers:model = 1
 
+! If using VINCIA, optionally use the VINCIA tune.
+! Vincia:tune = 0
+
 ! List changed settings or particle data.
 Init:showChangedSettings = on
 Init:showChangedParticleData = off

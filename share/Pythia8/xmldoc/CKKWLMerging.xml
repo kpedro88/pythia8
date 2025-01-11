@@ -21,8 +21,8 @@ the section Electroweak Merging below.
 <p/> The usage of the merging procedure is illustrated in a few 
 example main  programs (<code>main161.cc</code>, <code>main162.cc</code>, 
 and <code>main164.cc</code>). These examples should of course only serve 
-as  an illustration, and as such will not make use of the merging in 
-all  possible ways. For full generality, the example programs link to 
+as an illustration, and as such will not make use of the merging in 
+all possible ways. For full generality, the example programs link to 
 LHAPDF,  FastJet and HepMC. Of course the user is welcome to  remove 
 these dependencies. To remove the FastJet dependence, the functions 
 calculating example observables have to be deleted. Removing the 
@@ -386,6 +386,24 @@ with the cuts <ei> &Delta;R<sub>ij</sub> = 0.1 </ei>,
 you will also need to set <code>Merging:Process</code> and the 
 maximal number of additional matrix element jets 
 <code>Merging:nJetMax</code>. 
+ 
+<h4>Merging with a dynamic merging scale:</h4> 
+ 
+For DIS events, a dynamic merging scale has to be chosen 
+to ensure that low <ei>Q<sup>2</sup></ei>, high 
+<ei>E<sub>T,B</sub><sup>2</sup></ei> are treated by the the 
+matrix-element. See <ref>Hel24</ref> for more details. 
+ 
+<flag name="Merging:doDynamicMerging" default="off"> 
+This switch will enable a functional scale definition which dynamically 
+changes per event. 
+Note that this option is available only in VINCIA's merging. 
+</flag> 
+ 
+<parm name="Merging:Sparameter" default="0.8" min="0.1" max="1.0"> 
+The value of the parameter <ei>S</ei> for dynamic merging-scale 
+definitions. 
+</parm> 
  
 <h4>Les Houches events outside the matrix element region</h4> 
  
@@ -1314,4 +1332,4 @@ the method in <ref>Fre20</ref>.
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

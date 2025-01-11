@@ -279,6 +279,48 @@ Maximum invariant mass allowed for the created fermion pair in a
 <ei>gamma &rarr; f fbar</ei> branching in the shower. 
 </parm> 
  
+<h3>QED Radiation in Particle Decays</h3> 
+ 
+<p/> 
+<b>Note:</b>This option only takes effect if <code>HadronLevel:QED = 
+on</code>. 
+ 
+<p/> 
+Traditionally, PYTHIA did not have a generic machinery for handling 
+QED radiation in hadron (and tau) decays. In order to include this, a 
+program like PHOTOS <ref>Bar94, Dav10</ref> could be used as an 
+afterburner. The options below can be used to enable PYTHIA's internal 
+shower machinery for QED radiation. 
+<br/> 
+<b>Note 1:</b> Only two-body decays can be handled.<br/> 
+<b>Note 2:</b> The f &rarr; f&gamma; DGLAP kernels are used indiscriminately 
+irrespective of actual spins.<br/> 
+<b>Note 3:</b> First-order matrix-element corrections for the first 
+(hardest) photon emission are applied to <ei>V0 &rarr; ll and V&pm; 
+&rarr; l nu</ei> since such decays are mediated by <ei>gamma^*/Z^0/ 
+W^+-</ei> exchange, for which PYTHIA does have an existing machinery 
+that can be applied. 
+ 
+<modepick name="TimeShower:gammaModeHad" default="1" min="1" max="2"> 
+When <code>HadronLevel:QED = on</code> and the simple-shower model is 
+used, this switch determines how to handle hadron-level photon 
+radiation. 
+<option value="1">Photon radiation only in two-body decays to a lepton 
+pair, see above. Matrix element corrections are only applied in the 
+case of <ei>V0 &rarr; ll and V&pm; &rarr; l nu</ei>, based on the 
+equivalent corrections for <ei>Z</ei> and <ei>W</ei> decays. 
+</option> 
+<option value="2">Photon radiation in all two-body hadron 
+decays. Note: this option is mainly intended for comparisons and not 
+for serious studies. Since the simple shower's splitting kernels do 
+not encode the correct Lorentz structures for hadron decays in many 
+cases, nor are the correct matrix-element corrections implemented, 
+this option is not expected to deliver a faithful description of QED 
+radiation in hadron decays. (Nor are hadronic form factors or photon 
+VMD effects taken into account.) 
+</option> 
+</modepick> 
+ 
 <h3>Interleaved evolution</h3> 
  
 Multiparton interactions (MPI) and initial-state showers (ISR) are 
@@ -889,4 +931,4 @@ each newly emitted photon becomes the new recoiler.
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

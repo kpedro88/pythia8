@@ -1,5 +1,5 @@
 // main144.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -18,6 +18,7 @@
 #include "Pythia8/Pythia.h"
 #include "Pythia8/HeavyIons.h"
 #include "Pythia8Plugins/Pythia8Rivet.h"
+#include "Pythia8Plugins/InputParser.h"
 #include "main144.h"
 #include <chrono>
 #ifdef PY8ROOT
@@ -28,135 +29,82 @@
 
 using namespace Pythia8;
 
-//==========================================================================
-
-// Helper class to parse command line options.
-class InputParser {
-
-public:
-
-  InputParser (int &argc, char **argv) {
-    for (int i = 1; i < argc; ++i) arglist.push_back(string(argv[i]));
-  }
-
-  const string& getOption(const string &opt) const {
-    vector<string>::const_iterator itr = find(arglist.begin(),
-      arglist.end(), opt);
-    if (itr != arglist.end() && ++itr != arglist.end()) return *itr;
-    return "";
-  }
-
-  bool hasOption(const string &opt) const {
-    return find(arglist.begin(), arglist.end(), opt) != arglist.end();
-  }
-
-private:
-  vector<string> arglist;
-};
-
-//==========================================================================
-
 int main(int argc, char* argv[]) {
 
   // Parser object for command line input.
-  InputParser ip(argc, argv);
+  InputParser ip("Run Pythia with cmnd file input, and get Rivet, HepMC or"
+    " standard Pythia output.",
+    {"./main144 [options]", "./main144 -c main144.cmnd -n 1000 -o myoutput"},
+    "Additional options in cmnd file:\n"
+    "\tMain:runRivet = on \n\t\tRun Rivet analyses (requires a\n"
+    "\t\tworking installation of Rivet, linked to main144).\n"
+    "\tMain:analyses = ANALYSIS1,ANALYSIS2,...\n "
+    "\t\tA comma separated list of desired Rivet analyses to be run.\n"
+    "\t\tAnalyses can be post-fixed with Rivet analysis parameters:\n"
+    "\t\tANALYSIS:parm->value:parm2->value2 etc.\n"
+    "\tMain:rivetRunName = STRING \n\t\tAdd an optional run name to "
+    "the Rivet analysis.\n"
+    "\tMain:rivetIgnoreBeams = on\n\t\tIgnore beams in Rivet. \n"
+    "\tMain:rivetDumpPeriod = NUMBER\n\t\tDump Rivet histograms "
+    "to file evert NUMBER of events.\n"
+    "\tMain:rivetDumpFile = STRING\n\t\t Specify alternative "
+    "name for Rivet dump file. Default = OUT.\n"
+    "\tMain:writeHepMC = on \n\t\tWrite HepMC output (requires "
+    "a linked installation of HepMC).\n"
+    "\tMain:writeRoot = on \n\t\tWrite a root tree defined in the "
+    "main144.h header file.\n\t\tRequires a working installation of Root, "
+    "linked to Pythia.\n"
+    "\tMain:outputLog = on\n\t\tRedirect output to a logfile. Default is "
+    "OUT prefix, i.e., pythia.log.\n");
 
-  // Print help text and exit.
-  if(ip.hasOption("-h") || ip.hasOption("--help")) {
-    cout << "Usage: Run Pythia with cmnd file input, and get Rivet, HepMC or\n"
-      "standard Pythia output.\n" << endl;
-    cout << "Examples:\n\n\t ./main144 [options] \n\n\t or\n\n\t ./main144 -c "
-      "main144.cmnd -n 1000 -o myoutput\n" << endl;
-    cout << "Options:\n"
-      "\t -h, --help\n\t\t Show this help message and exit.\n"
-      "\t -c CMND-FILE\n\t\t Use this user-written command file.\n"
-      "\t -c2 CMND-FILE2\n\t\t Use a second cmnd file, loaded after "
-       "the first.\n"
-      "\t \t Useful for eg. tuning studies.\n"
-      "\t -s SEED \n\t\t Specify seed for the random number generator.\n"
-      "\t -o OUT \n\t\t Specify output prefix. Rivet histograms becomes "
-      "OUT.yoda.\n"
-      "\t -n NEVENTS\n\t\t Number of events.\n"
-      "\t -l \n\t\t Silence the splash screen.\n"
-      "\t -t \n\t\t Time event generation.\n"
-      "\t -v \n\t\t Print the Pythia version number and exit.\n"
-        << endl;
-     cout << "Additional options in cmnd file:\n"
-       "A few extra commands can be added to the cmnd file, compared "
-       "to normal.\n"
-       "\t Main:runRivet = on \n\t\tRun Rivet analyses (requires a\n"
-       "\t\tworking installation of Rivet, linked to main144).\n"
-       "\t Main:analyses = ANALYSIS1,ANALYSIS2,...\n "
-       "\t\tA comma separated list of desired Rivet analyses to be run.\n"
-       "\t\tAnalyses can be post-fixed with Rivet analysis parameters:\n"
-        "\t\tANALYSIS:parm->value:parm2->value2 etc.\n"
-       "\t Main:rivetRunName = STRING \n\t\tAdd an optional run name to "
-       "the Rivet analysis.\n"
-       "\t Main:rivetIgnoreBeams = on\n\t\tIgnore beams in Rivet. \n"
-       "\t Main:rivetDumpPeriod = NUMBER\n\t\tDump Rivet histograms "
-       "to file evert NUMBER of events.\n"
-       "\t Main:rivetDumpFile = STRING\n\t\t Specify alternative "
-       "name for Rivet dump file. Default = OUT.\n"
-       "\t Main:writeHepMC = on \n\t\tWrite HepMC output (requires "
-       "a linked installation of HepMC).\n"
-       "\t Main:writeRoot = on \n\t\tWrite a root tree defined in the "
-       "main144.h header file.\n\t\tRequires a working installation of Root, "
-       "linked to Pythia.\n"
-       "\t Main:outputLog = on\n\t\tRedirect output to a logfile. Default is "
-       "OUT prefix, ie. pythia.log.\n"
-         << endl;
-    return 0;
-  }
+  // Set up command line options.
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
+  ip.add("c2", "", "Use a second cmnd file, loaded after the first.",
+    {"-cmnd2"});
+  ip.add("s", "-1", "Specify seed for the random number generator.",
+    {"-seed"});
+  ip.require("o", "Specify output filenames for Rivet (.yoda), log-file etc.",
+    {"-out"});
+  ip.add("n", "-1", "Number of events. Overrides cmnd.file.", {"-nevents"});
+  ip.add("l", "false", "Silence the splash screen.");
+  ip.add("t", "false", "Time event generation.", {"-time"});
+  ip.add("v", "false", "Print Pythia version number and exit.", {"-version"});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Print version number and exit.
-  if(ip.hasOption("-v") || ip.hasOption("--version")) {
+  if (ip.get<bool>("v")) {
     cout << "PYTHIA version: " << PYTHIA_VERSION << endl;
     return 0;
   }
 
-  string cmndfile = "";
-  // Input command file.
-  if(ip.hasOption("-c")) {
-    cmndfile = ip.getOption("-c");
-    if(cmndfile.find(".cmnd") == string::npos &&
-        cmndfile.find(".dat") == string::npos) {
-      cout << "Please provide a valid .cmnd file as "
+  string cmndfile = ip.get<string>("c");
+  if (cmndfile.find(".cmnd") == string::npos &&
+    cmndfile.find(".dat") == string::npos) {
+    cout << "Please provide a valid .cmnd file as "
       "argument to the -c option." << endl;
-      return 1;
-    }
-  }
-  else {
-    cout << "You must provide a command file to produce output.\n"
-            "Use option -h to show all command line options." << endl;
     return 1;
   }
 
-  string cmndfile2 = "";
+  string cmndfile2 = ip.get<string>("c2");
   // Optional secondary input command file.
-  if(ip.hasOption("-c2")) {
-    cmndfile2 = ip.getOption("-c2");
-    if(cmndfile2.find(".cmnd") == string::npos &&
-        cmndfile2.find(".dat") == string::npos) {
-      cout << "Please provide a valid .cmnd file as argument "
-      "to the -c2 option." << endl;
-      return 1;
-    }
+  if(cmndfile2 != "" && cmndfile2.find(".cmnd") == string::npos &&
+    cmndfile2.find(".dat") == string::npos) {
+    cout << "Please provide a valid .cmnd file as "
+      "argument to the -c2 option." << endl;
+    return 1;
   }
 
-  string seed = "-1";
-  // Optional seed from command line.
-  if(ip.hasOption("-s")) seed = ip.getOption("-s");
-
-  string out = "";
-  // Set individual output prefix.
-  if(ip.hasOption("-o")) out = ip.getOption("-o");
-
-  bool takeTime = false;
-  if (ip.hasOption("-t")) takeTime = true;
-
-  int nev = -1;
+  // Random number seed.
+  string seed = ip.get<string>("s");
+  // Output filename.
+  string out = ip.get<string>("o");
+  // Time event generation.
+  bool takeTime = ip.get<bool>("t");
   // Command line number of event, overrides the one set in input .cmnd file.
-  if(ip.hasOption("-n")) nev = stoi(ip.getOption("-n"));
+  int nev = ip.get<int>("n");
 
   // Catch the splash screen in a buffer.
   stringstream splashBuf;
@@ -194,8 +142,8 @@ int main(int argc, char* argv[]) {
   }
 
   // Read the extra parameters.
+  if (nev > -1) pythia.settings.mode("Main:numberOfEvents",nev);
   int nEvent = pythia.mode("Main:numberOfEvents");;
-  if(nev > -1) nEvent = nev;
   const bool hepmc = pythia.flag("Main:writeHepMC");
   const bool root = pythia.flag("Main:writeRoot");
   const bool runRivet = pythia.flag("Main:runRivet");
@@ -279,7 +227,7 @@ int main(int argc, char* argv[]) {
   }
   // Option to trash the splash screen.
   ostream cnull(NULL);
-  if(ip.hasOption("-l")) cnull << splashBuf.str();
+  if(ip.get<bool>("l")) cnull << splashBuf.str();
   else cout << splashBuf.str();
   // If Pythia fails to initialize, exit with error.
   if (!pythia.init()) return 1;

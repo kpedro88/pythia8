@@ -4,12 +4,12 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main466.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
 // Authors:
-//            <a href="mailto:marius.m.utheim@jyu.fi">Marius Utheim</a>
+//            Marius Utheim
 
 // Keywords:
 //            <a href="../ExampleKeywords.html#hadron+widths">Hadron&nbsp;widths</a>
@@ -18,22 +18,22 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 // Useful if resonances are added or particle properties are changed.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 using namespace Pythia8;
 
 //==========================================================================
 
 int main(int argc, char* argv[]) {
 
-  // Get precision from command line, if provided.
-  int precision = (argc == 2) ? atoi(argv[1]) : 50;
-  if ((argc != 1 &amp;&amp; argc != 2) || precision &lt;= 1) {
-    cerr &lt;&lt; &quot; Unexpected number of command-line arguments. \n&quot;
-         &lt;&lt; &quot; You are expected to either provide the precision as an \n&quot;
-         &lt;&lt; &quot; integer (precision &gt;= 2), or no argument to indicate the \n&quot;
-         &lt;&lt; &quot; default value (50). \n&quot;
-         &lt;&lt; &quot; Program stopped! &quot; &lt;&lt; endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip(&quot;Create parameterization tables for hadron widths.&quot;,
+    {&quot;./main465 -a 2212 -b 2212&quot;});
+  ip.add(&quot;p&quot;, &quot;50&quot;, &quot;Precision, provided as integer.&quot;, {&quot;-precision&quot;});
+  ip.add(&quot;o&quot;, &quot;main466.dat&quot;, &quot;Output file for the widths.&quot;, {&quot;-out&quot;});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Initialize Pythia.
   Pythia pythia;
@@ -49,8 +49,8 @@ int main(int argc, char* argv[]) {
 
   // Perform parameterization.
   HadronWidths&amp; hadronWidths = pythia.hadronWidths;
-  hadronWidths.parameterizeAll(precision);
-  hadronWidths.save(&quot;HadronWidths.dat&quot;);
+  hadronWidths.parameterizeAll(ip.get&lt;int&gt;(&quot;p&quot;));
+  hadronWidths.save(ip.get&lt;string&gt;(&quot;o&quot;));
 
   // Done.
   return 0;

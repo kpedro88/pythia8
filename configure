@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # configure is a part of the PYTHIA event generator.
-# Copyright (C) 2024 Torbjorn Sjostrand.
+# Copyright (C) 2025 Torbjorn Sjostrand.
 # PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 # Please respect the MCnet Guidelines, see GUIDELINES for details.
 # Author: Philip Ilten, October 2014 - February 2024.
@@ -60,6 +60,7 @@ Optional external packages.
   lhapdf6  : Support the use of external PDF sets via LHAPDF, >= version 6.2.
   powheg   : Hard process production with POWHEGBOX matrix element executables.
   rivet    : Support use of RIVET through direct interface.
+  yoda     : Support linking direct booking of YODA2 histograms.
   root     : Use ROOT trees and histograms with PYTHIA.
              Note: this option automatically invokes DIR/bin/root-config to set 
              the ROOT lib/ and include/ paths. To set your ROOT paths manually
@@ -98,7 +99,7 @@ BLOCKTEXT
 OPTIONS="-h --h -help --help --enable-debug --enable-optdebug --lcg --lcg-ver"
 OPTIONS+=" --prefix --prefix-bin --prefix-lib --prefix-include --prefix-share"
 for PKG in "evtgen" "fastjet3" "hepmc2" "hepmc3" "lhapdf5" "lhapdf6" "powheg"\
-    "rivet" "root" "gzip" "python" "mg5mes" "openmp" "mpich" "hdf5"\
+    "rivet" "yoda" "root" "gzip" "python" "mg5mes" "openmp" "mpich" "hdf5"\
     "highfive"; do
     OPTIONS+=" --with-$PKG --with-$PKG-bin --with-$PKG-lib --with-$PKG-include"
     OPTIONS+="  --with-$PKG-config --with-$PKG-version"; done
@@ -376,6 +377,9 @@ configure_package "POWHEG"\
 configure_package "RIVET" "$LCG_PATH/MCGenerators/rivet" "3.1.9"\
     "rivet-config" "bin" "--includedir" "--libdir" "rivet-config"\
     "Rivet/Rivet.hh" "Rivet" ""
+configure_package "YODA" "$LCG_PATH/MCGenerators/yoda" "2.0.0"\
+    "yoda-config" "bin" "--includedir" "--libdir" "yoda-config"\
+    "YODA/YODA.h" "YODA" ""
 configure_package "ROOT" "$LCG_PATH/ROOT" "6.30.04" "root-config"\
     "--bindir" "--incdir" "--libdir" "rootcint;root-config" "TROOT.h" "Core" ""
 configure_package "GZIP" "" "" "" "" "" "" "" "zlib.h" "z" "" "-DGZIP"

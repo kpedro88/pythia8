@@ -604,56 +604,24 @@ junction rest frame).
    
  
 <a name="anchor47"></a>
-<p/><code>flag&nbsp; </code><strong> StringFragmentation:pearlFragmentation &nbsp;</strong> 
- (<code>default = <strong>off</strong></code>)<br/>
-Optionally allow to use a gluon approximation for pearl-on-a-string 
-junction topologies. Pearl-on-a-string is a junction topology such 
-that the junction gets stuck to a soft endpoint parton. In these cases 
-for light quarks, the propagation of the <i>pT</i> is similar to a 
-soft gluon kink, and can be fragmented by approximating the pearl as a 
-gluon. 
-   
- 
-<a name="anchor48"></a>
-<p/><code>parm&nbsp; </code><strong> StringFragmentation:pearlProbFactor &nbsp;</strong> 
- (<code>default = <strong>4</strong></code>; <code>minimum = 1</code>)<br/>
-The gluon approximation for pearl-on-a-string cases is chosen 
-probabilistically. This parameter, <i>f_pearl</i>, modifies the 
-probability distribution used and has the general form of 
-<br/><i> 
-    prob(x) = 1 / (1 + (4<i>&Delta;v</i>)<sup>f<sub>pearl</sub></sup>). 
-</i><br/> 
-Here <i>&Delta;v</i>, which varies between 0 and 1/2, is a measure 
-of the total deceleration the pearl (ie the soft parton) experiences 
-over a time characteristic of hadronization (here given by the 
-<code>pNormJunction</code> parameter above). 
-   
- 
-<a name="anchor49"></a>
-<p/><code>flag&nbsp; </code><strong> StringFragmentation:strangeJunctions &nbsp;</strong> 
+<p/><code>flag&nbsp; </code><strong> StringFragmentation:doStrangeJunctions &nbsp;</strong> 
  (<code>default = <strong>off</strong></code>)<br/>
 Switching this parameter on allows strangeness enhancement for string breaks 
 next to a junction. 
    
  
-<a name="anchor50"></a>
-<p/><code>parm&nbsp; </code><strong> StringFragmentation:strangeJuncFactor &nbsp;</strong> 
+<a name="anchor48"></a>
+<p/><code>parm&nbsp; </code><strong> StringFragmentation:enhanceStrangeJunction &nbsp;</strong> 
  (<code>default = <strong>0.5</strong></code>; <code>minimum = 0.</code>; <code>maximum = 1.0</code>)<br/>
-This parameter, <i>s_J</i>, scales how much strangeness enhancement 
-around a junction by modifying the probability 
+This parameter, <i>s<sub>J</sub></i>, scales how much strangeness 
+enhancement around a junction by modifying the probability 
 <code>StringFlav:probStoUD</code>, 
 <br/><i> 
     P'(s:u/d) = P(s:u/d)<sup>(1 - s_J)</sup>. 
 </i><br/> 
    
  
-<a name="anchor51"></a>
-<p/><code>parm&nbsp; </code><strong> StringFragmentation:strangePearlFactor &nbsp;</strong> 
- (<code>default = <strong>0.5</strong></code>; <code>minimum = 0.</code>; <code>maximum = 1.0</code>)<br/>
-Allow a different strangeness enhancement around a pearl junction. 
-   
- 
 </body>
 </html>
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

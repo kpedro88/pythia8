@@ -1,5 +1,5 @@
 // main408.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -28,6 +28,7 @@ int main() {
   // pythia.readString("SpaceShower:pTdampMatch = 1");
 
   // Vincia shower settings.
+  pythia.readString("Vincia:tune = 0"); // vincia tune
   pythia.readString("Vincia:EWMode = 2"); // vincia Multipole QED shower
   pythia.readString("Vincia:pTmaxMatch = 2"); // 2: power showers
   pythia.readString("Vincia:pTdampMatch = 1"); // 1: dampening.

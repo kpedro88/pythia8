@@ -4,7 +4,7 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main164.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -28,6 +28,8 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 //            <a href="../ExampleKeywords.html#mlm">MLM</a>
 //            <a href="../ExampleKeywords.html#userhooks">Userhooks</a>
 //            <a href="../ExampleKeywords.html#lhe+file">LHE&nbsp;file</a>
+//            <a href="../ExampleKeywords.html#hdf5+file">HDF5&nbsp;file</a>
+//            <a href="../ExampleKeywords.html#lheh5">LHEH5</a>
 //            <a href="../ExampleKeywords.html#hepmc">Hepmc</a>
 //            <a href="../ExampleKeywords.html#rivet">Rivet</a>
 
@@ -41,11 +43,12 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 // see the respective sections in the online manual for details.
 //
 // An example command is
-//     ./main164 main164ckkwl.cmnd
+//     ./main164 -c main164ckkwl.cmnd
 // where main164ckkwl.cmnd supplies the commands.
 // This example requires HepMC2 or HepMC3 and optionally RIVET.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 #if defined(HEPMC3)
 #include &quot;Pythia8Plugins/HepMC3.h&quot;
 #elif defined(HEPMC2)
@@ -74,17 +77,25 @@ using namespace Pythia8;
 
 int main(int argc, char** argv){
 
-  // Check that correct number of command-line arguments
-  if (argc != 2) {
-    cerr &lt;&lt; &quot; Unexpected number of command-line arguments (&quot;
-         &lt;&lt; argc-1 &lt;&lt; &quot;)&quot; &lt;&lt; endl &lt;&lt; endl
-         &lt;&lt; &quot; Usage:&quot; &lt;&lt; endl
-         &lt;&lt; &quot; &quot; &lt;&lt; argv[0] &lt;&lt; &quot; &lt;input.cmnd&gt;&quot; &lt;&lt; endl &lt;&lt; endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip(&quot;Illustrates how to do matching and merging.&quot;,
+    {&quot;./main164 -c main164ckkwl.cmnd&quot;,
+        &quot;./main164 -c main164amcatnlo.cmnd&quot;,
+        &quot;./main164 -c main164fxfx.cmnd&quot;,
+        &quot;./main164 -c main164mlm.cmnd&quot;,
+        &quot;./main164 -c main164umeps.cmnd&quot;,
+        &quot;./main164 -c main164mess.cmnd&quot;,
+        &quot;./main164 -c main164unlops.cmnd&quot;,
+        &quot;./main164 -c main164dis.cmnd&quot;,
+        &quot;./main164 -c main164powheg.cmnd&quot;,});
+  ip.require(&quot;c&quot;, &quot;Use this user-written command file.&quot;, {&quot;-cmnd&quot;});
+
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Input file.
-  string cmndFile = argv[1];
+  string cmndFile = ip.get&lt;string&gt;(&quot;c&quot;);
 
   // Generator.
   Pythia pythia;
@@ -154,8 +165,10 @@ int main(int argc, char** argv){
       if (showerModel == 1 || showerModel == 3) {
         pythia.readString(&quot;SpaceShower:pTmaxMatch = 2&quot;);
         pythia.readString(&quot;TimeShower:pTmaxMatch = 2&quot;);
-      } else if (showerModel == 2)
+      } else if (showerModel == 2) {
+        pythia.readString(&quot;Vincia:tune = 0&quot;);
         pythia.readString(&quot;Vincia:pTmaxMatch = 2&quot;);
+      }
     }
     // Set MPI to start at the kinematical limit.
     if (pwhgVetoModeMPI &gt; 0)

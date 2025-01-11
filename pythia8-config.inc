@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pythia8-config is a part of the PYTHIA event generator.
-# Copyright (C) 2024 Torbjorn Sjostrand.
+# Copyright (C) 2025 Torbjorn Sjostrand.
 # PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 # Please respect the MCnet Guidelines, see GUIDELINES for details.
 # Author: Philip Ilten, October 2014 - Februrary 2024.
@@ -104,7 +104,7 @@ if [ $# -eq 0 ]; then echo "$USAGE"; exit; fi
 for VAR in "$@"; do
     if [ "$VAR" = "-h" ] || [ "$VAR" = "--h" ] || [ "$VAR" = "-help" ] \
            || [ "$VAR" = "--help" ]; then echo "$USAGE"; exit;
-    elif [ "$VAR" = "--version" ]; then echo "8.312"; exit; fi
+    elif [ "$VAR" = "--version" ]; then echo "8.313"; exit; fi
 done
 
 # Read the configuration (use local version first, then installed version).

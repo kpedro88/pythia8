@@ -1,5 +1,5 @@
 // main133.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -11,7 +11,7 @@
 // It is similar to main132, except that it allows for several subruns,
 // e.g. from related LHE files. Input and output files are specified
 // on the command line, e.g. like
-//     ./main133 main133.cmnd main133.hepmc > main133.log
+//     ./main133 -c main133.cmnd -o main133.hepmc > main133.log
 // The main program contains no analysis; this is intended to happen later.
 // It therefore "never" has to be recompiled to handle different tasks.
 
@@ -19,6 +19,7 @@
 // Therefore large event samples may be impractical.
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 #ifndef HEPMC2
 #include "Pythia8Plugins/HepMC3.h"
 #else
@@ -31,36 +32,31 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
-  // Check that correct number of command-line arguments
-  if (argc != 3) {
-    cerr << " Unexpected number of command-line arguments. \n You are"
-         << " expected to provide one input and one output file name. \n"
-         << " Program stopped! " << endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip("This program illustrates how HepMC files can be written by"
+    " Pythia8.", {"./main133 -c main133.cmnd -o main133.hepmc"});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
+  ip.require("o", "Specify HepMC output filename.", {"-out"});
 
-  // Check that the provided input name corresponds to an existing file.
-  ifstream is(argv[1]);
-  if (!is) {
-    cerr << " Command-line file " << argv[1] << " was not found. \n"
-         << " Program stopped! " << endl;
-    return 1;
-  }
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Confirm that external files will be used for input and output.
-  cout << "\n >>> PYTHIA settings will be read from file " << argv[1]
-       << " <<< \n >>> HepMC events will be written to file "
-       << argv[2] << " <<< \n" << endl;
+  string cmnd(ip.get<string>("c")), out(ip.get<string>("o"));
+  cout << "\n >>> PYTHIA settings will be read from file '" << cmnd
+       << "' <<< \n >>> HepMC events will be written to file '"
+       << out << "' <<< \n";
 
   // Interface for conversion from Pythia8::Event to HepMC event.
   // Specify file where HepMC events will be stored.
-  Pythia8ToHepMC toHepMC(argv[2]);
+  Pythia8ToHepMC toHepMC(out);
 
   // Generator.
   Pythia pythia;
 
   // Read in subrun-independent commands from external file.
-  pythia.readFile( argv[1]);
+  pythia.readFile(cmnd);
 
   // Extract data to be used in main program. Set counters.
   int nSubrun = pythia.mode("Main:numberOfSubruns");
@@ -71,7 +67,7 @@ int main(int argc, char* argv[]) {
   for (int iSubrun = 1; iSubrun <= nSubrun; ++iSubrun) {
 
     // Read in subrun-specific data from external file.
-    pythia.readFile( argv[1], iSubrun);
+    pythia.readFile(cmnd, iSubrun);
 
     // If Pythia fails to initialize, exit with error.
     if (!pythia.init()) return 1;

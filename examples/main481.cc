@@ -1,9 +1,9 @@
 // main181.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Authors: Marius Utheim <marius.m.utheim@jyu.fi>
+// Authors: Marius Utheim
 
 // Keywords: PDFs; arXiv:2108.03481 [hep-ph]
 

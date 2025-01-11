@@ -4,7 +4,7 @@
 Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 <pre><code class="language-c++">
 // main132.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -20,7 +20,7 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 
 // This program illustrates how HepMC files can be written by Pythia8.
 // Input and output files are specified on the command line, e.g. like
-// ./main132 main132.cmnd main132.hepmc &gt; main132.log
+//     ./main132 -c main132.cmnd -o main132.hepmc &gt; main132.log
 // Either internal Pythia processes or Les Houches Event Files can be used.
 // The main program contains no analysis; this is intended to happen later.
 // It therefore &quot;never&quot; has to be recompiled to handle different tasks.
@@ -29,6 +29,7 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 // Therefore large event samples may be impractical.
 
 #include &quot;Pythia8/Pythia.h&quot;
+#include &quot;Pythia8Plugins/InputParser.h&quot;
 #ifndef HEPMC2
 #include &quot;Pythia8Plugins/HepMC3.h&quot;
 #else
@@ -41,36 +42,31 @@ using namespace Pythia8;
 
 int main(int argc, char* argv[]) {
 
-  // Check that correct number of command-line arguments
-  if (argc != 3) {
-    cerr &lt;&lt; &quot; Unexpected number of command-line arguments. \n You are&quot;
-         &lt;&lt; &quot; expected to provide one input and one output file name. \n&quot;
-         &lt;&lt; &quot; Program stopped! &quot; &lt;&lt; endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip(&quot;This program illustrates how HepMC files can be written by&quot;
+    &quot; Pythia8.&quot;, {&quot;./main132 -c main132.cmnd -o main132.hepmc&quot;});
+  ip.require(&quot;c&quot;, &quot;Use this user-written command file.&quot;, {&quot;-cmnd&quot;});
+  ip.require(&quot;o&quot;, &quot;Specify HepMC output filename.&quot;, {&quot;-out&quot;});
 
-  // Check that the provided input name corresponds to an existing file.
-  ifstream is(argv[1]);
-  if (!is) {
-    cerr &lt;&lt; &quot; Command-line file &quot; &lt;&lt; argv[1] &lt;&lt; &quot; was not found. \n&quot;
-         &lt;&lt; &quot; Program stopped! &quot; &lt;&lt; endl;
-    return 1;
-  }
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Confirm that external files will be used for input and output.
-  cout &lt;&lt; &quot;\n &gt;&gt;&gt; PYTHIA settings will be read from file &quot; &lt;&lt; argv[1]
-       &lt;&lt; &quot; &lt;&lt;&lt; \n &gt;&gt;&gt; HepMC events will be written to file &quot;
-       &lt;&lt; argv[2] &lt;&lt; &quot; &lt;&lt;&lt; \n&quot; &lt;&lt; endl;
+  string cmnd(ip.get&lt;string&gt;(&quot;c&quot;)), out(ip.get&lt;string&gt;(&quot;o&quot;));
+  cout &lt;&lt; &quot;\n &gt;&gt;&gt; PYTHIA settings will be read from file &apos;&quot; &lt;&lt; cmnd
+       &lt;&lt; &quot;&apos; &lt;&lt;&lt; \n &gt;&gt;&gt; HepMC events will be written to file &apos;&quot;
+       &lt;&lt; out &lt;&lt; &quot;&apos; &lt;&lt;&lt; \n&quot;;
 
   // Interface for conversion from Pythia8::Event to HepMC event.
   // Specify file where HepMC events will be stored.
-  Pythia8ToHepMC toHepMC(argv[2]);
+  Pythia8ToHepMC toHepMC(out);
 
   // Generator.
   Pythia pythia;
 
   // Read in commands from external file.
-  pythia.readFile(argv[1]);
+  pythia.readFile(cmnd);
 
   // Extract settings to be used in the main program.
   int    nEvent    = pythia.mode(&quot;Main:numberOfEvents&quot;);

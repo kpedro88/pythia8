@@ -23,7 +23,7 @@ th, td {
 <h2>Sample Main Programs</h2> 
 <ol id="toc">
   <li><a href="#section0">Simple starting examples</a></li>
-  <li><a href="#section1">Use of cmnd file and/or Pyplot</a></li>
+  <li><a href="#section1">Use of cmnd file and alternative plotting</a></li>
   <li><a href="#section2">Input from Les Houches Event files, or ditto output</a></li>
   <li><a href="#section3">Output to HepMC files</a></li>
   <li><a href="#section4">Output to ROOT and/or Rivet</a></li>
@@ -126,7 +126,7 @@ basic generation of <i>e^+e^-</i> events at LEP 1.</li>
 </ul> 
  
 <a name="section1"></a> 
-<h3>Use of cmnd file and/or Pyplot</h3> 
+<h3>Use of cmnd file and alternative plotting</h3> 
  
 While the generation process can be specified entirely in the main 
 program, it is useful to break out all settings and particle data 
@@ -141,7 +141,8 @@ by HBOOK, the ancestor of the current ROOT package. The simple
 line-printer output tends to confuse younger users, however, so an 
 alternative has been introduced. In it, Python Matplotlib/Pyplot code 
 can be generated with minimal fuss, a code that then can be run to 
-produce plots in a more familiar format. 
+produce plots in a more familiar format. Furthermore PYTHIA comes 
+with a simplistic interface to the YODA histogramming package. 
  
 <ul> 
  
@@ -159,6 +160,10 @@ with <code>main102.cc</code>.</li>
 a simple study of several different kinds of events, with the choice 
 to be made in the <code>main113.cmnd</code> "cards file". Also shows 
 how to plot histograms using the Pyplot approach.</li> 
+ 
+<li><code>main114.cc</code> (new) : 
+demonstration of the simple interface to <code>YODA</code> 
+histogramming.</li> 
  
 </ul> 
  
@@ -636,6 +641,11 @@ The output compares multiplicity distributions from the default
 parameters to the reweighted output with the varied parameters 
 and the output using the varied parameters without reweighting.</li> 
  
+<li><code>main264.cc</code> (name) : 
+runs the same analysis as <code>main264.cc</code> but only for flavor 
+hadronization parameters and demonstrates post-hoc reweighting rathern 
+than in-situ.</li> 
+ 
 </ul> 
  
 <a name="section12"></a> 
@@ -976,6 +986,12 @@ later use.</li>
 <li><code>main425.cc</code> (new) : calculates the proton-oxygen 
 cross section at varying energies.</li> 
  
+<li><code>main426.cc</code> (new) : exemplifies adding new nuclei and 
+extracting various cross sections and Glauber statistics from Angantyr.</li> 
+ 
+<li><code>main427.cc</code> (new) : add a different impact parameter 
+sampler to Angantyr, to output events with unit weights.</li> 
+ 
 </ul> 
  
 <a name="section21"></a> 
@@ -1081,7 +1097,8 @@ running times for different scenarios.</li>
  
 <li><code>main483.cc</code> (was <code>main183.cc</code>) : 
 simple example of how Pythia can be used to simulate a basic hadronic 
-cascade in the atmosphere.</li> 
+cascade in a few simple atmospheres, either as a sequence of hadron-hadron 
+collisions or making use of the Angantyr module.</li> 
  
 <li><code>main484.cc</code> (was <code>main184.cc</code>) : 
 as <code>main483.cc</code>, but using the <code>PythiaCascade</code> class 
@@ -1094,9 +1111,14 @@ in <code>PythiaCascade</code>.</li>
  
 <li><code>main486.cc</code> (new) : 
 study total and inelastic cross section for various beam combinations, 
-using the public methods in the Pythia class. These methods are intended 
-for fast switching, and only provide the SaS/DL ansats at high 
-energies.</li> 
+using the public methods in the <code>Pythia</code> class. These 
+methods are intended for fast switching, and only provide the SaS/DL 
+ansats at high energies.</li> 
+ 
+<li><code>main487.cc</code> (new) : 
+direct comparison of a hadronic cascade simulated either with 
+<code>PythiaCascade</code> or with Angantyr. Here the 
+atmosphere is a realistic mix of nitrogen, oxygen and argon.</li> 
  
 </ul> 
  
@@ -1164,6 +1186,12 @@ with a selection of further possible variations.</li>
 <li><code>main510.cc</code> (new) : 
 a related setup of a few different scenarios for Hidden Valley 
 particle production at a 1 TeV <i>e^+e^-</i> collider.</li> 
+ 
+<li><code>main511.cc</code> (new) : 
+demonstrates consistency of the Hidden Valley fragmentation framework, 
+by comparing a scaled-up HV version of two-flavour (<i>u/d</i>) QCD 
+with its QCD original, for three different ways to set HV fragmentation 
+parameters.</li> 
  
 </ul> 
  
@@ -1319,4 +1347,4 @@ Table for the translation from the old Python names to the new ones:
 </body>
 </html>
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

@@ -1,5 +1,5 @@
 // main231.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -10,9 +10,10 @@
 // and (b) how to provide the .cmnd filename on the command line
 
 // Once you have linked the main program you can run it with a command line
-// ./main231.exe main231.cmnd > main231.log
+//     ./main231 -c main231.cmnd > main231.log
 
 #include "Pythia8/Pythia.h"
+#include "Pythia8Plugins/InputParser.h"
 
 using namespace Pythia8;
 
@@ -118,28 +119,22 @@ void MyAnalysis::finish() {
 
 int main(int argc, char* argv[]) {
 
-  // Check that correct number of command-line arguments
-  if (argc != 2) {
-    cerr << " Unexpected number of command-line arguments. \n"
-         << " You are expected to provide a file name and nothing else. \n"
-         << " Program stopped! " << endl;
-    return 1;
-  }
+  // Set up command line options.
+  InputParser ip("Illustrates how collect analysis code and read commands.",
+    {"./main231 -c main231.cmnd"});
+  ip.require("c", "Use this user-written command file.", {"-cmnd"});
 
-  // Check that the provided file name corresponds to an existing file.
-  ifstream is(argv[1]);
-  if (!is) {
-    cerr << " Command-line file " << argv[1] << " was not found. \n"
-         << " Program stopped! " << endl;
-    return 1;
-  }
+  // Initialize the parser and exit if necessary.
+  InputParser::Status status = ip.init(argc, argv);
+  if (status != InputParser::Valid) return status;
 
   // Confirm that external file will be used for settings.
-  cout << " PYTHIA settings will be read from file " << argv[1] << endl;
+  cout << " PYTHIA settings will be read from file "
+       << ip.get<string>("c") << endl;
 
   // Declare generator. Read in commands from external file.
   Pythia pythia;
-  pythia.readFile(argv[1]);
+  pythia.readFile(ip.get<string>("c"));
 
   // If Pythia fails to initialize, exit with error.
   if (!pythia.init()) return 1;

@@ -1,12 +1,12 @@
 // main407.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
 // Authors: Peter Skands <peter.skands@monash.edu>
 // Thanks to: M. di Mauro, for the original template for this example.
 
-// Keywords: Vincia; weak showers; LHEF; dark matter;
+// Keywords: Vincia; weak showers; LHE file; dark matter;
 
 // Example showing how to run Vincia's electroweak shower with LHEF input.
 // This requires the LHEF files to contain helicities for the hard partons.

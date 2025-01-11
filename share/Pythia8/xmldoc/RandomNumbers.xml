@@ -159,6 +159,11 @@ randomly shuffle a vector of objects (<code>type T</code>, i.e. any type,
 templated method) according to the Fisher-Yates algorithm. 
 </method> 
  
+<method name="double Rndm::peekFlat()"> 
+peek at the next random number in the sequence without updating 
+the state. Useful for debugging purposes. 
+</method> 
+ 
 <method name="bool Rndm::dumpState(string fileName)"> 
 save the current state of the random number generator to a binary 
 file. This involves two integers and 100 double-precision numbers. 
@@ -318,4 +323,4 @@ header, but before additional headers.
  
 </chapter> 
  
-<!-- Copyright (C) 2024 Torbjorn Sjostrand --> 
+<!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

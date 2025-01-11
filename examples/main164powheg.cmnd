@@ -36,7 +36,7 @@ Main:Rivet                  = on
 Rivet:output                = main164powheg.yoda
 Rivet:analyses              = {MC_XS,MC_WEIGHTS}
 
-! Subruns for CKKW-L merging.
+! Subruns for NLO matching with POWHEG-BOX events.
 Main:numberOfSubruns        = 1
 Main:subrun                 = 0
 Beams:LHEF                  = powheg-hvq.lhe

@@ -1,5 +1,5 @@
 // ProcessContainer.cc is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -83,6 +83,9 @@ bool ProcessContainer::init(bool isFirst, ResonanceDecays* resDecaysPtrIn,
   // Use external photon flux.
   approximatedGammaFlux = beamAPtr->hasApproxGammaFlux() ||
     beamBPtr->hasApproxGammaFlux();
+
+  // Check whether merging is enabled.
+  doMerging = flag("Merging:doMerging") || word("Merging:process") != "";
 
   // Check whether photon sub-beams present.
   bool beamAhasGamma = flag("PDF:beamA2gamma");
@@ -238,15 +241,21 @@ bool ProcessContainer::init(bool isFirst, ResonanceDecays* resDecaysPtrIn,
   }
 
   // Allow Pythia to overwrite incoming beams or parts of Les Houches input.
-  idRenameBeams = mode("LesHouches:idRenameBeams");
-  setLifetime   = mode("LesHouches:setLifetime");
-  setQuarkMass  = mode("LesHouches:setQuarkMass");
-  setLeptonMass = mode("LesHouches:setLeptonMass");
-  mRecalculate  = parm("LesHouches:mRecalculate");
-  matchInOut    = flag("LesHouches:matchInOut");
+  idRenameBeams   = mode("LesHouches:idRenameBeams");
+  setLifetime     = mode("LesHouches:setLifetime");
+  setQuarkMass    = mode("LesHouches:setQuarkMass");
+  setLeptonMass   = mode("LesHouches:setLeptonMass");
+  smearHadronMass = mode("LesHouches:smearHadronMass");
+  idSmearHadIn    = mvec("LesHouches:idSmearHadrons");
+  mRecalculate    = parm("LesHouches:mRecalculate");
+  matchInOut      = flag("LesHouches:matchInOut");
   for (int i = 0; i < 6; ++i) idNewM[i] = i;
   for (int i = 6; i < 9; ++i) idNewM[i] = 2 * i - 1;
   for (int i = 1; i < 9; ++i) mNewM[i]  = particleDataPtr->m0(idNewM[i]);
+  idSmearHadrons.clear();
+  idSmearHadrons.push_back(0);
+  for (int i = 0; i < int(idSmearHadIn.size()); ++i)
+    idSmearHadrons.push_back(idSmearHadIn[i]);
 
   // Done.
   return physical;
@@ -884,11 +893,12 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
     // Second pass to catch vanishing final lepton and quark masses.
     int iFinalSz = iFinal.size();
     for (int iF = 0; iF < iFinalSz; ++iF) {
-      int iMod = iFinal[iF];
-      int iQLmod  = 0;
+      int iMod    = iFinal[iF];
+      int idAbs   = process[iMod].idAbs();
       double mOld = process[iMod].m();
+      int iQLmod  = 0;
       for (int iQL = 1; iQL < 9; ++iQL)
-      if (process[iMod].idAbs() == idNewM[iQL]) {
+      if (idAbs == idNewM[iQL]) {
         if ( iQL < 6 && setQuarkMass > 0 && (iQL == 4 || iQL == 5
           || setQuarkMass == 2) && (mOld < 0.5 * mNewM[iQL]
           || mOld > 1.5 * mNewM[iQL]) ) iQLmod = iQL;
@@ -896,8 +906,22 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
           || mOld < 0.9 * mNewM[iQL] || mOld > 1.1 * mNewM[iQL]) )
           iQLmod = iQL;
       }
-      if (iQLmod == 0) continue;
-      double mNew = mNewM[iQLmod];
+
+      // Also catch hadrons that should have smeared masses.
+      int iHmod = 0;
+      if (iQLmod == 0 && smearHadronMass > 0)
+      for (int iH = 1; iH < int(idSmearHadrons.size()); ++iH)
+      if (idAbs == idSmearHadrons[iH]) iHmod = iH;
+
+      // Assign new masses where relevant.
+      if (iQLmod == 0 && iHmod == 0) continue;
+      double mNew = 0;
+      if (iQLmod > 0) mNew = mNewM[iQLmod];
+      else if (smearHadronMass == 1 && (mOld < particleDataPtr->mMin(idAbs)
+        || mOld > particleDataPtr->mMax(idAbs)))
+        loggerPtr->WARNING_MSG( "unexpected mass " + to_string(mOld)
+        + " for id " + to_string(idAbs) + " so no smearing ");
+      else mNew = particleDataPtr->mSel(idAbs);
 
       // Find partner to exchange energy and momentum with: general.
       int iRec = 0;
@@ -926,13 +950,13 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
       }
 
       // Find partner to exchange energy and momentum with: quark.
-      if (iRec == 0 && iQLmod < 6 && process[iMod].col() != 0) {
+      if (iRec == 0 && iQLmod > 0 && iQLmod < 6 && process[iMod].col() != 0) {
         for (int iR = 0; iR < iFinalSz; ++iR) if (iR != iF) {
           int iRtmp = iFinal[iR];
           if (process[iRtmp].acol() == process[iMod].col()) iRec = iRtmp;
         }
       }
-      if (iRec == 0 && iQLmod < 6 && process[iMod].acol() != 0) {
+      if (iRec == 0 && iQLmod > 0 && iQLmod < 6 && process[iMod].acol() != 0) {
         for (int iR = 0; iR < iFinalSz; ++iR) if (iR != iF) {
           int iRtmp = iFinal[iR];
           if (process[iRtmp].col() == process[iMod].acol()) iRec = iRtmp;
@@ -977,7 +1001,8 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
         pMod.e( sqrtpos( pMod.pAbs2() + mNew * mNew) );
         process[iMod].p( pMod);
         process[iMod].m( mNew);
-        loggerPtr->WARNING_MSG("unsuitable recoiler found");
+        loggerPtr->WARNING_MSG("no suitable recoiler found,"
+          " so energy violated");
       }
     }
 
@@ -1113,6 +1138,45 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
       Q2FacNow, alphaEM, alphaS, Q2Ren, scalup);
     infoPtr->setKin( 0, id1Now, id2Now, x1Now, x2Now, sHat, tHat, uHat,
       pTHatL, m3, m4, theta, phi);
+
+    // For DIS processes, save some kinematic variables.
+    bool isDIS = (beamAPtr->isLepton() && beamBPtr->isHadron())
+      || (beamAPtr->isHadron() && beamBPtr->isLepton());
+    isDIS = isDIS && !beamHasGamma;
+    if (isDIS) {
+      // Find hardest lepton in event record.
+      double eMax = -1.0;
+      int iLepScat(0);
+      for (int i = process.size()-1; i > 0 ; --i) {
+        if (process[i].isFinal() && particleDataPtr->isLepton(process[i].id())
+          && process[i].e() > eMax) {
+          iLepScat = i;
+          eMax = process[i].e();
+          break;
+        }
+      }
+
+      // Return error if no final-state leptons (neutrinos) found.
+      if (eMax < 0.) {
+        loggerPtr->ERROR_MSG("scattered lepton (neutrino) not found");
+        return false;
+      }
+
+      // Calculate kinematic variables.
+      int iLepIn   = beamAPtr->isLepton() ? 1 : 2;
+      int iHadIn   = beamAPtr->isHadron() ? 1 : 2;
+      Vec4 pProton = process[iHadIn].p();
+      Vec4 peIn    = process[iLepIn].p();
+      Vec4 peOut   = process[iLepScat].p();
+      Vec4 pPhoton = peIn - peOut;
+      // Q2, W2, Bjorken x, y.
+      double Q2DIS = -pPhoton.m2Calc();
+      double WDIS  = (pProton + pPhoton).mCalc();
+      double xDIS  = Q2DIS / (2. * pProton * pPhoton);
+      double yDIS  = (pProton * pPhoton) / (pProton * peIn);
+      // Save variables in info.
+      infoPtr->setDISKinematics(Q2DIS, WDIS, xDIS, yDIS);
+    }
   }
   infoPtr->setTypeMPI( code(), pTHatL);
 
@@ -1356,7 +1420,10 @@ void ProcessContainer::sigmaDelta() {
   // If wgtNow includes the sign, do not include the sign again
   if (lhaStratAbs == 3) wgtNow *= abs(sigmaTemp);
   // Refetch the LHA weight in case of second hard
-  if (lhaStratAbs == 4) wgtNow = lhaUpPtr->weight() * PB2MB;
+  if (lhaStratAbs == 4) {
+    if (doMerging) wgtNow *= PB2MB;
+    else wgtNow = lhaUpPtr->weight() * PB2MB;
+  }
   if (lhaStratAbs > 0 && infoPtr->atEndOfFile()) wgtNow = 0;
 
   sigmaSum += wgtNow;

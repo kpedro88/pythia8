@@ -1,5 +1,5 @@
 // Basics.h is a part of the PYTHIA event generator.
-// Copyright (C) 2024 Torbjorn Sjostrand.
+// Copyright (C) 2025 Torbjorn Sjostrand.
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
@@ -161,9 +161,10 @@ public:
   // Cross-product of three 4-vectors ( p_i = epsilon_{iabc} p_a p_b p_c).
   friend Vec4 cross4(const Vec4& a, const Vec4& b, const Vec4& c);
 
-  // theta is polar angle between v1 and v2.
+  // theta is the opening angle (on the unit sphere) between v1 and v2.
   friend double theta(const Vec4& v1, const Vec4& v2);
   friend double costheta(const Vec4& v1, const Vec4& v2);
+  friend double sintheta(const Vec4& v1, const Vec4& v2);
 
   // phi is azimuthal angle between v1 and v2 around z axis.
   friend double phi(const Vec4& v1, const Vec4& v2);
@@ -220,6 +221,7 @@ Vec4 cross4(const Vec4& a, const Vec4& b, const Vec4& c);
 // theta is polar angle between v1 and v2.
 double theta(const Vec4& v1, const Vec4& v2);
 double costheta(const Vec4& v1, const Vec4& v2);
+double sintheta(const Vec4& v1, const Vec4& v2);
 double costheta(double e1, double e2, double m1, double m2, double s12);
 
 // phi is azimuthal angle between v1 and v2 around z axis.
@@ -266,7 +268,7 @@ public:
   // Member functions.
   void rot(double = 0., double = 0.);
   void rot(const Vec4& p);
-  void bst(double = 0., double = 0., double = 0.);
+  void bst(double = 0., double = 0., double = 0., double = 0.);
   void bst(const Vec4&);
   void bstback(const Vec4&);
   void bst(const Vec4&, const Vec4&);
@@ -426,6 +428,15 @@ public:
 
   // Randomly shuffle a vector, standard Fisher-Yates algorithm.
   template<typename T> void shuffle(vector<T>& vec);
+
+  // Peek at the next random number in sequence without updating
+  // the generator state.
+  double peekFlat() {if (useExternalRndm) return -1;
+    RndmState oldState = stateSave;
+    double f = this->flat();
+    stateSave = oldState;
+    return f;
+  }
 
   // Save or read current state to or from a binary file.
   bool dumpState(string fileName);
