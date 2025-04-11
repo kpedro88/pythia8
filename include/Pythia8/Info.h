@@ -109,7 +109,7 @@ public:
   UserHooksPtr   userHooksPtr{};
 
   // Pointer to information about a HeavyIons run and the current event.
-  // (Is NULL if HeavyIons object is inactive.)
+  // (Is nullptr if HeavyIons object is inactive.)
   HIInfo*        hiInfo{};
 
   WeightContainer* weightContainerPtr{};

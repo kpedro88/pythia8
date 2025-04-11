@@ -289,6 +289,8 @@ public:
   // Overload index operator to access a resolved parton from the list.
   ResolvedParton& operator[](int i) {return resolved[i];}
   const ResolvedParton& operator[](int i) const {return resolved[i];}
+  ResolvedParton& at(int i) {return resolved.at(i);}
+  const ResolvedParton& at(int i) const {return resolved.at(i);}
 
   // Total number of partons extracted from beam, and initiators only.
   int size() const {return resolved.size();}
@@ -461,6 +463,19 @@ public:
   xfModPrepData xfModPrep( int iSkip, double Q2);
 
 private:
+
+  // After initInfoPtr, remove circular dependencies.
+  virtual void onInitInfoPtr() override {
+    beamAPtr    = nullptr;
+    beamBPtr    = nullptr;
+    beamPomAPtr = nullptr;
+    beamPomBPtr = nullptr;
+    beamGamAPtr = nullptr;
+    beamGamBPtr = nullptr;
+    beamVMDAPtr = nullptr;
+    beamVMDBPtr = nullptr;
+    userHooksPtr = nullptr;
+  }
 
   // Constants: could only be changed in the code itself.
   static const double XMINUNRESOLVED, POMERONMASS, XMAXCOMPANION, TINYZREL;

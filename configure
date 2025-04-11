@@ -112,7 +112,7 @@ OPTIONS+=" --obj-common"
 #                       <relative bin path> <relative include path>
 #                       <relative library path> <bin deps> <header deps>
 #                       <lib deps> <package deps> <global compiler flags>
-
+#
 # The following array structure stores the package configuration to the global
 # variable <upper-case package name>_CFG.
 #     0: Use the package.       5:  Header dependencies.
@@ -178,6 +178,8 @@ function configure_package() {
 	    PKG_CFG[1]=$(cd ${PKG_CFG[1]} 2> /dev/null && pwd -P)
 	elif $PKG_EXE $PKG_BIN &> /dev/null && [ -z "$PKG_DIR" ] &&
 	   [ -n "$PKG_BIN" ]; then PKG_CFG[1]=$($PKG_EXE $PKG_BIN 2> /dev/null)
+           if [ -z "${PKG_CFG[1]}" ]; then local BIN=$(command -v $PKG_EXE)
+               PKG_CFG[1]=${BIN%/*}; fi
 	fi
     fi
     if [ -z "${PKG_CFG[2]}" ]; then
@@ -304,19 +306,19 @@ done
 
 # Parse the user arguments and evaluate each as a global variable.
 echo "# PYTHIA configuration file." > $CFG_FILE
-echo "# Generated on" `date` "with the user supplied options:" >> $CFG_FILE
+echo "# Generated on" `date` "with the following command:" >> $CFG_FILE
+USER_CFG=""
 for VAR in "$@"; do
-    if [[ $OPTIONS =~ (^| )${VAR%%=*}($| ) ]]; then
-	echo "# $VAR" >> $CFG_FILE;
+    if [[ $OPTIONS =~ (^| )${VAR%%=*}($| ) ]]; then USER_CFG+=" $VAR"
     else
 	warn "Ignoring invalid option \"${VAR%=*}\".";
-	continue;
-    fi
+	continue; fi
     VAR=${VAR#--with-}; VAR=${VAR#--};
     KEY=${VAR%%=*}; VAL=${VAR#$KEY}; VAL=${VAL#*=}; KEY=${KEY//"-"/"_"};
     KEY=$(echo $KEY | awk '{print toupper($0)}');  VAL=$(eval echo $VAL)
     eval $KEY=\"$VAL\"; eval ${KEY}_SET=true
 done
+echo "# ./configure$USER_CFG" >> $CFG_FILE
 
 # Set the compilation flags and options (order matters).
 [ "$ENABLE_DEBUG_SET"    = true ] && ENABLE_DEBUG="-g "   || ENABLE_DEBUG="-O2 "
@@ -436,7 +438,7 @@ for IDX in ${!PKG_LIST[@]}; do
     eval PKG_USE=\${${PKG}_CFG[0]}
 done
     
-# Write the configuation to screen and file, update the pythia8-config script.
+# Write the configuration to screen and file, update the pythia8-config script.
 mkdir -p bin;
 sed 's|^CFG_FILE=.*|CFG_FILE='"$PREFIX_SHARE"'/examples/Makefile.inc|' \
     pythia8-config.inc > bin/pythia8-config

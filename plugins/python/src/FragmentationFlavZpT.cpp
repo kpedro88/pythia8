@@ -25,7 +25,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
 #endif
 
-// Pythia8::StringFlav file:Pythia8/FragmentationFlavZpT.h line:84
+// Pythia8::StringFlav file:Pythia8/FragmentationFlavZpT.h line:87
 struct PyCallBack_Pythia8_StringFlav : public Pythia8::StringFlav {
 	using Pythia8::StringFlav::StringFlav;
 
@@ -279,7 +279,7 @@ struct PyCallBack_Pythia8_StringFlav : public Pythia8::StringFlav {
 	}
 };
 
-// Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:265
+// Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:268
 struct PyCallBack_Pythia8_StringZ : public Pythia8::StringZ {
 	using Pythia8::StringZ::StringZ;
 
@@ -469,7 +469,7 @@ struct PyCallBack_Pythia8_StringZ : public Pythia8::StringZ {
 
 void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // Pythia8::StringFlav file:Pythia8/FragmentationFlavZpT.h line:84
+	{ // Pythia8::StringFlav file:Pythia8/FragmentationFlavZpT.h line:87
 		pybind11::class_<Pythia8::StringFlav, std::shared_ptr<Pythia8::StringFlav>, PyCallBack_Pythia8_StringFlav, Pythia8::PhysicsBase> cl(M("Pythia8"), "StringFlav", "");
 		pybind11::handle cl_type = cl;
 
@@ -559,7 +559,7 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def("initDerived", (void (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::initDerived, "C++: Pythia8::StringFlav::initDerived() --> void");
 		cl.def("assign", (class Pythia8::StringFlav & (Pythia8::StringFlav::*)(const class Pythia8::StringFlav &)) &Pythia8::StringFlav::operator=, "C++: Pythia8::StringFlav::operator=(const class Pythia8::StringFlav &) --> class Pythia8::StringFlav &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:265
+	{ // Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:268
 		pybind11::class_<Pythia8::StringZ, std::shared_ptr<Pythia8::StringZ>, PyCallBack_Pythia8_StringZ, Pythia8::PhysicsBase> cl(M("Pythia8"), "StringZ", "");
 		pybind11::handle cl_type = cl;
 
@@ -614,7 +614,11 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def("stopSmear", (double (Pythia8::StringZ::*)()) &Pythia8::StringZ::stopSmear, "C++: Pythia8::StringZ::stopSmear() --> double");
 		cl.def("aAreaLund", (double (Pythia8::StringZ::*)()) &Pythia8::StringZ::aAreaLund, "C++: Pythia8::StringZ::aAreaLund() --> double");
 		cl.def("bAreaLund", (double (Pythia8::StringZ::*)()) &Pythia8::StringZ::bAreaLund, "C++: Pythia8::StringZ::bAreaLund() --> double");
-		cl.def("deriveBLund", (bool (Pythia8::StringZ::*)()) &Pythia8::StringZ::deriveBLund, "C++: Pythia8::StringZ::deriveBLund() --> bool");
+		cl.def("deriveABLund", [](Pythia8::StringZ &o) -> bool { return o.deriveABLund(); }, "");
+		cl.def("deriveABLund", [](Pythia8::StringZ &o, bool const & a0) -> bool { return o.deriveABLund(a0); }, "", pybind11::arg("derivaA"));
+		cl.def("deriveABLund", [](Pythia8::StringZ &o, bool const & a0, bool const & a1) -> bool { return o.deriveABLund(a0, a1); }, "", pybind11::arg("derivaA"), pybind11::arg("deriveAExtraDiquark"));
+		cl.def("deriveABLund", (bool (Pythia8::StringZ::*)(bool, bool, bool)) &Pythia8::StringZ::deriveABLund, "C++: Pythia8::StringZ::deriveABLund(bool, bool, bool) --> bool", pybind11::arg("derivaA"), pybind11::arg("deriveAExtraDiquark"), pybind11::arg("deriveAExtraSQuark"));
+		cl.def("deriveBLund", (double (Pythia8::StringZ::*)(double, double, double)) &Pythia8::StringZ::deriveBLund, "C++: Pythia8::StringZ::deriveBLund(double, double, double) --> double", pybind11::arg("avgZ"), pybind11::arg("a"), pybind11::arg("mT2ref"));
 		cl.def("assign", (class Pythia8::StringZ & (Pythia8::StringZ::*)(const class Pythia8::StringZ &)) &Pythia8::StringZ::operator=, "C++: Pythia8::StringZ::operator=(const class Pythia8::StringZ &) --> class Pythia8::StringZ &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
 }

@@ -287,7 +287,7 @@ struct PyCallBack_Pythia8_ColourReconnectionBase : public Pythia8::ColourReconne
 		}
 		return ColourReconnectionBase::init();
 	}
-	void reassignBeamPtrs(class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) override { 
+	void reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle> a0, class std::shared_ptr<class Pythia8::BeamParticle> a1) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::ColourReconnectionBase *>(this), "reassignBeamPtrs");
 		if (overload) {
@@ -384,7 +384,7 @@ struct PyCallBack_Pythia8_DipoleSwingBase : public Pythia8::DipoleSwingBase {
 		}
 		return DipoleSwingBase::init();
 	}
-	void reassignBeamPtrs(class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1, int a2) override { 
+	void reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle> a0, class std::shared_ptr<class Pythia8::BeamParticle> a1, int a2) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::DipoleSwingBase *>(this), "reassignBeamPtrs");
 		if (overload) {
@@ -582,7 +582,7 @@ void bind_Pythia8_RHadrons(std::function< pybind11::module &(std::string const &
 		cl.def( pybind11::init( [](){ return new PyCallBack_Pythia8_ColourReconnectionBase(); } ) );
 		cl.def(pybind11::init<PyCallBack_Pythia8_ColourReconnectionBase const &>());
 		cl.def("init", (bool (Pythia8::ColourReconnectionBase::*)()) &Pythia8::ColourReconnectionBase::init, "C++: Pythia8::ColourReconnectionBase::init() --> bool");
-		cl.def("reassignBeamPtrs", (void (Pythia8::ColourReconnectionBase::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *)) &Pythia8::ColourReconnectionBase::reassignBeamPtrs, "C++: Pythia8::ColourReconnectionBase::reassignBeamPtrs(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("reassignBeamPtrs", (void (Pythia8::ColourReconnectionBase::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>)) &Pythia8::ColourReconnectionBase::reassignBeamPtrs, "C++: Pythia8::ColourReconnectionBase::reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
 		cl.def("next", (bool (Pythia8::ColourReconnectionBase::*)(class Pythia8::Event &, int)) &Pythia8::ColourReconnectionBase::next, "C++: Pythia8::ColourReconnectionBase::next(class Pythia8::Event &, int) --> bool", pybind11::arg("event"), pybind11::arg("oldSize"));
 		cl.def("assign", (class Pythia8::ColourReconnectionBase & (Pythia8::ColourReconnectionBase::*)(const class Pythia8::ColourReconnectionBase &)) &Pythia8::ColourReconnectionBase::operator=, "C++: Pythia8::ColourReconnectionBase::operator=(const class Pythia8::ColourReconnectionBase &) --> class Pythia8::ColourReconnectionBase &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
@@ -593,8 +593,8 @@ void bind_Pythia8_RHadrons(std::function< pybind11::module &(std::string const &
 		cl.def( pybind11::init( [](){ return new PyCallBack_Pythia8_DipoleSwingBase(); } ) );
 		cl.def_readwrite("beamOffset", &Pythia8::DipoleSwingBase::beamOffset);
 		cl.def("init", (bool (Pythia8::DipoleSwingBase::*)()) &Pythia8::DipoleSwingBase::init, "C++: Pythia8::DipoleSwingBase::init() --> bool");
-		cl.def("reassignBeamPtrs", [](Pythia8::DipoleSwingBase &o, class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) -> void { return o.reassignBeamPtrs(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
-		cl.def("reassignBeamPtrs", (void (Pythia8::DipoleSwingBase::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int)) &Pythia8::DipoleSwingBase::reassignBeamPtrs, "C++: Pythia8::DipoleSwingBase::reassignBeamPtrs(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("beamOffsetIn"));
+		cl.def("reassignBeamPtrs", [](Pythia8::DipoleSwingBase &o, class std::shared_ptr<class Pythia8::BeamParticle> const & a0, class std::shared_ptr<class Pythia8::BeamParticle> const & a1) -> void { return o.reassignBeamPtrs(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("reassignBeamPtrs", (void (Pythia8::DipoleSwingBase::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int)) &Pythia8::DipoleSwingBase::reassignBeamPtrs, "C++: Pythia8::DipoleSwingBase::reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("beamOffsetIn"));
 		cl.def("prepare", [](Pythia8::DipoleSwingBase &o, int const & a0, class Pythia8::Event & a1) -> void { return o.prepare(a0, a1); }, "", pybind11::arg(""), pybind11::arg(""));
 		cl.def("prepare", (void (Pythia8::DipoleSwingBase::*)(int, class Pythia8::Event &, bool)) &Pythia8::DipoleSwingBase::prepare, "C++: Pythia8::DipoleSwingBase::prepare(int, class Pythia8::Event &, bool) --> void", pybind11::arg(""), pybind11::arg(""), pybind11::arg(""));
 		cl.def("rescatterUpdate", (void (Pythia8::DipoleSwingBase::*)(int, class Pythia8::Event &)) &Pythia8::DipoleSwingBase::rescatterUpdate, "C++: Pythia8::DipoleSwingBase::rescatterUpdate(int, class Pythia8::Event &) --> void", pybind11::arg(""), pybind11::arg(""));

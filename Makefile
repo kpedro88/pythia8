@@ -152,11 +152,7 @@ install: all
 clean:
 	cd plugins/python && $(MAKE) clean
 	cd plugins/mg5mes && $(MAKE) clean
-	rm -rf $(LOCAL_TMP) $(LOCAL_LIB)
-	rm -f $(LOCAL_EXAMPLE)/*Dct.*
-	rm -f $(LOCAL_EXAMPLE)/*[0-9][0-9]
-	rm -f $(LOCAL_EXAMPLE)/weakbosons.lhe
-	rm -f $(LOCAL_EXAMPLE)/hist.root
+	cd $(LOCAL_EXAMPLE) && $(MAKE) clean
 
 # Clean all temporary and generated files.
 distclean: clean

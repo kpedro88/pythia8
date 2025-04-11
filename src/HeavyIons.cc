@@ -378,16 +378,26 @@ void Angantyr::setBeamKinematics(int idA, int idB) {
 // Switch to new beam particle identities.
 bool Angantyr::setBeamIDs(int idAIn, int idBIn) {
 
+  if ( idAIn == projPtr->id() && ( idBIn == 0 || idBIn == targPtr->id() ) )
+    return true;
+
+  // Reset the statistics.
+  hiInfo.glauberReset();
+
+  // Set the projectile and target IDs.
   projPtr->setParticle(idAIn);
   if ( idBIn != 0 ) targPtr->setParticle(idBIn);
 
+  // Set the beam IDs in minimum bias.
   if (!pythia[MBIAS]->setBeamIDs(projPtr->idN(), targPtr->idN()))
     return false;
   if (!pythia[SASD]->setBeamIDs(projPtr->idN(), targPtr->idN()))
     return false;
 
+  // Calculate the total cross-section.
   sigTotNN.calc(projPtr->idN(), targPtr->idN(), beamSetupPtr->eCM);
 
+  // Set masses and IDs.
   beamSetupPtr->mA = projPtr->mN();
   beamSetupPtr->mB = targPtr->mN();
   beamSetupPtr->idA = idAIn;
@@ -1805,8 +1815,7 @@ bool Angantyr::addNucleusRemnants() {
     ptot = Vec4();
   }
 
-  etmp.rotbst(fromCMframe(beamSetupPtr->pAnow, beamSetupPtr->pBnow));
-
+  // Return successful.
   return true;
 
 }
@@ -1829,6 +1838,7 @@ bool Angantyr::setKinematics(){
 }
 
 bool Angantyr::setKinematicsCM() {
+  hiInfo.glauberReset();
   if ( !setKinematics() ) return false;
   if (!glauberOnly && !pythia[SASD]->setKinematics(beamSetupPtr->eCM) )
     return false;
@@ -1837,25 +1847,32 @@ bool Angantyr::setKinematicsCM() {
 
 
 bool Angantyr::setKinematics(double eCMIn) {
+  if ( eCMIn == beamSetupPtr->eCM ) return true;
   if ( !beamSetupPtr->setKinematics(eCMIn) ) return false;
   return setKinematicsCM();
 }
 
 bool Angantyr::setKinematics(double eAIn, double eBIn) {
+  if ( eAIn == beamSetupPtr->eA && eBIn == beamSetupPtr->eB )
+    return true;
   if ( !beamSetupPtr->setKinematics(eAIn, eBIn) ) return false;
   return setKinematicsCM();
 }
 
 bool Angantyr::setKinematics(double pxAIn, double pyAIn, double pzAIn,
   double pxBIn, double pyBIn, double pzBIn) {
+  if ( pxAIn == beamSetupPtr->pxA && pyAIn == beamSetupPtr->pyA &&
+       pzAIn == beamSetupPtr->pzA && pxBIn == beamSetupPtr->pxB &&
+       pyBIn == beamSetupPtr->pyB && pzBIn == beamSetupPtr->pzB )
+    return true;
+
   if ( !beamSetupPtr->setKinematics(pxAIn, pyAIn, pzAIn,
                                     pxBIn, pyBIn, pzBIn) ) return false;
   return setKinematicsCM();
 }
 
-bool Angantyr::setKinematics(Vec4 pAIn, Vec4 pBIn) {
-  if ( !beamSetupPtr->setKinematics(pAIn, pBIn) ) return false;
-  return setKinematicsCM();
+bool Angantyr::setKinematics(Vec4 pA, Vec4 pB) {
+  return setKinematics(pA.px(), pA.py(), pA.pz(), pB.px(), pB.py(), pB.pz());
 }
 
 //--------------------------------------------------------------------------
@@ -1984,13 +2001,13 @@ bool Angantyr::next() {
     // Collect secondary elastic sub-collisions.
     addELsecond(subColls);
 
-    // Finally bunch all events together.
+    // Bunch all events together.
     if ( subEvents.empty() || !buildEvent(subEvents) ) {
       loggerPtr->ERROR_MSG("failed to build full event");
       continue;
     }
 
-    // Finally we hadronise everything, if requested.
+    // Hadronise everything, if requested.
     if (doHadronLevel) {
      if ( HIHooksPtr && HIHooksPtr->canForceHadronLevel() ) {
         if ( !HIHooksPtr->forceHadronLevel(*pythia[HADRON]) ) continue;
@@ -1998,6 +2015,11 @@ bool Angantyr::next() {
         if ( !pythia[HADRON]->forceHadronLevel(false) ) continue;
       }
     }
+
+    // Finally, boost to the requested frame and optionally do vertex
+    // spreading.
+    pythia[HADRON]->event.rotbst(
+      fromCMframe(beamSetupPtr->pAnow, beamSetupPtr->pBnow));
 
     if ( settingsPtr->flag("Beams:allowVertexSpread") ) {
       pythia[HADRON]->getBeamShapePtr()->pick();

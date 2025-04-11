@@ -35,7 +35,16 @@ class BeamSetup : public PhysicsBase {
 public:
 
   // Constructor.
-  BeamSetup() = default;
+  BeamSetup() {
+    beamAPtr = make_shared<BeamParticle>();
+    beamBPtr = make_shared<BeamParticle>();
+    beamPomAPtr = make_shared<BeamParticle>();
+    beamPomBPtr = make_shared<BeamParticle>();
+    beamGamAPtr = make_shared<BeamParticle>();
+    beamGamBPtr = make_shared<BeamParticle>();
+    beamVMDAPtr = make_shared<BeamParticle>();
+    beamVMDBPtr = make_shared<BeamParticle>();
+  }
 
   // Possibility to pass in pointers to PDF's.
   bool setPDFPtr( PDFPtr pdfAPtrIn, PDFPtr pdfBPtrIn,
@@ -111,7 +120,7 @@ public:
     bool setVertex);
 
   // Print parton lists for the main beams. For debug mainly.
-  void list() const { beamA.list(); beamB.list(); }
+  void list() const { beamAPtr->list(); beamBPtr->list(); }
 
   // Some data values are kept public so that the Pythia class can access them.
   bool   doLHA = false, useNewLHA = false, skipInit = false,
@@ -128,20 +137,20 @@ public:
   LHAupPtr lhaUpPtr = {};
 
   // The two incoming beams.
-  BeamParticle   beamA = {};
-  BeamParticle   beamB = {};
+  BeamParticlePtr beamAPtr = {};
+  BeamParticlePtr beamBPtr = {};
 
   // Alternative Pomeron beam-inside-beam.
-  BeamParticle beamPomA = {};
-  BeamParticle beamPomB = {};
+  BeamParticlePtr beamPomAPtr = {};
+  BeamParticlePtr beamPomBPtr = {};
 
   // Alternative photon beam-inside-beam.
-  BeamParticle beamGamA = {};
-  BeamParticle beamGamB = {};
+  BeamParticlePtr beamGamAPtr = {};
+  BeamParticlePtr beamGamBPtr = {};
 
   // Alternative VMD beam-inside-beam.
-  BeamParticle beamVMDA = {};
-  BeamParticle beamVMDB = {};
+  BeamParticlePtr beamVMDAPtr = {};
+  BeamParticlePtr beamVMDBPtr = {};
 
   // Hadron types for rapid switching.
   vector<int> idAList = { 2212, 211, 311, 221,
@@ -151,14 +160,14 @@ public:
 protected:
 
   void onInitInfoPtr() override {
-    registerSubObject(beamA);
-    registerSubObject(beamB);
-    registerSubObject(beamPomA);
-    registerSubObject(beamPomB);
-    registerSubObject(beamGamA);
-    registerSubObject(beamGamB);
-    registerSubObject(beamVMDA);
-    registerSubObject(beamVMDB);
+    registerSubObject(*beamAPtr);
+    registerSubObject(*beamBPtr);
+    registerSubObject(*beamPomAPtr);
+    registerSubObject(*beamPomBPtr);
+    registerSubObject(*beamGamAPtr);
+    registerSubObject(*beamGamBPtr);
+    registerSubObject(*beamVMDAPtr);
+    registerSubObject(*beamVMDBPtr);
   }
 
 private:

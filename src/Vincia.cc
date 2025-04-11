@@ -275,8 +275,6 @@ bool Vincia::init(MergingPtr mrgPtrIn, MergingHooksPtr mrgHooksPtrIn,
 void Vincia::setVerbose(int verboseIn) {
 
   verbose = verboseIn;
-  if (verboseIn < VinciaConstants::DEBUG) loggerPtr->setVerbosity(verbose+1);
-  else loggerPtr->setVerbosity(verboseIn);
   vinCom.setVerbose(verboseIn);
   resolution.setVerbose(verboseIn);
   timesPtr->setVerbose(verboseIn);
@@ -290,6 +288,10 @@ void Vincia::setVerbose(int verboseIn) {
   if (ewShowerPtr != nullptr) ewShowerPtr->setVerbose(verboseIn);
   if (qedShowerHardPtr != nullptr) qedShowerHardPtr->setVerbose(verboseIn);
   if (qedShowerSoftPtr != nullptr) qedShowerSoftPtr->setVerbose(verboseIn);
+
+  // If Vincia:Debug is on, also set Logger verbosity to REPORT.
+  if (verbose >= VinciaConstants::DEBUG)
+    loggerPtr->setVerbosity(Logger::REPORT);
 
 }
 

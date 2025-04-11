@@ -31,60 +31,60 @@
 
 void bind_Pythia8_PythiaStdlib(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// Pythia8::pow2(const double &) file:Pythia8/PythiaStdlib.h line:182
+	// Pythia8::pow2(const double &) file:Pythia8/PythiaStdlib.h line:173
 	M("Pythia8").def("pow2", (double (*)(const double &)) &Pythia8::pow2, "C++: Pythia8::pow2(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow3(const double &) file:Pythia8/PythiaStdlib.h line:183
+	// Pythia8::pow3(const double &) file:Pythia8/PythiaStdlib.h line:174
 	M("Pythia8").def("pow3", (double (*)(const double &)) &Pythia8::pow3, "C++: Pythia8::pow3(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow4(const double &) file:Pythia8/PythiaStdlib.h line:184
+	// Pythia8::pow4(const double &) file:Pythia8/PythiaStdlib.h line:175
 	M("Pythia8").def("pow4", (double (*)(const double &)) &Pythia8::pow4, "C++: Pythia8::pow4(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow5(const double &) file:Pythia8/PythiaStdlib.h line:185
+	// Pythia8::pow5(const double &) file:Pythia8/PythiaStdlib.h line:176
 	M("Pythia8").def("pow5", (double (*)(const double &)) &Pythia8::pow5, "C++: Pythia8::pow5(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow6(const double &) file:Pythia8/PythiaStdlib.h line:186
+	// Pythia8::pow6(const double &) file:Pythia8/PythiaStdlib.h line:177
 	M("Pythia8").def("pow6", (double (*)(const double &)) &Pythia8::pow6, "C++: Pythia8::pow6(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow7(const double &) file:Pythia8/PythiaStdlib.h line:187
+	// Pythia8::pow7(const double &) file:Pythia8/PythiaStdlib.h line:178
 	M("Pythia8").def("pow7", (double (*)(const double &)) &Pythia8::pow7, "C++: Pythia8::pow7(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::pow8(const double &) file:Pythia8/PythiaStdlib.h line:188
+	// Pythia8::pow8(const double &) file:Pythia8/PythiaStdlib.h line:179
 	M("Pythia8").def("pow8", (double (*)(const double &)) &Pythia8::pow8, "C++: Pythia8::pow8(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::sqrtpos(const double &) file:Pythia8/PythiaStdlib.h line:191
+	// Pythia8::sqrtpos(const double &) file:Pythia8/PythiaStdlib.h line:182
 	M("Pythia8").def("sqrtpos", (double (*)(const double &)) &Pythia8::sqrtpos, "C++: Pythia8::sqrtpos(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::sqrtnan(const double &) file:Pythia8/PythiaStdlib.h line:194
+	// Pythia8::sqrtnan(const double &) file:Pythia8/PythiaStdlib.h line:185
 	M("Pythia8").def("sqrtnan", (double (*)(const double &)) &Pythia8::sqrtnan, "C++: Pythia8::sqrtnan(const double &) --> double", pybind11::arg("x"));
 
-	// Pythia8::clamp(const double &, const double &, const double &) file:Pythia8/PythiaStdlib.h line:198
+	// Pythia8::clamp(const double &, const double &, const double &) file:Pythia8/PythiaStdlib.h line:189
 	M("Pythia8").def("clamp", (double (*)(const double &, const double &, const double &)) &Pythia8::clamp, "C++: Pythia8::clamp(const double &, const double &, const double &) --> double", pybind11::arg("x"), pybind11::arg("xmin"), pybind11::arg("xmax"));
 
-	// Pythia8::toLower(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:203
+	// Pythia8::toLower(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:194
 	M("Pythia8").def("toLower", [](const class std::basic_string<char> & a0) -> std::string { return Pythia8::toLower(a0); }, "", pybind11::arg("name"));
 	M("Pythia8").def("toLower", (std::string (*)(const std::string &, bool)) &Pythia8::toLower, "C++: Pythia8::toLower(const std::string &, bool) --> std::string", pybind11::arg("name"), pybind11::arg("trim"));
 
-	// Pythia8::toLowerRep(std::string &, bool) file:Pythia8/PythiaStdlib.h line:206
+	// Pythia8::toLowerRep(std::string &, bool) file:Pythia8/PythiaStdlib.h line:197
 	M("Pythia8").def("toLowerRep", [](class std::basic_string<char> & a0) -> void { return Pythia8::toLowerRep(a0); }, "", pybind11::arg("name"));
 	M("Pythia8").def("toLowerRep", (void (*)(std::string &, bool)) &Pythia8::toLowerRep, "C++: Pythia8::toLowerRep(std::string &, bool) --> void", pybind11::arg("name"), pybind11::arg("trim"));
 
-	// Pythia8::trimString(const std::string &) file:Pythia8/PythiaStdlib.h line:210
+	// Pythia8::trimString(const std::string &) file:Pythia8/PythiaStdlib.h line:201
 	M("Pythia8").def("trimString", (std::string (*)(const std::string &)) &Pythia8::trimString, "C++: Pythia8::trimString(const std::string &) --> std::string", pybind11::arg("name"));
 
-	// Pythia8::trimStringRep(std::string &) file:Pythia8/PythiaStdlib.h line:213
+	// Pythia8::trimStringRep(std::string &) file:Pythia8/PythiaStdlib.h line:204
 	M("Pythia8").def("trimStringRep", (void (*)(std::string &)) &Pythia8::trimStringRep, "C++: Pythia8::trimStringRep(std::string &) --> void", pybind11::arg("name"));
 
-	// Pythia8::toString(bool) file:Pythia8/PythiaStdlib.h line:217
+	// Pythia8::toString(bool) file:Pythia8/PythiaStdlib.h line:208
 	M("Pythia8").def("toString", (std::string (*)(bool)) &Pythia8::toString, "C++: Pythia8::toString(bool) --> std::string", pybind11::arg("val"));
 
-	// Pythia8::toString(int) file:Pythia8/PythiaStdlib.h line:220
+	// Pythia8::toString(int) file:Pythia8/PythiaStdlib.h line:211
 	M("Pythia8").def("toString", (std::string (*)(int)) &Pythia8::toString, "C++: Pythia8::toString(int) --> std::string", pybind11::arg("val"));
 
-	// Pythia8::toString(double) file:Pythia8/PythiaStdlib.h line:223
+	// Pythia8::toString(double) file:Pythia8/PythiaStdlib.h line:214
 	M("Pythia8").def("toString", (std::string (*)(double)) &Pythia8::toString, "C++: Pythia8::toString(double) --> std::string", pybind11::arg("val"));
 
-	// Pythia8::methodName(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:290
+	// Pythia8::methodName(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:281
 	M("Pythia8").def("methodName", [](const class std::basic_string<char> & a0) -> std::string { return Pythia8::methodName(a0); }, "", pybind11::arg("prettyFunction"));
 	M("Pythia8").def("methodName", (std::string (*)(const std::string &, bool)) &Pythia8::methodName, "C++: Pythia8::methodName(const std::string &, bool) --> std::string", pybind11::arg("prettyFunction"), pybind11::arg("withNamespace"));
 

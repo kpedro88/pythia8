@@ -245,9 +245,9 @@ protected:
   // Constructor.
   UserHooks() {}
 
-  // After initInfoPtr, initialize workEvent
+  // After initInfoPtr, initialize workEvent.
   virtual void onInitInfoPtr() override {
-    // Set smart pointer to null, in order to avoid circular dependency
+    // Set smart pointer to null, in order to avoid circular dependency.
     userHooksPtr = nullptr;
     workEvent.init("(work event)", particleDataPtr);
   }

@@ -53,6 +53,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
 #include <pybind11/functional.h>
+#include <awkward/PythiaBatch.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -92,6 +93,8 @@ void bind_Pythia8_Pythia(std::function< pybind11::module &(std::string const &na
 		cl.def_readwrite("heavyIonsPtr", &Pythia8::Pythia::heavyIonsPtr);
 		cl.def_readwrite("hiHooksPtr", &Pythia8::Pythia::hiHooksPtr);
 		cl.def_readwrite("hadronWidths", &Pythia8::Pythia::hadronWidths);
+		cl.def_readwrite("beamAPtr", &Pythia8::Pythia::beamAPtr);
+		cl.def_readwrite("beamBPtr", &Pythia8::Pythia::beamBPtr);
 		cl.def("checkVersion", (bool (Pythia8::Pythia::*)()) &Pythia8::Pythia::checkVersion, "C++: Pythia8::Pythia::checkVersion() --> bool");
 		cl.def("readString", [](Pythia8::Pythia &o, class std::basic_string<char> const & a0) -> bool { return o.readString(a0); }, "", pybind11::arg("line"));
 		cl.def("readString", [](Pythia8::Pythia &o, class std::basic_string<char> const & a0, bool const & a1) -> bool { return o.readString(a0, a1); }, "", pybind11::arg("line"), pybind11::arg("warn"));
@@ -156,6 +159,7 @@ void bind_Pythia8_Pythia(std::function< pybind11::module &(std::string const &na
 		cl.def("init", (bool (Pythia8::Pythia::*)()) &Pythia8::Pythia::init, "C++: Pythia8::Pythia::init() --> bool");
 		cl.def("next", (bool (Pythia8::Pythia::*)()) &Pythia8::Pythia::next, "C++: Pythia8::Pythia::next() --> bool");
 		cl.def("next", (bool (Pythia8::Pythia::*)(int)) &Pythia8::Pythia::next, "C++: Pythia8::Pythia::next(int) --> bool", pybind11::arg("procTypeIn"));
+		cl.def("nextBatch", &nextBatch, pybind11::arg("nEvents"), pybind11::arg("errorMode") = pybind11::str("skip"));
 		cl.def("setBeamIDs", [](Pythia8::Pythia &o, int const & a0) -> bool { return o.setBeamIDs(a0); }, "", pybind11::arg("idAin"));
 		cl.def("setBeamIDs", (bool (Pythia8::Pythia::*)(int, int)) &Pythia8::Pythia::setBeamIDs, "C++: Pythia8::Pythia::setBeamIDs(int, int) --> bool", pybind11::arg("idAin"), pybind11::arg("idBin"));
 		cl.def("setKinematics", (bool (Pythia8::Pythia::*)(double)) &Pythia8::Pythia::setKinematics, "C++: Pythia8::Pythia::setKinematics(double) --> bool", pybind11::arg("eCMIn"));

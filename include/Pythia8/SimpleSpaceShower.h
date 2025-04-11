@@ -104,7 +104,7 @@ public:
   virtual ~SimpleSpaceShower() override {}
 
   // Initialize generation. Possibility to force re-initialization by hand.
-  virtual void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn)
+  virtual void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn)
     override;
 
   // Find whether to limit maximum scale of emissions, and whether to dampen.

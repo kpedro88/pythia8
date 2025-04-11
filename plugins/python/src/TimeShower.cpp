@@ -47,7 +47,7 @@
 struct PyCallBack_Pythia8_TimeShower : public Pythia8::TimeShower {
 	using Pythia8::TimeShower::TimeShower;
 
-	void init(class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) override { 
+	void init(class std::shared_ptr<class Pythia8::BeamParticle> a0, class std::shared_ptr<class Pythia8::BeamParticle> a1) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::TimeShower *>(this), "init");
 		if (overload) {
@@ -542,11 +542,11 @@ void bind_Pythia8_TimeShower(std::function< pybind11::module &(std::string const
 		cl.def_readwrite("varX2XGcNS", &Pythia8::TimeShower::varX2XGcNS);
 		cl.def_readwrite("enhanceFSR", &Pythia8::TimeShower::enhanceFSR);
 		cl.def("initPtrs", (void (Pythia8::TimeShower::*)(class std::shared_ptr<class Pythia8::MergingHooks>, class std::shared_ptr<class Pythia8::PartonVertex>, class Pythia8::WeightContainer *)) &Pythia8::TimeShower::initPtrs, "C++: Pythia8::TimeShower::initPtrs(class std::shared_ptr<class Pythia8::MergingHooks>, class std::shared_ptr<class Pythia8::PartonVertex>, class Pythia8::WeightContainer *) --> void", pybind11::arg("mergingHooksPtrIn"), pybind11::arg("partonVertexPtrIn"), pybind11::arg("weightContainerPtrIn"));
-		cl.def("reassignBeamPtrs", [](Pythia8::TimeShower &o, class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) -> void { return o.reassignBeamPtrs(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
-		cl.def("reassignBeamPtrs", (void (Pythia8::TimeShower::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int)) &Pythia8::TimeShower::reassignBeamPtrs, "C++: Pythia8::TimeShower::reassignBeamPtrs(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("beamOffsetIn"));
+		cl.def("reassignBeamPtrs", [](Pythia8::TimeShower &o, class std::shared_ptr<class Pythia8::BeamParticle> const & a0, class std::shared_ptr<class Pythia8::BeamParticle> const & a1) -> void { return o.reassignBeamPtrs(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("reassignBeamPtrs", (void (Pythia8::TimeShower::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int)) &Pythia8::TimeShower::reassignBeamPtrs, "C++: Pythia8::TimeShower::reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("beamOffsetIn"));
 		cl.def("init", [](Pythia8::TimeShower &o) -> void { return o.init(); }, "");
-		cl.def("init", [](Pythia8::TimeShower &o, class Pythia8::BeamParticle * a0) -> void { return o.init(a0); }, "", pybind11::arg(""));
-		cl.def("init", (void (Pythia8::TimeShower::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *)) &Pythia8::TimeShower::init, "C++: Pythia8::TimeShower::init(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *) --> void", pybind11::arg(""), pybind11::arg(""));
+		cl.def("init", [](Pythia8::TimeShower &o, class std::shared_ptr<class Pythia8::BeamParticle> const & a0) -> void { return o.init(a0); }, "", pybind11::arg(""));
+		cl.def("init", (void (Pythia8::TimeShower::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>)) &Pythia8::TimeShower::init, "C++: Pythia8::TimeShower::init(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>) --> void", pybind11::arg(""), pybind11::arg(""));
 		cl.def("limitPTmax", [](Pythia8::TimeShower &o, class Pythia8::Event & a0) -> bool { return o.limitPTmax(a0); }, "", pybind11::arg(""));
 		cl.def("limitPTmax", [](Pythia8::TimeShower &o, class Pythia8::Event & a0, double const & a1) -> bool { return o.limitPTmax(a0, a1); }, "", pybind11::arg(""), pybind11::arg(""));
 		cl.def("limitPTmax", (bool (Pythia8::TimeShower::*)(class Pythia8::Event &, double, double)) &Pythia8::TimeShower::limitPTmax, "C++: Pythia8::TimeShower::limitPTmax(class Pythia8::Event &, double, double) --> bool", pybind11::arg(""), pybind11::arg(""), pybind11::arg(""));

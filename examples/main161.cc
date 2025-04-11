@@ -5,6 +5,8 @@
 
 // Authors: Stefan Prestel
 
+// Contact: Christian T. Preuss <christian.preuss@uni-goettingen.de>
+
 // Keywords: merging; leading order; jet finding; fastjet; kT
 
 // This program illustrates how to do CKKW-L merging, see the Matrix Element

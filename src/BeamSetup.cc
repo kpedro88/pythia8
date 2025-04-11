@@ -237,15 +237,15 @@ bool BeamSetup::setBeamIDs( int idAIn, int idBIn) {
   // Modify beam particles. Possibly also PDF for idA.
   if (switchA) {
     if (allowIDAswitch && iPDFAnew != iPDFAsave) {
-      beamA.initPDFPtr( pdfASavePtrs[iPDFAnew], pdfASavePtrs[iPDFAnew]);
+      beamAPtr->initPDFPtr( pdfASavePtrs[iPDFAnew], pdfASavePtrs[iPDFAnew]);
       iPDFAsave = iPDFAnew;
     }
-    beamA.setBeamID( idA);
-    beamA.initBeamKind();
+    beamAPtr->setBeamID( idA);
+    beamAPtr->initBeamKind();
   }
   if (switchB) {
-    beamB.setBeamID( idB);
-    beamB.initBeamKind();
+    beamBPtr->setBeamID( idB);
+    beamBPtr->initBeamKind();
   }
 
   return true;
@@ -392,7 +392,7 @@ bool BeamSetup::initFrame() {
       if (!useExternal && useNewLHA && skipInit)
         lhaUpPtr->newEventFile(cstring1);
       else if (!useExternal) {
-        // Header is optional, so use NULL pointer to indicate no value.
+        // Header is optional, so use nullptr to indicate no value.
         const char* cstring2 = (lhefHeader == "void")
           ? nullptr : lhefHeader.c_str();
         lhaUpPtr = make_shared<LHAupLHEF>(infoPtr, cstring1, cstring2,
@@ -520,8 +520,8 @@ bool BeamSetup::initBeams(bool doNonPertIn, StringFlav* flavSelPtr) {
 
   // Simplified beam setup when no process level.
   if (doNonPert && !doSoftQCD) {
-    beamA.initID( idA);
-    beamB.initID( idB);
+    beamAPtr->initID( idA);
+    beamBPtr->initID( idB);
     if (!initKinematics()) {
       loggerPtr->ABORT_MSG("kinematics initialization failed");
       return false;
@@ -544,50 +544,50 @@ bool BeamSetup::initBeams(bool doNonPertIn, StringFlav* flavSelPtr) {
     }
 
     // Set up the two beams and the common remnant system.
-    beamA.init( idA, pzAcm, eA, mA, pdfAPtr, pdfHardAPtr,
+    beamAPtr->init( idA, pzAcm, eA, mA, pdfAPtr, pdfHardAPtr,
       isUnresolvedA, flavSelPtr);
-    beamB.init( idB, pzBcm, eB, mB, pdfBPtr, pdfHardBPtr,
+    beamBPtr->init( idB, pzBcm, eB, mB, pdfBPtr, pdfHardBPtr,
       isUnresolvedB, flavSelPtr);
 
     // Special setup to allow switching between beam PDFs.
-    if (allowIDAswitch) beamA.initSwitchID( pdfASavePtrs);
+    if (allowIDAswitch) beamAPtr->initSwitchID( pdfASavePtrs);
 
     // Pass information whether the beam will contain a photon beam.
-    if (beamA2gamma) beamA.initGammaInBeam();
-    if (beamB2gamma) beamB.initGammaInBeam();
+    if (beamA2gamma) beamAPtr->initGammaInBeam();
+    if (beamB2gamma) beamBPtr->initGammaInBeam();
 
     // Init also unresolved PDF pointers for photon beams when needed.
-    if (beamAUnresGamma) beamA.initUnres( pdfUnresAPtr);
-    if (beamBUnresGamma) beamB.initUnres( pdfUnresBPtr);
+    if (beamAUnresGamma) beamAPtr->initUnres( pdfUnresAPtr);
+    if (beamBUnresGamma) beamBPtr->initUnres( pdfUnresBPtr);
 
     // Optionally set up new alternative beams for these Pomerons.
     if ( doDiffraction || doHardDiff ) {
-      beamPomA.init( 990,  0.5 * eCM, 0.5 * eCM, 0.,
+      beamPomAPtr->init( 990,  0.5 * eCM, 0.5 * eCM, 0.,
         pdfPomAPtr, pdfPomAPtr, false, flavSelPtr);
-      beamPomB.init( 990, -0.5 * eCM, 0.5 * eCM, 0.,
+      beamPomBPtr->init( 990, -0.5 * eCM, 0.5 * eCM, 0.,
         pdfPomBPtr, pdfPomBPtr, false, flavSelPtr);
     }
 
     // Initialise VMD beams from gammas (in leptons). Use pion PDF for VMDs.
-    if (doVMDsideA) beamVMDA.init( 111,  0.5 * eCM, 0.5 * eCM, 0.,
+    if (doVMDsideA) beamVMDAPtr->init( 111,  0.5 * eCM, 0.5 * eCM, 0.,
       pdfVMDAPtr, pdfVMDAPtr, false, flavSelPtr);
-    if (doVMDsideB) beamVMDB.init( 111,  0.5 * eCM, 0.5 * eCM, 0.,
+    if (doVMDsideB) beamVMDBPtr->init( 111,  0.5 * eCM, 0.5 * eCM, 0.,
       pdfVMDBPtr, pdfVMDBPtr, false, flavSelPtr);
 
     // Optionally set up photon beams from lepton beams if resolved photons.
-    if ( !(beamA.isGamma()) && beamA2gamma) {
+    if ( !(beamAPtr->isGamma()) && beamA2gamma) {
       if ( gammaMode < 4 ) {
-        beamGamA.init( 22,  0.5 * eCM, 0.5 * eCM, 0.,
+        beamGamAPtr->init( 22,  0.5 * eCM, 0.5 * eCM, 0.,
           pdfGamAPtr, pdfHardGamAPtr, false, flavSelPtr);
       }
-      if ( beamAUnresGamma ) beamGamA.initUnres( pdfUnresGamAPtr);
+      if ( beamAUnresGamma ) beamGamAPtr->initUnres( pdfUnresGamAPtr);
     }
-    if ( !(beamB.isGamma()) && beamB2gamma) {
+    if ( !(beamBPtr->isGamma()) && beamB2gamma) {
       if ( gammaMode < 4 ) {
-        beamGamB.init( 22, -0.5 * eCM, 0.5 * eCM, 0.,
+        beamGamBPtr->init( 22, -0.5 * eCM, 0.5 * eCM, 0.,
           pdfGamBPtr, pdfHardGamBPtr, false, flavSelPtr);
       }
-      if ( beamBUnresGamma ) beamGamB.initUnres( pdfUnresGamBPtr);
+      if ( beamBUnresGamma ) beamGamBPtr->initUnres( pdfUnresGamBPtr);
     }
   }
 
@@ -601,14 +601,14 @@ bool BeamSetup::initBeams(bool doNonPertIn, StringFlav* flavSelPtr) {
 // Clear all beams.
 
 void BeamSetup::clear() {
-  beamA.clear();
-  beamB.clear();
-  beamPomA.clear();
-  beamPomB.clear();
-  beamGamA.clear();
-  beamGamB.clear();
-  beamVMDA.clear();
-  beamVMDB.clear();
+  beamAPtr->clear();
+  beamBPtr->clear();
+  beamPomAPtr->clear();
+  beamPomBPtr->clear();
+  beamGamAPtr->clear();
+  beamGamBPtr->clear();
+  beamVMDAPtr->clear();
+  beamVMDBPtr->clear();
 }
 
 //--------------------------------------------------------------------------
@@ -616,14 +616,14 @@ void BeamSetup::clear() {
 // Pick new beam valence flavours (for pi0, eta, K0S, Pomeron, etc.).
 
 void BeamSetup::newValenceContent() {
-  beamA.newValenceContent();
-  beamB.newValenceContent();
+  beamAPtr->newValenceContent();
+  beamBPtr->newValenceContent();
   if ( doDiffraction || doHardDiff) {
-    beamPomA.newValenceContent();
-    beamPomB.newValenceContent();
+    beamPomAPtr->newValenceContent();
+    beamPomBPtr->newValenceContent();
   }
-  if (doVMDsideA) beamVMDA.newValenceContent();
-  if (doVMDsideB) beamVMDB.newValenceContent();
+  if (doVMDsideA) beamVMDAPtr->newValenceContent();
+  if (doVMDsideB) beamVMDBPtr->newValenceContent();
 }
 
 //--------------------------------------------------------------------------
@@ -682,8 +682,8 @@ void BeamSetup::nextKinematics() {
   infoPtr->setBeamA( idA, pzAcm, eA, mA);
   infoPtr->setBeamB( idB, pzBcm, eB, mB);
   infoPtr->setECM( eCM);
-  beamA.newPzE( pzAcm, eA);
-  beamB.newPzE( pzBcm, eB);
+  beamAPtr->newPzE( pzAcm, eA);
+  beamBPtr->newPzE( pzBcm, eB);
 
   // Set boost/rotation matrices from/to CM frame.
   if (frameType != 1) {
@@ -1209,10 +1209,10 @@ PDFPtr BeamSetup::getPDFPtr(int idIn, int sequence, string beam,
           make_pair("", ""),
           make_pair("", "")
         };
+        if      (pMode == 1) pWord = "LHAPDF5:" + pMap[pSet - 1].first;
+        else if (pMode == 2) pWord = "LHAPDF6:" + pMap[pSet - 1].second;
+        else if (pMode == 3) pWord = "LHAGrid1:" + pMap[pSet - 1].second;
         pSet = 0;
-        if      (pMode == 1) pWord = "LHAPDF5:" + pMap[pSet + 1].first;
-        else if (pMode == 2) pWord = "LHAPDF6:" + pMap[pSet + 1].second;
-        else if (pMode == 3) pWord = "LHALHAGrid1:" + pMap[pSet + 1].second;
       }
     }
 

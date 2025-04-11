@@ -19,37 +19,83 @@ namespace Pythia8 {
 // The unnormalised Lund FF
 
 double LundFFRaw(double z, double a, double b, double c, double mT2) {
+
   if (z <= 0. || z >= 1.) return 0.;
   return pow(1. - z, a) / pow(z, c) * exp(-b * mT2 / z);
+
 }
 
 //--------------------------------------------------------------------------
 
 // Average, <z>, of Lund FF.
+// Return values:
+//   > 0. : <z>.
+//    -1. : failed to compute normalisation.
+//    -2. : failed to compute <z>.
 
-double LundFFAvg(double a, double b, double c,
-  double mT2, double tol = 1.e-6) {
+double LundFFAvg(double a, double b, double mT2, double tol = 1.e-6) {
 
   // Checks whether the integration succeeded.
   bool check;
 
-  // Define lundFF as a function of only z, fixing a, b, c, mT2 as parameters
-  // Note that c must be captured by reference, since it is modified later.
-  auto lundFF = [=, &c](double z) { return LundFFRaw(z, a, b, c, mT2); };
+  // Fragmentation function dependent on only z (defined as a lambda function).
+  function<bool(double)> lundFF;
 
-  // Get denominator.
+  // Get denominator (lundFF is function of only z, c = 1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
   double denominator = 1.;
-  check = integrateGauss(denominator, lundFF, 0, 1, tol);
+  check = integrateGauss(denominator, lundFF, 0., 1., tol);
   if (!check || denominator <= 0.) return -1.;
 
-  // Get numerator
-  c -= 1;
+  // Get numerator (lundFF is function of only z, c = 0).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
   double numerator = 0.;
   check = integrateGauss(numerator, lundFF, 0., 1., tol);
-  if (!check || numerator <= 0.) return -1.;
+  if (!check || numerator <= 0.) return -2.;
 
   // Done.
   return numerator / denominator;
+
+}
+
+//--------------------------------------------------------------------------
+
+// RMSD(z) = sqrt(<z^2> - <z>^2) of Lund FF.
+// Return values:
+//   > 0. : rmsd
+//    -1. : failed to compute normalisation.
+//    -2. : failed to compute <z>.
+//    -3. : failed to compute <z^2>.
+
+double LundFFRms(double a, double b, double mT2, double tol = 1.e-6) {
+
+  // Checks whether the integration succeeded.
+  bool check;
+
+  // Fragmentation function dependent on only z (defined as a lambda function).
+  function<bool(double)> lundFF;
+
+  // Get denominator (lundFF is function of only z, c = 1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
+  double denominator = 1.;
+  check = integrateGauss(denominator, lundFF, 0., 1., tol);
+  if (!check || denominator <= 0.) return -1.;
+
+  // Get first moment (lundFF is function of only z, c = 0).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
+  double moment1 = 0.;
+  check = integrateGauss(moment1, lundFF, 0., 1., tol);
+  if (!check || moment1 <= 0.) return -2.;
+
+  // Get second moment (lundFF is function of only z, c = -1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, -1., mT2); };
+  double moment2 = 0.;
+  check = integrateGauss(moment2, lundFF, 0., 1., tol);
+  if (!check || moment2 <= 0.) return -3.;
+
+  // Done.
+  return sqrt(moment2 / denominator - pow2(moment1 / denominator));
+
 }
 
 //==========================================================================
@@ -1514,13 +1560,13 @@ void StringZ::init() {
   rFactB        = parm("StringZ:rFactB");
   rFactH        = parm("StringZ:rFactH");
 
-  // Alternative parameterisation of Lund FF using average z(rho) instead of b.
-  if (flag("StringZ:deriveBLund")) {
-    if (!deriveBLund()) {
-      loggerPtr->ERROR_MSG(
-        "derivation of b parameter failed. Reverting to default");
-      settingsPtr->resetParm("StringZ:bLund");
-    }
+  // Alternative parameterisation of Lund FF it terms of its average and
+  // optionally rms and multiplicative factors for aDiquark and aStrange.
+  if ( mode("StringZ:deriveLundPars") >= 1 ) {
+    bool deriveA   = mode("StringZ:deriveLundPars") >= 2;
+    bool deriveAQQ = mode("StringZ:deriveLundPars") >= 3;
+    bool deriveAS  = mode("StringZ:deriveLundPars") >= 4;
+    deriveABLund( deriveA, deriveAQQ, deriveAS );
   }
 
   // Flags and parameters of nonstandard Lund fragmentation functions.
@@ -1554,45 +1600,209 @@ void StringZ::init() {
 // Alternative parameterisation of the Lund function. Derive the bLund
 // parameter given the average z for fixed a and mT2.
 
-bool StringZ::deriveBLund() {
+double StringZ::deriveBLund(double avgZ, double a, double mT2ref) {
 
-  // Set up using reference mT2 = mRho^2 + 2*sigmaPT^2
-  double mRef   = particleDataPtr->m0(113);
-  double mT2ref = pow2(mRef) + 2.*pow2(parm("stringPT:sigma"));
-  double avgZ   = parm("StringZ:avgZLund");
-  double a      = parm("StringZ:aLund");
+  // Define lundFF as a function of only b, fixing a, and mT2 as parameters.
+  function<bool(double)> lundFF =
+    [=](double b) { return LundFFAvg(a, b, mT2ref); };
 
-  // Define lundFF as a function of only b, fixing a, c and mT2 as parameters
-  auto lundFF = [=](double b) { return LundFFAvg(a, b, 1., mT2ref, 1.e-6); };
+  // Solve for b and return.
+  double bNow = -1;
+  bool check = brent(bNow, lundFF, avgZ, 0.0, 20.0, 1.e-7);
+  return check ? bNow : -1;
 
-  // Solve for b
-  double bNow;
-  bool check = brent(bNow, lundFF, avgZ, 0.01, 20.0, 1.e-6);
+}
 
-  // Check if derived b fell inside the nominal range for bLund
-  if (check) {
-    settingsPtr->parm("StringZ:bLund", bNow, false);
+//--------------------------------------------------------------------------
 
-    // Print out derived value for b (and mT2ref), noting if outside range.
-    stringstream msg;
-    msg << fixed << setprecision(2) << "\n <z(rho)> = " << setw(5)
-         << avgZ << " for aLund = "<< a <<" & mT2ref = " << setw(5) << mT2ref
-         << " GeV^2 gave bLund = " << setw(5) << bNow << " GeV^-2:";
-    if ( bNow == parm("StringZ:bLund") ) {
-      if (!settingsPtr->parm("Print:quiet"))
-        cout << msg.str() << " accepted" << endl;
-    } else {
-      // If outside range, tell user but force anyway so fits can see
-      // behaviour.
-      msg << " accepted (forced)";
-      loggerPtr->WARNING_MSG(msg.str());
-      settingsPtr->parm("StringZ:bLund", bNow, true);
-    }
+// Method to derive bLund and, optionally, aLund, aExtraDiquark,
+// and aExtraSQuark, from:
+//      avgZLund = <z(rho)>,
+//      rmsZLund = sqrt( <z(rho)^2> - <z(rho)>^2),
+//      facALundDiquark = (aLund + aExtraDiquark)/aLund,
+//      facALundSQuark  = (aLund + aExtraStrange)/aLund,
+// for reference (typical) values of the transverse mass mT.
 
-    // No further calls needed since b parameter updated in settings database.
-    settingsPtr->flag("StringZ:deriveBLund", false);
+bool StringZ::deriveABLund( bool deriveA, bool deriveAExtraDiquark,
+  bool deriveAExtraSQuark ) {
+
+  // Set up using reference mT2ref = mHad^2 + 2*sigmaPT^2 with mHad =
+  // mRho, mK*, mp+ for light mesons, strange mesons, and baryons.
+  double mRef        = particleDataPtr->m0(113);
+  double mT2ref      = pow2(mRef) + 2.*pow2(parm("StringPT:sigma"));
+  double mRefQQ      = particleDataPtr->m0(2212);
+  double mT2refQQ    = pow2(mRefQQ) + 2.*pow2(parm("StringPT:sigma"));
+  double mRefS       = particleDataPtr->m0(323);
+  double mT2refS     = pow2(mRefS) + 2.*pow2(parm("StringPT:sigma"));
+  double avgZ        = parm("StringZ:avgZLund");
+  double rmsZ        = parm("StringZ:rmsZLund");
+  double facAQQ      = parm("StringZ:facALundDiquark");
+  double facAS       = parm("StringZ:facALundSQuark");
+  double aNow        = parm("StringZ:aLund");
+  double bNow        = parm("StringZ:bLund");
+  double aExtraQQNow = parm("StringZ:aExtraDiquark");
+  double aExtraSNow  = parm("StringZ:aExtraSQuark");
+
+  // Debug output if requested.
+  bool doReport = settingsPtr->mode("Print:verbosity") >= 3;
+  if (doReport) {
+    cout << "\n Deriving Lund FF parameter(s) with avgZ = " << avgZ;
+    if (deriveA) cout << " rmsZ = " << rmsZ;
+    else cout << " aLund = " << aNow;
+    if (deriveAExtraDiquark) cout << " facADiquark = " << facAQQ;
+    else cout << " aExtraDiquark = " << aExtraDiquark;
+    if (deriveAExtraSQuark) cout << " facASQuark = " << facAS;
+    else cout << " aExtraSQuark = " << aExtraSQuark;
+    cout << endl;
   }
-  return check;
+
+  // Simplest option: just derive bLund from requested avgZ.
+  if ( !deriveA ) {
+    if (doReport) {
+      double avgZNow = LundFFAvg(aNow, bNow, mT2ref, 1.e-6);
+      double rmsZNow = LundFFRms(aNow, bNow, mT2ref, 1.e-7);
+      if (doReport) cout << fixed
+                         << "   For aNow = " << aNow << " bNow = " << bNow
+                         << ", got avgZNow = " << avgZNow
+                         << " rmsZNow = " << rmsZNow << endl;
+    }
+    bNow = deriveBLund( avgZ, aNow, mT2ref);
+    if (bNow < 0) {
+      loggerPtr->ERROR_MSG("unable to converge on bLund: "
+        "forcing bLund = 0");
+      bNow = 0.;
+    }
+  } else {
+    // Derive both aLund and bLund from requested avgZ and rmsZ.
+    bool accept  = false;
+    double nLoop = 0;
+    while (!accept) {
+      if (++nLoop > 10000.) {
+        loggerPtr->ERROR_MSG("maximum number of iterations exceeded");
+        break;
+      }
+      const double TOLAVGZ = 1.e-5;
+      const double TOLRMSZ = 1.e-5;
+      double avgZNow   = LundFFAvg(aNow, bNow, mT2ref, 1.e-7);
+      double rmsZNow   = LundFFRms(aNow, bNow, mT2ref, 1.e-7);
+      if (doReport) cout << "   For aNow = " << aNow << " bNow = " << bNow
+                         << "  =>  avgZNow = " << avgZNow
+                         << " rmsZNow = " << rmsZNow << endl;
+      double deltaAvg = avgZNow - avgZ;
+      double deltaRms = rmsZNow - rmsZ;
+
+      // Take big steps in the beginning, then smaller ones.
+      double step;
+      if (nLoop < 500) step = 10.;
+      else if (nLoop < 1000) step = 5.;
+      else if (nLoop < 2000) step = 2.;
+      else if (nLoop < 5000) step = 1.;
+      else step = 0.3;
+
+      if ( abs(deltaRms) > TOLRMSZ ) {
+        // First see if we can get the right RMS.
+        aNow *= (1. + min(0.1,max(-0.1, step*deltaRms)));
+        bNow = deriveBLund( avgZ, aNow, mT2ref);
+        // Stop if we cannot possibly get a bigger width.
+        if (aNow <= 0.001 && LundFFRms(aNow, bNow, mT2ref, 1.e-7)
+          + 2*TOLRMSZ < rmsZ) {
+          loggerPtr->ERROR_MSG("requested rmsZLund gave aLund < 0: "
+            "forcing aLund = 0");
+          aNow = 0.0;
+          bNow = deriveBLund( avgZ, aNow, mT2ref);
+          break;
+        }
+      }
+      else if ( abs(deltaAvg) > TOLAVGZ ) {
+        // Then get the right mean.
+        aNow *= (1. + min(0.1,max(-0.1, step*deltaAvg)));
+        bNow = deriveBLund( avgZ, aNow, mT2ref);
+      }
+      else accept = true;
+    }
+  }
+
+  // Derive aExtraDiquark if requested.
+  if (deriveAExtraDiquark) aExtraQQNow = (facAQQ - 1)*aNow;
+
+  // Derive aExtraStrange if requested.
+  if (deriveAExtraSQuark) aExtraSNow = (facAS - 1)*aNow;
+
+  // Print out derived value(s).
+  if ( !settingsPtr->flag("Print:quiet") ) {
+    cout << "\n *-------  PYTHIA Derivation of Lund FF Parameters ----------"
+      "------------------------------------------------------*" << endl;
+    cout << fixed << setprecision(3) << " |\n | aLund = " << aNow
+         << " & bLund = " << bNow << " GeV^-2 accepted";
+    cout << "  (=> avgZ(rho) = " << setw(5)
+         << LundFFAvg(aNow, bNow, mT2ref, 1.e-6)
+         << " & rmsZ(rho) = " << setw(5)
+         << LundFFRms(aNow, bNow, mT2ref, 1.e-6)
+         << " for mTref = " << setw(5) << sqrt(mT2ref) << " GeV)" << endl;
+    cout << fixed << setprecision(3) << " | aExtraSQuark  = " << aExtraSNow
+         << "   (=> avgZ(K*) = " << setw(5)
+         << LundFFAvg(aNow + aExtraSNow, bNow, mT2refS, 1.e-6)
+         << " & rmsZ(K*) = " << setw(5)
+         << LundFFRms(aNow + aExtraSNow, bNow, mT2refS, 1.e-6)
+         << " for mTref = " << setw(5) << sqrt(mT2refS) << " GeV)" << endl;
+    cout << fixed << setprecision(3) << " | aExtraDiquark = " << aExtraQQNow
+         << "   (=> rmsZ(p+) = " << setw(5)
+         << LundFFAvg(aNow + aExtraQQNow, bNow, mT2refQQ, 1.e-6)
+         << " & rmsZ(p+) = " << setw(5)
+         << LundFFRms(aNow + aExtraQQNow, bNow, mT2refQQ, 1.e-6)
+         << " for mTref = " << setw(5) << sqrt(mT2refQQ) << " GeV)" << endl;
+    cout << " |\n *-------  End PYTHIA Derivation of Lund FF Parameters "
+      "------------------------------------------------------------*" << endl;
+  }
+
+  // Set and check if derived bLund fell inside the nominal range.
+  bool outOfRange = false;
+  settingsPtr->parm("StringZ:bLund", bNow, false);
+  if ( bNow != parm("StringZ:bLund") ) {
+    // If outside nominal range, force so fits can see behaviour.
+    outOfRange = true;
+    settingsPtr->parm("StringZ:bLund", bNow, true);
+  }
+
+  // Set and check if derived aLund fell inside the nominal range.
+  if ( deriveA ) {
+    settingsPtr->parm("StringZ:aLund", aNow, false);
+    if ( aNow != parm("StringZ:aLund") ) {
+      // If outside nominal range, force so fits can see behaviour.
+      outOfRange = true;
+      settingsPtr->parm("StringZ:aLund", aNow, true);
+    }
+  }
+
+  // Set and check if derived aExtraDiquark fell inside the nominal range.
+  if ( deriveAExtraDiquark ) {
+    settingsPtr->parm("StringZ:aExtraDiquark", aExtraQQNow, false);
+    if ( aExtraQQNow != parm("StringZ:aExtraDiquark") ) {
+      // If outside nominal range, force so fits can see behaviour.
+      outOfRange = true;
+      settingsPtr->parm("StringZ:aExtraDiquark", aExtraQQNow, true);
+    }
+  }
+
+  // Set and check if derived aExtraDiquark fell inside the nominal range.
+  if ( deriveAExtraSQuark ) {
+    settingsPtr->parm("StringZ:aExtraSQuark", aExtraSNow, false);
+    if ( aExtraSNow != parm("StringZ:aExtraSQuark") ) {
+      // If outside nominal range, force so fits can see behaviour.
+      outOfRange = true;
+      settingsPtr->parm("StringZ:aExtraSQuark", aExtraSNow, true);
+    }
+  }
+
+  // Issue warning if one or more parameters out of range.
+  if (outOfRange) {
+    loggerPtr->WARNING_MSG("one or more parameters out of range (forced)");
+  }
+
+  // No further calls needed since parameters updated in settings database.
+  settingsPtr->mode("StringZ:deriveLundPars", 0);
+  return true;
+
 }
 
 //--------------------------------------------------------------------------

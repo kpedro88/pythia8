@@ -587,9 +587,16 @@ current <code>HIInfo</code> object. The methods of this class are:
 <method name="double HIInfo::b()"> 
 The impact parameter distance of the heavy ion event. 
 </method> 
+<method name="double HIInfo::phi()"> 
+The impact parameter angle. 
+</method> 
 <method name="double HIInfo::T()"> 
 The summed elastic amplitude for this event, from which cross 
 sections at Glauber level are calculated. 
+</method> 
+<method name="double HIInfo::avNDb()"> 
+The average NN non-diffractive impact parameter to be used to 
+communicate to Pythia's MPI machinery. 
 </method> 
 <method name="int HIInfo::nAttempts()"> 
 The number of attempted impact parameter points. 
@@ -602,7 +609,7 @@ Several methods exist to extract information from the Glauber
 calculation. Caution should be taken when using this information 
 directly, under the assumption that obtained numbers correspond 
 one-to-one to numbers obtained from another calculation, as performed 
-eg. by an experiment. Since they are all model dependent quantities, a 
+e.g. by an experiment. Since they are all model dependent quantities, a 
 direct comparison can often not be made. 
  
 <p/> 
@@ -690,7 +697,9 @@ these are in general not the same as the generated cross sections, since
 Angantyr does not generate elastic scatterings correctly. Also the error of 
 these cross sections are available from functions of the form 
 <code>HIInfo::glauberTotErr()</code>. The cross sections are given in 
-millibarns and the slope in Gev<sup>-2</sup>. 
+millibarns and the slope in Gev<sup>-2</sup>. Note also that when using 
+variable beam id and energy, the Glauber statistics are reset any time the 
+beams change. 
 </methodmore> 
 <method name="double HIInfo::weight()"> 
 The weight for this collision. Note that heavy ion weights are 

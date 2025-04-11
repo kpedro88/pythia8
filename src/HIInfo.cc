@@ -125,6 +125,22 @@ void HIInfo::addAttempt(double T, double bin, double phiin, double bweight,
 
 }
 
+//--------------------------------------------------------------------------
+
+// Reset the Glauber statistics.
+
+void HIInfo::glauberReset() {
+  sigmaTotSave = sigmaNDSave = sigmaELSave = sigmaINELSave = sigmaDiffPSave =
+    sigmaDiffTSave = sigmaDDiffSave = slopeSave = 0.0;
+  sigErr2TotSave = sigErr2NDSave = sigErr2ELSave = sigErr2INELSave =
+    sigErr2DiffPSave = sigErr2DiffTSave = sigErr2DDiffSave =
+    slopeErrSave = 0.0;
+  NSave = NAccSave = 0;
+}
+
+//--------------------------------------------------------------------------
+
+// Indicate that the last generated collision system was accepted.
 
 void HIInfo::accept() {
   int pc = primInfo.code();

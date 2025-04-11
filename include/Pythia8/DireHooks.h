@@ -25,8 +25,8 @@ public:
   virtual ~DireHooks() {}
 
   // Initialize pointers and workEvent. Note: not virtual.
-  void initPtr( Info* infoPtrIn, BeamParticle* beamAPtrIn,
-    BeamParticle* beamBPtrIn) {
+  void initPtr( Info* infoPtrIn, BeamParticlePtr beamAPtrIn,
+    BeamParticlePtr beamBPtrIn) {
     infoPtr       = infoPtrIn;
     settingsPtr      = infoPtr->settingsPtr;
     particleDataPtr  = infoPtr->particleDataPtr;
@@ -90,8 +90,8 @@ protected:
   Rndm*          rndmPtr;
 
   // Pointers to the two incoming beams and to Pomeron beam-inside-beam.
-  BeamParticle*  beamAPtr;
-  BeamParticle*  beamBPtr;
+  BeamParticlePtr beamAPtr;
+  BeamParticlePtr beamBPtr;
 
   // Pointers to Standard Model couplings.
   CoupSM*        coupSMPtr;

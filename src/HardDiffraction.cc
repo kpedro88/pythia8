@@ -28,8 +28,8 @@ const double HardDiffraction::PROTONMASS  = 0.93827;
 const double HardDiffraction::DIFFMASSMARGIN = 0.2;
 //--------------------------------------------------------------------------
 
-void HardDiffraction::init(BeamParticle* beamAPtrIn,
-  BeamParticle* beamBPtrIn) {
+void HardDiffraction::init(BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn) {
 
   // The beam pointers may differ from originally set in PhysicsBase.
   beamAPtr    = beamAPtrIn;

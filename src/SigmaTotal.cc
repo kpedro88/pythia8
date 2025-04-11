@@ -205,7 +205,7 @@ bool SigmaTotal::calc(int idA, int idB, double eCM) {
   ispp = (idAbsA == 2212 && idAbsB == 2212 && idA * idB > 0);
 
   // Set up pointer to class that handles total and elastic cross sections.
-  if (modeTotElOld != modeTotElNow || sigTotElPtr == NULL) {
+  if (modeTotElOld != modeTotElNow || sigTotElPtr == nullptr) {
     if (sigTotElPtr != nullptr) delete sigTotElPtr;
     if      (modeTotElNow == 0) sigTotElPtr = new SigmaTotOwn();
     else if (modeTotElNow == 1) sigTotElPtr = new SigmaSaSDL();

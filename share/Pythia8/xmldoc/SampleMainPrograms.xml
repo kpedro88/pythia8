@@ -658,6 +658,13 @@ the simple C++ Pythia wrapper class <code>main296Lib.cc</code>. This
 wrapper module must be compiled with <code>make 
 libmain296Lib.so</code>.</li> 
  
+<li><code>main297.py</code> (new) : 
+generates batches of events via an interface with Awkward array.</li> 
+ 
+<li><code>main298.py</code> (new) : 
+further examples on how to work with events via the Awkward array 
+interface.</li> 
+ 
 </ul> 
  
 <h3>QCD physics in <ei>e^+e^-</ei></h3> 

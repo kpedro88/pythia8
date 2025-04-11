@@ -332,7 +332,7 @@ struct PyCallBack_Pythia8_FluctuatingSubCollisionModel : public Pythia8::Fluctua
 	}
 };
 
-// Pythia8::DoubleStrikmanSubCollisionModel file:Pythia8/HISubCollisionModel.h line:460
+// Pythia8::DoubleStrikmanSubCollisionModel file:Pythia8/HISubCollisionModel.h line:461
 struct PyCallBack_Pythia8_DoubleStrikmanSubCollisionModel : public Pythia8::DoubleStrikmanSubCollisionModel {
 	using Pythia8::DoubleStrikmanSubCollisionModel::DoubleStrikmanSubCollisionModel;
 
@@ -445,7 +445,7 @@ struct PyCallBack_Pythia8_DoubleStrikmanSubCollisionModel : public Pythia8::Doub
 	}
 };
 
-// Pythia8::ImpactParameterGenerator file:Pythia8/HISubCollisionModel.h line:502
+// Pythia8::ImpactParameterGenerator file:Pythia8/HISubCollisionModel.h line:511
 struct PyCallBack_Pythia8_ImpactParameterGenerator : public Pythia8::ImpactParameterGenerator {
 	using Pythia8::ImpactParameterGenerator::ImpactParameterGenerator;
 
@@ -490,7 +490,7 @@ struct PyCallBack_Pythia8_ImpactParameterGenerator : public Pythia8::ImpactParam
 	}
 };
 
-// Pythia8::LogNormalSubCollisionModel file:Pythia8/HISubCollisionModel.h line:569
+// Pythia8::LogNormalSubCollisionModel file:Pythia8/HISubCollisionModel.h line:578
 struct PyCallBack_Pythia8_LogNormalSubCollisionModel : public Pythia8::LogNormalSubCollisionModel {
 	using Pythia8::LogNormalSubCollisionModel::LogNormalSubCollisionModel;
 
@@ -642,7 +642,7 @@ void bind_Pythia8_HISubCollisionModel(std::function< pybind11::module &(std::str
 		cl.def("pickRadiusProj", (double (Pythia8::FluctuatingSubCollisionModel::*)() const) &Pythia8::FluctuatingSubCollisionModel::pickRadiusProj, "C++: Pythia8::FluctuatingSubCollisionModel::pickRadiusProj() const --> double");
 		cl.def("pickRadiusTarg", (double (Pythia8::FluctuatingSubCollisionModel::*)() const) &Pythia8::FluctuatingSubCollisionModel::pickRadiusTarg, "C++: Pythia8::FluctuatingSubCollisionModel::pickRadiusTarg() const --> double");
 	}
-	{ // Pythia8::DoubleStrikmanSubCollisionModel file:Pythia8/HISubCollisionModel.h line:460
+	{ // Pythia8::DoubleStrikmanSubCollisionModel file:Pythia8/HISubCollisionModel.h line:461
 		pybind11::class_<Pythia8::DoubleStrikmanSubCollisionModel, std::shared_ptr<Pythia8::DoubleStrikmanSubCollisionModel>, PyCallBack_Pythia8_DoubleStrikmanSubCollisionModel, Pythia8::FluctuatingSubCollisionModel> cl(M("Pythia8"), "DoubleStrikmanSubCollisionModel", "");
 		pybind11::handle cl_type = cl;
 
@@ -655,7 +655,7 @@ void bind_Pythia8_HISubCollisionModel(std::function< pybind11::module &(std::str
 		cl.def("pickRadiusProj", (double (Pythia8::DoubleStrikmanSubCollisionModel::*)() const) &Pythia8::DoubleStrikmanSubCollisionModel::pickRadiusProj, "C++: Pythia8::DoubleStrikmanSubCollisionModel::pickRadiusProj() const --> double");
 		cl.def("pickRadiusTarg", (double (Pythia8::DoubleStrikmanSubCollisionModel::*)() const) &Pythia8::DoubleStrikmanSubCollisionModel::pickRadiusTarg, "C++: Pythia8::DoubleStrikmanSubCollisionModel::pickRadiusTarg() const --> double");
 	}
-	{ // Pythia8::ImpactParameterGenerator file:Pythia8/HISubCollisionModel.h line:502
+	{ // Pythia8::ImpactParameterGenerator file:Pythia8/HISubCollisionModel.h line:511
 		pybind11::class_<Pythia8::ImpactParameterGenerator, std::shared_ptr<Pythia8::ImpactParameterGenerator>, PyCallBack_Pythia8_ImpactParameterGenerator> cl(M("Pythia8"), "ImpactParameterGenerator", "");
 		pybind11::handle cl_type = cl;
 
@@ -671,7 +671,7 @@ void bind_Pythia8_HISubCollisionModel(std::function< pybind11::module &(std::str
 		cl.def("updateWidth", (void (Pythia8::ImpactParameterGenerator::*)()) &Pythia8::ImpactParameterGenerator::updateWidth, "C++: Pythia8::ImpactParameterGenerator::updateWidth() --> void");
 		cl.def("assign", (class Pythia8::ImpactParameterGenerator & (Pythia8::ImpactParameterGenerator::*)(const class Pythia8::ImpactParameterGenerator &)) &Pythia8::ImpactParameterGenerator::operator=, "C++: Pythia8::ImpactParameterGenerator::operator=(const class Pythia8::ImpactParameterGenerator &) --> class Pythia8::ImpactParameterGenerator &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::LogNormalSubCollisionModel file:Pythia8/HISubCollisionModel.h line:569
+	{ // Pythia8::LogNormalSubCollisionModel file:Pythia8/HISubCollisionModel.h line:578
 		pybind11::class_<Pythia8::LogNormalSubCollisionModel, std::shared_ptr<Pythia8::LogNormalSubCollisionModel>, PyCallBack_Pythia8_LogNormalSubCollisionModel, Pythia8::FluctuatingSubCollisionModel> cl(M("Pythia8"), "LogNormalSubCollisionModel", "");
 		pybind11::handle cl_type = cl;
 
@@ -715,6 +715,7 @@ void bind_Pythia8_HISubCollisionModel(std::function< pybind11::module &(std::str
 		cl.def("weightSum", (double (Pythia8::HIInfo::*)() const) &Pythia8::HIInfo::weightSum, "C++: Pythia8::HIInfo::weightSum() const --> double");
 		cl.def("nFail", (int (Pythia8::HIInfo::*)() const) &Pythia8::HIInfo::nFail, "C++: Pythia8::HIInfo::nFail() const --> int");
 		cl.def("failedExcitation", (void (Pythia8::HIInfo::*)(const class Pythia8::SubCollision &)) &Pythia8::HIInfo::failedExcitation, "C++: Pythia8::HIInfo::failedExcitation(const class Pythia8::SubCollision &) --> void", pybind11::arg("subColl"));
+		cl.def("glauberReset", (void (Pythia8::HIInfo::*)()) &Pythia8::HIInfo::glauberReset, "C++: Pythia8::HIInfo::glauberReset() --> void");
 		cl.def("glauberTot", (double (Pythia8::HIInfo::*)() const) &Pythia8::HIInfo::glauberTot, "C++: Pythia8::HIInfo::glauberTot() const --> double");
 		cl.def("glauberTotErr", (double (Pythia8::HIInfo::*)() const) &Pythia8::HIInfo::glauberTotErr, "C++: Pythia8::HIInfo::glauberTotErr() const --> double");
 		cl.def("glauberND", (double (Pythia8::HIInfo::*)() const) &Pythia8::HIInfo::glauberND, "C++: Pythia8::HIInfo::glauberND() const --> double");

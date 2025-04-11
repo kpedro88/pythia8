@@ -115,7 +115,7 @@ class Dire : public ShowerModel {
 
   void initTune();
   void initShowersAndWeights();
-  void setup(BeamParticle* beamA, BeamParticle* beamB);
+  void setup(BeamParticlePtr beamA, BeamParticlePtr beamB);
   void printBanner();
 
   TimeShowerPtr  getTimeShower() const override    { return timesPtr; }

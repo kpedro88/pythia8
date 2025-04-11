@@ -360,13 +360,13 @@ The nuclear modication to be used for beam A if enabled with the switch above.
 <option value = "1"> EPS09, LO <ref>Esk09</ref>.</option> 
 <option value = "2"> EPS09, NLO <ref>Esk09</ref>. The grid files can be 
 found from 
-<a href="https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/eps09"> 
+<a href="https://research.hip.fi/qcdtheory/nuclear-pdfs/eps09/"> 
 here</a> and are to be stored in the same folder as other PDF grid files 
 (usually share/Pythia8/xmldoc/). 
 </option> 
 <option value = "3"> EPPS16, NLO <ref>Esk16</ref>. The grid files can be 
 found from 
-<a href="https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs"> 
+<a href="https://research.hip.fi/qcdtheory/nuclear-pdfs/epps16/"> 
 here</a>. 
 </option> 
 </modepick> 

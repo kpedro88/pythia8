@@ -223,7 +223,7 @@ int main() {
             if (sigmaPick < sigmaN)               idTarg = 1000070140;
             else if (sigmaPick < sigmaN + sigmaO) idTarg = 1000080160;
             else                                  idTarg = 1000180400;
-            Ztarg = (idTarg / 10000) * 100;
+            Ztarg = (idTarg / 10000) % 100;
             Atarg = (idTarg / 10) % 1000;
 
             // Atmosphere medium density is nucleons per volume (not nuclei),

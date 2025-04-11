@@ -3,7 +3,7 @@
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// This file contains the definition of the ImpactParmeterGenerator,
+// This file contains the definition of the ImpactParameterGenerator,
 // SubCollision, and SubCollisionModel classes, as well as a set of
 // subclasses of SubCollisionModel.
 //
@@ -436,7 +436,8 @@ private:
   // The opacity of the collision at a given sigma.
   double opacity(double sig) const {
     sig /= sigd;
-    if ( opacityMode == 1 ) sig = 1.0/sig;
+    if ( opacityMode == 1 )
+      return pow(-expm1(-sig), alpha);
     return sig > numeric_limits<double>::epsilon() ?
       pow(-expm1(-1.0/sig), alpha) : 1.0;
   }
@@ -476,8 +477,16 @@ public:
 
 protected:
 
-  double pickRadiusProj() const override { return rndmPtr->gamma(k0, r0()); }
-  double pickRadiusTarg() const override { return rndmPtr->gamma(k0, r0()); }
+  double pickRadiusProj() const override {
+    double r =  rndmPtr->gamma(k0, r0());
+    return (r < numeric_limits<double>::epsilon() ?
+      numeric_limits<double>::epsilon() : r);
+  }
+  double pickRadiusTarg() const override {
+    double r =  rndmPtr->gamma(k0, r0());
+    return (r < numeric_limits<double>::epsilon() ?
+      numeric_limits<double>::epsilon() : r);
+  }
 
 private:
 

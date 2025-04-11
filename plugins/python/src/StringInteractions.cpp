@@ -283,7 +283,7 @@ struct PyCallBack_Pythia8_ColourReconnection : public Pythia8::ColourReconnectio
 		}
 		return ColourReconnection::init();
 	}
-	void reassignBeamPtrs(class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) override { 
+	void reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle> a0, class std::shared_ptr<class Pythia8::BeamParticle> a1) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::ColourReconnection *>(this), "reassignBeamPtrs");
 		if (overload) {
@@ -536,7 +536,7 @@ void bind_Pythia8_StringInteractions(std::function< pybind11::module &(std::stri
 
 		cl.def( pybind11::init( [](){ return new Pythia8::ColourReconnection(); }, [](){ return new PyCallBack_Pythia8_ColourReconnection(); } ) );
 		cl.def("init", (bool (Pythia8::ColourReconnection::*)()) &Pythia8::ColourReconnection::init, "C++: Pythia8::ColourReconnection::init() --> bool");
-		cl.def("reassignBeamPtrs", (void (Pythia8::ColourReconnection::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *)) &Pythia8::ColourReconnection::reassignBeamPtrs, "C++: Pythia8::ColourReconnection::reassignBeamPtrs(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("reassignBeamPtrs", (void (Pythia8::ColourReconnection::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>)) &Pythia8::ColourReconnection::reassignBeamPtrs, "C++: Pythia8::ColourReconnection::reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
 		cl.def("next", (bool (Pythia8::ColourReconnection::*)(class Pythia8::Event &, int)) &Pythia8::ColourReconnection::next, "C++: Pythia8::ColourReconnection::next(class Pythia8::Event &, int) --> bool", pybind11::arg("event"), pybind11::arg("oldSize"));
 		cl.def("assign", (class Pythia8::ColourReconnection & (Pythia8::ColourReconnection::*)(const class Pythia8::ColourReconnection &)) &Pythia8::ColourReconnection::operator=, "C++: Pythia8::ColourReconnection::operator=(const class Pythia8::ColourReconnection &) --> class Pythia8::ColourReconnection &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
@@ -548,7 +548,7 @@ void bind_Pythia8_StringInteractions(std::function< pybind11::module &(std::stri
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_BeamRemnants const &o){ return new PyCallBack_Pythia8_BeamRemnants(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::BeamRemnants const &o){ return new Pythia8::BeamRemnants(o); } ) );
 		cl.def("init", (bool (Pythia8::BeamRemnants::*)(class std::shared_ptr<class Pythia8::PartonVertex>, class std::shared_ptr<class Pythia8::ColourReconnectionBase>)) &Pythia8::BeamRemnants::init, "C++: Pythia8::BeamRemnants::init(class std::shared_ptr<class Pythia8::PartonVertex>, class std::shared_ptr<class Pythia8::ColourReconnectionBase>) --> bool", pybind11::arg("partonVertexPtrIn"), pybind11::arg("colourReconnectionPtrIn"));
-		cl.def("reassignBeamPtrs", (void (Pythia8::BeamRemnants::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int)) &Pythia8::BeamRemnants::reassignBeamPtrs, "C++: Pythia8::BeamRemnants::reassignBeamPtrs(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("iDSin"));
+		cl.def("reassignBeamPtrs", (void (Pythia8::BeamRemnants::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int)) &Pythia8::BeamRemnants::reassignBeamPtrs, "C++: Pythia8::BeamRemnants::reassignBeamPtrs(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, int) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("iDSin"));
 		cl.def("add", [](Pythia8::BeamRemnants &o, class Pythia8::Event & a0) -> bool { return o.add(a0); }, "", pybind11::arg("event"));
 		cl.def("add", [](Pythia8::BeamRemnants &o, class Pythia8::Event & a0, int const & a1) -> bool { return o.add(a0, a1); }, "", pybind11::arg("event"), pybind11::arg("iFirst"));
 		cl.def("add", (bool (Pythia8::BeamRemnants::*)(class Pythia8::Event &, int, bool)) &Pythia8::BeamRemnants::add, "C++: Pythia8::BeamRemnants::add(class Pythia8::Event &, int, bool) --> bool", pybind11::arg("event"), pybind11::arg("iFirst"), pybind11::arg("doDiffCR"));

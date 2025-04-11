@@ -81,8 +81,8 @@ const double SimpleTimeShower::PROBLIMIT = 0.99;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
-  BeamParticle* beamBPtrIn) {
+void SimpleTimeShower::init( BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn) {
 
   // Store input pointers for future use.
   beamAPtr           = beamAPtrIn;
@@ -112,6 +112,8 @@ void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
   dampenBeamRecoil   = flag("TimeShower:dampenBeamRecoil");
   recoilDeadCone     = flag("TimeShower:recoilDeadCone");
   recoilStrategyRF   = mode("TimeShower:recoilStrategyRF");
+  weightRF           = parm("TimeShower:weightRF");
+  recoilRFUseParents = flag("TimeShower:recoilRFUseParents");
   allowMPIdipole     = flag("TimeShower:allowMPIdipole");
 
   // If SimpleSpaceShower does dipole recoil then SimpleTimeShower must adjust.
@@ -4136,7 +4138,7 @@ bool SimpleTimeShower::branch( Event& event, bool isInterleaved) {
   // Optional reweighting to dipole with decaying coloured (e.g., top) mother.
   // Skip if ME corrections are already made (= first emission in many cases).
   int iResMot = partonSystemsPtr->getInRes(iSysSel);
-  if (recoilStrategyRF > 1 && iResMot != 0 && event[iResMot].colType() != 0
+  if (recoilStrategyRF == 0 && iResMot != 0 && event[iResMot].colType() != 0
       && dipSel->MEtype == 0) {
 
     // Check if newly emitted gluon matches decaying resonance colour line.
@@ -4171,8 +4173,8 @@ bool SimpleTimeShower::branch( Event& event, bool isInterleaved) {
 
     // Use dipole partons after or before emission (after recommended).
     if (colourMatches) {
-      Vec4 pRadNow = (recoilStrategyRF == 2) ? pRad : pRadBef;
-      Vec4 pRecNow = (recoilStrategyRF == 2) ? pRec : pRecBef;
+      Vec4 pRadNow = ( !recoilRFUseParents ) ? pRad : pRadBef;
+      Vec4 pRecNow = ( !recoilRFUseParents ) ? pRec : pRecBef;
 
       // Denominator: eikonal weight with X as recoiler (= W for t->bW).
       double pRadRec = pRadNow * pRecNow;
@@ -4187,6 +4189,12 @@ bool SimpleTimeShower::branch( Event& event, bool isInterleaved) {
       double pResEmt = event[iResMot].p() * pEmt;
       double wtRes = 2. * pRadRes / (pRadEmt * pResEmt)
         - pow2(mRad / pRadEmt) - pow2(event[iResMot].m() / pResEmt);
+
+      // PS March 2025.
+      // Option to continuously interpolate between Resonance and X recoiler.
+      //   weightRF = 1. => Resonance recoiler (RF).
+      //   weightRF = 0. => X recoiler.
+      wtRes = weightRF * wtRes + (1.-weightRF) * wtX;
 
       // Reweight accept probability by eikonal ratio Resonance / X recoiler.
       pAccept *= wtRes / wtX;

@@ -1286,7 +1286,7 @@ double BrancherSplitRF::genQ2(int, double q2MaxNow, Rndm* rndmPtr,
 
 // Initialize alphaStrong and related pTmin parameters (TimeShower).
 
-void VinciaFSR::init( BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn) {
+void VinciaFSR::init( BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
   // Check if already initialized.
   if (isInit)
     return;

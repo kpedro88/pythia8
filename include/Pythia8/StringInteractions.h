@@ -89,8 +89,8 @@ public:
   virtual bool init() { return true; }
 
   // New beams possible for handling of hard diffraction.
-  virtual void reassignBeamPtrs( BeamParticle* beamAPtrIn,
-    BeamParticle* beamBPtrIn) {beamAPtr = beamAPtrIn;
+  virtual void reassignBeamPtrs( BeamParticlePtr beamAPtrIn,
+    BeamParticlePtr beamBPtrIn) {beamAPtr = beamAPtrIn;
     beamBPtr = beamBPtrIn;}
 
   // Do colour reconnection for current event.
@@ -117,8 +117,8 @@ public:
   virtual bool init() { return true; }
 
   // New beams possible for handling of hard diffraction.
-  virtual void reassignBeamPtrs( BeamParticle* beamAPtrIn,
-    BeamParticle* beamBPtrIn, int beamOffsetIn = 0) {beamAPtr = beamAPtrIn;
+  virtual void reassignBeamPtrs( BeamParticlePtr beamAPtrIn,
+    BeamParticlePtr beamBPtrIn, int beamOffsetIn = 0) {beamAPtr = beamAPtrIn;
     beamBPtr = beamBPtrIn; beamOffset = beamOffsetIn;}
 
   // Prepare system for evolution after each new interaction; identify ME.

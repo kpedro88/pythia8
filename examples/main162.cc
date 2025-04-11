@@ -3,7 +3,7 @@
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Authors: Christian T Preuss <preuss@uni-wuppertal.de>
+// Authors: Christian T. Preuss <christian.preuss@uni-goettingen.de>
 
 // Keywords: merging; CKKW-L; MESS; UMEPS; NL3; UNLOPS; NLO;
 

@@ -84,8 +84,8 @@ const double DireTimes::LEPTONZMAX     = 1. - 1e-4;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void DireTimes::init( BeamParticle* beamAPtrIn,
-  BeamParticle* beamBPtrIn) {
+void DireTimes::init( BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn) {
 
   dryrun = false;
 
@@ -217,7 +217,7 @@ void DireTimes::init( BeamParticle* beamAPtrIn,
 
   usePDFalphas       = settingsPtr->flag("ShowerPDF:usePDFalphas");
   useSummedPDF       = settingsPtr->flag("ShowerPDF:useSummedPDF");
-  BeamParticle* beam = nullptr;
+  BeamParticlePtr beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id())) ?
       beamAPtr
@@ -2053,7 +2053,7 @@ double DireTimes::overheadFactors( DireTimesEnd* dip, const Event& state,
     && !state[dip->iRecoiler].isFinal()
     && particleDataPtr->colType(state[dip->iRecoiler].id()) != 0) {
 
-    BeamParticle* beam = nullptr;
+    BeamParticlePtr beam = nullptr;
     if (beamAPtr != nullptr || beamBPtr != nullptr) {
       if (dip->isrType == 1 && beamAPtr != nullptr) beam = beamAPtr;
       if (dip->isrType != 1 && beamBPtr != nullptr) beam = beamBPtr;
@@ -3658,7 +3658,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
   if (pT2endForce >= 0.) pT2endDip = pT2endForce;
   if (pT2begDip < pT2endDip) { dip.pT2 = 0.; return false; }
 
-  BeamParticle& beam = (dip.isrType == 1) ? *beamAPtr : *beamBPtr;
+  BeamParticlePtr beam = (dip.isrType == 1) ? beamAPtr : beamBPtr;
 
   // Variables used inside evolution loop. (Mainly dummy start values.)
   dip.pT2              = pT2begDip;
@@ -3673,7 +3673,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
   int idRadiator       = event[dip.iRadiator].id();
   int idRecoiler       = event[dip.iRecoiler].id();
   int iSysRec          = dip.systemRec;
-  double xRecoiler     = beam[iSysRec].x();
+  double xRecoiler     = beam->at(iSysRec).x();
   bool   hasPDFrec     = hasPDF(idRecoiler);
 
   // Get momentum of other beam, since this might be needed to calculate
@@ -3750,7 +3750,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
     // Finish evolution if PDF vanishes.
     double tnew = (useFixedFacScale) ? fixedFacScale2 : factorMultFac*tnow;
     bool inNew  = (hasPDFrec)
-                ? beam.insideBounds(xRecoiler, max(tnew, pT2colCut) ) : 1.0;
+                ? beam->insideBounds(xRecoiler, max(tnew, pT2colCut) ) : 1.0;
     if (hasPDFrec && !inNew) { dip.pT2 = 0.0; return false; }
 
     // Bad sign if repeated looping with small daughter PDF, so fail.
@@ -3773,7 +3773,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
       // Parton density of daughter at current scale.
       pdfScale2    = (useFixedFacScale) ? fixedFacScale2 : factorMultFac*tnow;
       pdfScale2    = max(pdfScale2, pT2colCut);
-      xPDFrecoiler = getXPDF(idRecoiler, xRecoiler, pdfScale2, iSysRec, &beam);
+      xPDFrecoiler = getXPDF(idRecoiler, xRecoiler, pdfScale2, iSysRec, beam);
       if ( hasPDFrec && xPDFrecoiler != 0.
         && abs(xPDFrecoiler) < 1e-15) {
         int sign      = (xPDFrecoiler > 0.) ? 1 : -1;
@@ -3962,12 +3962,12 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
     double pdfScale2Old = pdfScale2;
     double pdfScale2New = pdfScale2;
     if (forceBranching)  pdfScale2New = pdfScale2Old = infoPtr->Q2Fac();
-    bool inD = hasPDFrec ? beam.insideBounds(xRecoiler, pdfScale2Old) : true;
-    bool inM = hasPDFrec ? beam.insideBounds(xNew, pdfScale2New)      : true;
+    bool inD = hasPDFrec ? beam->insideBounds(xRecoiler, pdfScale2Old) : true;
+    bool inM = hasPDFrec ? beam->insideBounds(xNew, pdfScale2New)      : true;
     double pdfOld = getXPDF(idRecoiler, xRecoiler, pdfScale2Old, iSysRec,
-      &beam, false, z, dip.m2Dip);
+      beam, false, z, dip.m2Dip);
     double pdfNew = getXPDF(idRecoiler, xNew, pdfScale2New, iSysRec,
-      &beam, false, z, dip.m2Dip);
+      beam, false, z, dip.m2Dip);
 
     if ( hasPDFrec && pdfOld != 0.
       && abs(pdfOld) < tinypdf(xRecoiler) ) {
@@ -3981,7 +3981,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
     // daughter PDF fell too rapidly, to avoid large shower weights.
     // (Note: Last resort - would like something more physical here!)
     double xPDFrecoilerLow = getXPDF(idRecoiler, xRecoiler,
-      pdfScale2Old*pdfScale2Old/max(teval, pT2colCut), iSysRec, &beam);
+      pdfScale2Old*pdfScale2Old/max(teval, pT2colCut), iSysRec, beam);
     if ( idRecoiler == 21
       && ( abs(pdfOld/xPDFrecoiler) < 1e-4
         || abs(xPDFrecoilerLow/pdfOld) < 1e-4) ) {
@@ -4044,8 +4044,8 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
 
         // Recalculate PDF ratio.
         xNew     = xRecoiler / xCDST;
-        inM      = (!hasPDFrec) ? true : beam.insideBounds(xNew, pdfScale2);
-        pdfNew   = getXPDF(idRecoiler, xNew, pdfScale2, iSysRec, &beam);
+        inM      = (!hasPDFrec) ? true : beam->insideBounds(xNew, pdfScale2);
+        pdfNew   = getXPDF(idRecoiler, xNew, pdfScale2, iSysRec, beam);
         pdfRatio = (inD && inM) ? pdfNew/pdfOld : 0.;
       }
     }
@@ -4116,11 +4116,11 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
 
       // PDF variations.
       if (hasPDFrec && settingsPtr->flag("Variations:PDFup") ) {
-        int valSea = (beam[iSysRec].isValence()) ? 1 : 0;
-        if( beam[iSysRec].isUnmatched() ) valSea = 2;
-        beam.calcPDFEnvelope( make_pair(idRecoiler, idRecoiler),
+        int valSea = (beam->at(iSysRec).isValence()) ? 1 : 0;
+        if( beam->at(iSysRec).isUnmatched() ) valSea = 2;
+        beam->calcPDFEnvelope( make_pair(idRecoiler, idRecoiler),
           make_pair(xNew,xRecoiler), pdfScale2, valSea);
-        PDF::PDFEnvelope ratioPDFEnv = beam.getPDFEnvelope();
+        PDF::PDFEnvelope ratioPDFEnv = beam->getPDFEnvelope();
         double deltaPDFplus
           = min(ratioPDFEnv.errplusPDF  / ratioPDFEnv.centralPDF, 10.);
         double deltaPDFminus
@@ -8198,7 +8198,7 @@ void DireTimes::list() const {
 double DireTimes::alphasNow( double pT2, double renormMultFacNow, int iSys ) {
 
   // Get beam for PDF alphaS, if necessary.
-  BeamParticle* beam = nullptr;
+  BeamParticlePtr beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
          ? beamAPtr
@@ -8283,7 +8283,7 @@ double DireTimes::getNF(double pT2) {
 
   double NF = 6.;
 
-  BeamParticle* beam = nullptr;
+  BeamParticlePtr beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
          ? beamAPtr

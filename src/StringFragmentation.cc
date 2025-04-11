@@ -127,9 +127,10 @@ void StringEnd::newHadron(double kappaModifier, bool forbidPopcornNow,
 // by taking steps from positive end.
 
 Vec4 StringEnd::kinematicsHadron( StringSystem& system,
-  StringVertex& newVertex, double zHad) {
+  StringVertex& newVertex, double zHadIn) {
 
   // Calculate new Gamma.
+  zHad = zHadIn;
   GammaNew = (1. - zHad) * (GammaOld + mT2Had / zHad);
 
   // Set up references that are direction-neutral;

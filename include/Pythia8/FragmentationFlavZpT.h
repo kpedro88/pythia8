@@ -22,11 +22,14 @@ namespace Pythia8 {
 
 //==========================================================================
 
-// Functions for unnormalised and average Lund FF.
+// Functions for unnormalised, <z>, and RMSD(z) of Lund FF. The two latter
+// return negative values in case of failure.
 
 double LundFFRaw(double z, double a, double b, double c, double mT2);
 
-double LundFFAvg(double a, double b, double c, double mT2, double tol);
+double LundFFAvg(double a, double b, double mT2, double tol);
+
+double LundFFRms(double a, double b, double mT2, double tol);
 
 //==========================================================================
 
@@ -299,10 +302,13 @@ public:
   virtual double aAreaLund() {return aLund;}
   virtual double bAreaLund() {return bLund;}
 
+  // Method to derive both a and b parameters (from <z> and RMSD(z)).
+  bool deriveABLund( bool derivaA = false, bool deriveAExtraDiquark = false,
+                     bool deriveAExtraSQuark = false);
   // Method to derive bLund from <z> (for fixed a and reference mT2).
-  bool deriveBLund();
+  double deriveBLund( double avgZ, double a, double mT2ref);
 
-protected:
+ protected:
 
   // Constants: could only be changed in the code itself.
   static const double CFROMUNITY, AFROMZERO, AFROMC, EXPMAX;

@@ -98,15 +98,15 @@ protected:
 
   // Pointers to the two incoming beams and to Pomeron, photon or VMD
   // beam-inside-beam cases.
-  BeamSetup*     beamSetupPtr     = {};
-  BeamParticle*  beamAPtr         = {};
-  BeamParticle*  beamBPtr         = {};
-  BeamParticle*  beamPomAPtr      = {};
-  BeamParticle*  beamPomBPtr      = {};
-  BeamParticle*  beamGamAPtr      = {};
-  BeamParticle*  beamGamBPtr      = {};
-  BeamParticle*  beamVMDAPtr      = {};
-  BeamParticle*  beamVMDBPtr      = {};
+  BeamSetup*      beamSetupPtr    = {};
+  BeamParticlePtr beamAPtr        = {};
+  BeamParticlePtr beamBPtr        = {};
+  BeamParticlePtr beamPomAPtr     = {};
+  BeamParticlePtr beamPomBPtr     = {};
+  BeamParticlePtr beamGamAPtr     = {};
+  BeamParticlePtr beamGamBPtr     = {};
+  BeamParticlePtr beamVMDAPtr     = {};
+  BeamParticlePtr beamVMDBPtr     = {};
 
   // Pointer to information on subcollision parton locations.
   PartonSystems* partonSystemsPtr = {};
@@ -121,7 +121,7 @@ protected:
 
   // Pointer to the UserHooks object (needs to be sett to null in
   // classes deriving from UserHooks to avoid closed loop ownership).
-  UserHooksPtr   userHooksPtr;
+  UserHooksPtr      userHooksPtr;
 
 private:
 

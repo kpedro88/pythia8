@@ -232,8 +232,8 @@ public:
   virtual ~DireTimes() {}
 
   // Initialize alphaStrong and related pTmin parameters.
-  virtual void init( BeamParticle* beamAPtrIn = nullptr,
-    BeamParticle* beamBPtrIn = nullptr);
+  virtual void init( BeamParticlePtr beamAPtrIn = nullptr,
+    BeamParticlePtr beamBPtrIn = nullptr);
 
   bool initSplits() {
     if (splittingsPtr) splits = splittingsPtr->getSplittings();
@@ -456,8 +456,8 @@ public:
     int iSys = -1);
 
   // Pointers to the two incoming beams.
-  BeamParticle*  getBeamA () { return beamAPtr; }
-  BeamParticle*  getBeamB () { return beamBPtr; }
+  BeamParticlePtr  getBeamA () { return beamAPtr; }
+  BeamParticlePtr  getBeamB () { return beamBPtr; }
 
   // Function to calculate the correct alphaS/2*Pi value, including
   // renormalisation scale variations + threshold matching.
@@ -605,12 +605,12 @@ private:
 
   // Wrapper around PDF calls.
   double getXPDF( int id, double x, double t, int iSys = 0,
-    BeamParticle* beam = nullptr, bool finalRec = true, double z = 0.,
+    BeamParticlePtr beam = nullptr, bool finalRec = true, double z = 0.,
     double m2dip = 0.) {
     // Return one if no PDF should be used.
     if (!hasPDF(id)) return 1.0;
     // Else get PDF from beam particle.
-    BeamParticle* b = beam;
+    BeamParticlePtr b = beam;
     if (b == nullptr) {
       if (beamAPtr != nullptr || beamBPtr != nullptr) {
         b = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
@@ -727,7 +727,7 @@ private:
 
   // Get particle masses.
   double getMass(int id, int strategy, double mass = 0.) {
-    BeamParticle* beam = nullptr;
+    BeamParticlePtr beam = nullptr;
     if (beamAPtr != nullptr || beamBPtr != nullptr) {
       beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
            ? beamAPtr

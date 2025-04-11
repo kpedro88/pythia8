@@ -2937,8 +2937,8 @@ bool VinciaCommon::map2to3FFmassive(vector<Vec4>& pThree,
   // Check whether we are inside massive phase space.
   double gDet = gramDet(s01, s12, s02, mass0, mass1, mass2);
   if (gDet <= 0.) {
-    // Verbose output in case of failure (with REPORT mode on).
-    if (verbose >= Logger::REPORT) {
+    // Verbose output in case of failure.
+    if (verbose >= VinciaConstants::DEBUG) {
       loggerPtr->INFO_MSG("failed massive phase space check");
       cout << "   I : " << pTwo[0];
       cout << "   K : " << pTwo[1];

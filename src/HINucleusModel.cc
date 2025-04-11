@@ -227,16 +227,13 @@ void HardCoreModel::initHardCore() {
 
 // Initialize.
 bool WoodsSaxonModel::init() {
+
+  // Initialize hard core (even if this is not actually a nucleus).
+  initHardCore();
   if (A() == 0) return true;
 
-  // Initialize hard core.
-  initHardCore();
-
-  // Initialize Radius and other parameters.
+  // Initialize radius and other parameters.
   initGeometry();
-  // Calculate the overestimates.
-
-  overestimates();
 
   return NucleusModel::init();
 
@@ -252,6 +249,9 @@ bool WoodsSaxonModel::initGeometry() {
   // In the basic Woods-Saxon model we get parameters directly from settings.
   RSave = settingsPtr->parm(isProj ? "HeavyIonA:WSR" : "HeavyIonB:WSR");
   aSave = settingsPtr->parm(isProj ? "HeavyIonA:WSa" : "HeavyIonB:WSa");
+
+  // Calculate the overestimates.
+  overestimates();
 
   return true;
 
@@ -350,14 +350,13 @@ vector<Nucleon> WoodsSaxonModel::generate() const {
 // Initialize parameters.
 
 bool GLISSANDOModel::init() {
+  // Initialize hard core (even if this is not actually a nucleus).
+  initHardCore();
   if ( A() == 0 ) return true;
 
-  // Initialize hard core, and other parameters.
-  initHardCore();
+  // Initialize radius and other parameters.
   initGeometry();
 
-  // Calculate overestimates.
-  overestimates();
   return NucleusModel::init();
 
 }
@@ -379,6 +378,9 @@ bool GLISSANDOModel::initGeometry() {
              0.86*pow(double(A()),-1.0/3.0));
     aSave = 0.54;
   }
+
+  // Calculate the overestimates.
+  overestimates();
 
   return true;
 

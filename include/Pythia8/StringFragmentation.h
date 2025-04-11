@@ -29,7 +29,7 @@ public:
     fromPos(), thermalModel(), mT2suppression(), iEnd(), iMax(), idHad(),
     iPosOld(), iNegOld(), iPosNew(), iNegNew(), hadSoFar(), colOld(), colNew(),
     pxOld(), pyOld(), pxNew(), pyNew(), pxHad(), pyHad(), mHad(), mT2Had(),
-    GammaOld(), GammaNew(), xPosOld(), xPosNew(), xPosHad(), xNegOld(),
+    zHad(), GammaOld(), GammaNew(), xPosOld(), xPosNew(), xPosHad(), xNegOld(),
     xNegNew(), xNegHad(), aLund(), bLund(), iPosOldPrev(), iNegOldPrev(),
     colOldPrev(), pxOldPrev(), pyOldPrev(), GammaOldPrev(), xPosOldPrev(),
     xNegOldPrev() {}
@@ -57,7 +57,7 @@ public:
   // Fragment off one hadron from the string system, in momentum space,
   // by taking steps either from positive or from negative end.
   Vec4 kinematicsHadron(StringSystem& system, StringVertex& newVertex,
-    double zHad);
+    double zHadIn);
 
   // Generate momentum for some possible next hadron, based on mean values
   // to get an estimate for rapidity and pT.
@@ -87,7 +87,7 @@ public:
   bool   fromPos, thermalModel, mT2suppression, closePacking;
   int    iEnd, iMax, idHad, iPosOld, iNegOld, iPosNew, iNegNew, hadSoFar,
          colOld, colNew;
-  double pxOld, pyOld, pxNew, pyNew, pxHad, pyHad, mHad, mT2Had,
+  double pxOld, pyOld, pxNew, pyNew, pxHad, pyHad, mHad, mT2Had, zHad,
          GammaOld, GammaNew, xPosOld, xPosNew, xPosHad, xNegOld, xNegNew,
          xNegHad, aLund, bLund;
   int    iPosOldPrev, iNegOldPrev, colOldPrev;

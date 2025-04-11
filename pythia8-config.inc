@@ -24,7 +24,7 @@ Usage: ./pythia8-config [OPTIONS]
 Configuration tool for the PYTHIA event generator library. The available 
 options are defined below. All available options (without arguments) for the 
 PYTHIA configuration script are also valid for this script. See 
-"./configuration --help" in the top PYTHIA 8 directory for more details. 
+"./configure --help" in the top PYTHIA 8 directory for more details. 
 
 Available options.
 --help         : Print this help message (also -h, --h, and -help).
@@ -104,7 +104,7 @@ if [ $# -eq 0 ]; then echo "$USAGE"; exit; fi
 for VAR in "$@"; do
     if [ "$VAR" = "-h" ] || [ "$VAR" = "--h" ] || [ "$VAR" = "-help" ] \
            || [ "$VAR" = "--help" ]; then echo "$USAGE"; exit;
-    elif [ "$VAR" = "--version" ]; then echo "8.313"; exit; fi
+    elif [ "$VAR" = "--version" ]; then echo "8.314"; exit; fi
 done
 
 # Read the configuration (use local version first, then installed version).
@@ -113,14 +113,14 @@ if [ -f $PREFIX/Makefile.inc ]; then CFG_FILE="$PREFIX/Makefile.inc"
 elif [ ! -f $CFG_FILE ]; then
     echo "Error: cannot find valid configuration for Pythia 8"; exit; fi
 while read LINE; do
-    if [[ $LINE == \#\ --* ]]; then CONFIG+=${LINE#?}; fi
+    if [[ $LINE == \#\ \./configure* ]]; then CONFIG+=${LINE#?}; fi
     if [[ $LINE != *=* ]]; then continue; fi
     VAR=${LINE%%=*}; VAL=${LINE#*=};
     eval $VAR=\"$VAL\"; done < $CFG_FILE
 
 # Check if configuration is requested.
 for VAR in "$@"; do
-    if [ "$VAR" = "--config" ]; then echo "./configure$CONFIG"; exit; fi; done
+    if [ "$VAR" = "--config" ]; then echo "$CONFIG"; exit; fi; done
 
 # Change the prefixes if local version.
 if [ "$CFG_FILE" = "$PREFIX/Makefile.inc" ]; then

@@ -152,6 +152,7 @@ void bind_Pythia8_BeamParticle(std::function< pybind11::module &(std::string con
 		cl.def("pickValSeaComp", (int (Pythia8::BeamParticle::*)()) &Pythia8::BeamParticle::pickValSeaComp, "C++: Pythia8::BeamParticle::pickValSeaComp() --> int");
 		cl.def("initBeamKind", (void (Pythia8::BeamParticle::*)()) &Pythia8::BeamParticle::initBeamKind, "C++: Pythia8::BeamParticle::initBeamKind() --> void");
 		cl.def("__getitem__", (class Pythia8::ResolvedParton & (Pythia8::BeamParticle::*)(int)) &Pythia8::BeamParticle::operator[], "C++: Pythia8::BeamParticle::operator[](int) --> class Pythia8::ResolvedParton &", pybind11::return_value_policy::reference, pybind11::arg("i"));
+		cl.def("at", (class Pythia8::ResolvedParton & (Pythia8::BeamParticle::*)(int)) &Pythia8::BeamParticle::at, "C++: Pythia8::BeamParticle::at(int) --> class Pythia8::ResolvedParton &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("size", (int (Pythia8::BeamParticle::*)() const) &Pythia8::BeamParticle::size, "C++: Pythia8::BeamParticle::size() const --> int");
 		cl.def("sizeInit", (int (Pythia8::BeamParticle::*)() const) &Pythia8::BeamParticle::sizeInit, "C++: Pythia8::BeamParticle::sizeInit() const --> int");
 		cl.def("clear", (void (Pythia8::BeamParticle::*)()) &Pythia8::BeamParticle::clear, "C++: Pythia8::BeamParticle::clear() --> void");

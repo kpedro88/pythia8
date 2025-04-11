@@ -657,7 +657,7 @@ istream* LHAup::openFile(const char *fn, ifstream &ifs) {
 // Correctly deallocates memory if required before closing the file.
 
 void LHAup::closeFile(istream *&is, ifstream &ifs) {
-  // If the istream pointer is not NULL and is not the
+  // If the istream pointer is not a nullptr and is not the
   // same as the ifstream, then delete pointer.
   if (is && is != &ifs) delete is;
   is = nullptr;
@@ -1230,6 +1230,17 @@ bool LHAupFromPYTHIA8::updateSigma() {
 //==========================================================================
 
 // LHEF3FromPythia8 class.
+
+//--------------------------------------------------------------------------
+
+// Constructor.
+
+LHEF3FromPythia8::LHEF3FromPythia8(Pythia* pythiaPtrIn, int pDigitsIn,
+  bool writeToFileIn) :
+  eventPtr(&pythiaPtrIn->event), infoPtr(&pythiaPtrIn->info),
+  particleDataPtr(&pythiaPtrIn->particleData),
+  settingsPtr(&pythiaPtrIn->settings), writer(osLHEF),
+  pDigits(pDigitsIn), writeToFile(writeToFileIn) {}
 
 //--------------------------------------------------------------------------
 

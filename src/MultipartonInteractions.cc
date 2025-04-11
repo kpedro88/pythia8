@@ -35,7 +35,7 @@ const double SigmaMultiparton::OTHERFRAC  = 0.2;
 // Initialize the generation process for given beams.
 
 bool SigmaMultiparton::init(int inState, int processLevel, Info* infoPtr,
-  BeamParticle* beamAPtr, BeamParticle* beamBPtr) {
+  BeamParticlePtr beamAPtr, BeamParticlePtr beamBPtr) {
 
   // Store input pointer for future use.
   particleDataPtr           = infoPtr->particleDataPtr;
@@ -348,7 +348,7 @@ const double MultipartonInteractions::SIGMAMBLIMIT  = 1.;
 // Initialize the generation process for given beams.
 
 bool MultipartonInteractions::init( bool doMPIinit, int iDiffSysIn,
-  BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
+  BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
   PartonVertexPtr partonVertexPtrIn,  bool hasGammaIn) {
 
   // Store input pointers for future use. Done if no initialization.
@@ -550,6 +550,7 @@ bool MultipartonInteractions::init( bool doMPIinit, int iDiffSysIn,
   // Read or write initialization data from/to file, to save time.
   reuseInit = mode("MultipartonInteractions:reuseInit");
   initFile  = word("MultipartonInteractions:initFile");
+  int idAsave = infoPtr->idA();
   int idBsave = infoPtr->idB();
   bool reuseWorked = (reuseInit == 2 || reuseInit == 3 || reuseInit < 0 )
                      && loadMPIdata();
@@ -855,8 +856,8 @@ bool MultipartonInteractions::init( bool doMPIinit, int iDiffSysIn,
 
   // Restore to default setup with option 0. Does not apply for Pomeron beam.
   if (nPDFA != 1 && iDiffSys < 2) {
-    beamAPtr->setBeamID( idAList[0], 0);
-    infoPtr->setBeamIDs( idAList[0], idBsave);
+    beamAPtr->setBeamID( idAsave);
+    infoPtr->setBeamIDs( idAsave, idBsave);
   }
 
   // Reset statistics.
@@ -1580,7 +1581,7 @@ void MultipartonInteractions::upperEnvelope() {
   pT4dSigmaMax = 0.;
 
   // Loop thorough allowed pT range logarithmically evenly.
-  for (int iPT = 0; iPT < 100; ++iPT) {
+  for (int iPT = 0; iPT < NSUDPTS; ++iPT) {
     double pT = pTmin * pow( pTmax/pTmin, (iPT + 0.5)/NSUDPTS );
     pT2       = pT*pT;
     pT2shift  = pT2 + pT20;

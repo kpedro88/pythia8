@@ -37,14 +37,14 @@ void PhysicsBase::initInfoPtr(Info& infoIn) {
   sigmaCmbPtr      = infoPtr->sigmaCmbPtr;
   userHooksPtr     = infoPtr->userHooksPtr;
 
-  beamAPtr         = &beamSetupPtr->beamA;
-  beamBPtr         = &beamSetupPtr->beamB;
-  beamPomAPtr      = &beamSetupPtr->beamPomA;
-  beamPomBPtr      = &beamSetupPtr->beamPomB;
-  beamGamAPtr      = &beamSetupPtr->beamGamA;
-  beamGamBPtr      = &beamSetupPtr->beamGamB;
-  beamVMDAPtr      = &beamSetupPtr->beamVMDA;
-  beamVMDBPtr      = &beamSetupPtr->beamVMDB;
+  beamAPtr         = beamSetupPtr->beamAPtr;
+  beamBPtr         = beamSetupPtr->beamBPtr;
+  beamPomAPtr      = beamSetupPtr->beamPomAPtr;
+  beamPomBPtr      = beamSetupPtr->beamPomBPtr;
+  beamGamAPtr      = beamSetupPtr->beamGamAPtr;
+  beamGamBPtr      = beamSetupPtr->beamGamBPtr;
+  beamVMDAPtr      = beamSetupPtr->beamVMDAPtr;
+  beamVMDBPtr      = beamSetupPtr->beamVMDBPtr;
 
   // If the class has sub objects, register them now.
   onInitInfoPtr();

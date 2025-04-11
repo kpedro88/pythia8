@@ -26,7 +26,7 @@ indicated in caps, i.e. FILE.
 Configuration options.
 --help      : Print this message (also -h, --h, and -help).
 --part      : Generate the partial/simplified Python interface.
---full      : Generate the full Python interface.
+--full      : Generate the full Python interface (default).
 --user=FILE : Generate a user defined Python interface using the Binder 
               configuration in FILE.
 --debug     : Do not remove generated files.
@@ -48,11 +48,13 @@ GCC_INCLUDE="/usr/include/c++/6.3.1"
 # FUNCTION: Create the bindings.
 ################################################################################
 function binder() {
+    mv $BINDER_SRC/PythiaBatch.cpp ./
     rm -rf $BINDER_SRC; mkdir $BINDER_SRC
     docker run -i -t -v "$PWD:$PWD" -w $PWD -u $(id -u) --rm pythia8/dev:binder\
      --config $BINDER_CFG --root-module pythia8 --prefix $BINDER_SRC/\
      $BINDER_HPP -- -w -std=c++11 -I$BINDER_INCLUDE\
      -I$GCC_INCLUDE -I$GCC_INCLUDE/x86_64-redhat-linux -I/usr/include/clang
+    mv PythiaBatch.cpp $BINDER_SRC/
 }
 
 ################################################################################
@@ -213,13 +215,13 @@ if [ "$USER_SET" = true ]; then
     fi
     cp $USER $BINDER_CFG
     binder
-elif [ "$FULL_SET" = true ]; then
-    configure_full
-    binder
-else
+elif [ "$PART_SET" = true ]; then
     configure_part
     binder
     configure_part $BINDER_SRC/Pythia8
+    binder
+else
+    configure_full
     binder
 fi
 
@@ -237,6 +239,22 @@ for SRC in $BINDER_SRC/*.cpp; do
     if [ "$SRC" = "$BINDER_SRC/Pythia8Plugins.cpp" ]; then continue; fi
     sed -i.sed "/#include <Pythia8Plugins/d" $SRC
 done
+
+# Insert the Awkward batch interface.
+BATCH="		cl.def(\"nextBatch\", \&nextBatch, pybind11::arg(\"nEvents\"),"
+BATCH+=" pybind11::arg(\"errorMode\") = pybind11::str(\"skip\"));"
+ENTRY="cl.def(\"next\".*In\"));"
+sed -i.sed "s/\($ENTRY\)/\1\n$BATCH/" $BINDER_SRC/Pythia.cpp
+INCLUDE="#include <awkward\/PythiaBatch.h>"
+sed -i.sed "s/\(functional.h>\)/\1\n$INCLUDE/" $BINDER_SRC/Pythia.cpp
+
+# Insert the parallel Awkward batch interface.
+BATCH="		cl.def(\"nextBatch\", \&nextBatchParallel,"
+BATCH+=" pybind11::arg(\"nEvents\"));"
+ENTRY="cl.def(\"sigmaGen\".*);"
+sed -i.sed "s/\($ENTRY\)/\1\n$BATCH/" $BINDER_SRC/PythiaParallel.cpp
+INCLUDE="#include <awkward\/PythiaBatch.h>"
+sed -i.sed "s/\(functional.h>\)/\1\n$INCLUDE/" $BINDER_SRC/PythiaParallel.cpp
 
 # Remove the stream bindings.
 sed -i.sed "/_tcc/d" $BINDER_SRC/pythia8.cpp
@@ -298,15 +316,15 @@ if [ "$USER_SET" = true ]; then cat > $BINDER_DOC << BLOCKTEXT
 * A custom user interface to PYTHiA has been defined. See main01.py for
   a direct Python translation of the C++ main01.cc example.
 BLOCKTEXT
-elif [ "$FULL_SET" = true ]; then cat > $BINDER_DOC << BLOCKTEXT
-* All PYTHIA classes and functions are available. See main01.py for
-  a direct Python translation of the C++ main01.cc example.
-BLOCKTEXT
-else cat > $BINDER_DOC << BLOCKTEXT
+elif [ "$PART_SET" = true ]; then cat > $BINDER_DOC << BLOCKTEXT
 * A limited subset of PYTHIA classes and functions are available. See
-  main01.py for a direct Python translation of the C++ main01.cc
+  main291.py for a direct Python translation of the C++ main101.cc
   example. To generate the full Python bindings, use "generate --full"
   in the "plugins/python" directory.
+BLOCKTEXT
+else cat > $BINDER_DOC << BLOCKTEXT
+* All PYTHIA classes and functions are available. See main291.py for
+  a direct Python translation of the C++ main101.cc example.
 BLOCKTEXT
 fi
 cat > $BINDER_DOC << BLOCKTEXT

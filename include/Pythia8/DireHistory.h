@@ -563,8 +563,8 @@ private:
   // probability.
   double hardProcessME( const Event& event);
   double hardProcessCouplings( const Event& event, int order = 0,
-    double renormMultFac = 1., AlphaStrong* alphaS = NULL,
-    AlphaEM* alphaEM = NULL, bool fillCouplCounters = false,
+    double renormMultFac = 1., AlphaStrong* alphaS = nullptr,
+    AlphaEM* alphaEM = nullptr, bool fillCouplCounters = false,
     bool with2pi = true);
 
   // Perform the clustering of the current state and return the

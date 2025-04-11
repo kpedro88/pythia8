@@ -250,7 +250,7 @@ public:
 
   // Constructor.
   VinciaHistory(Event &stateIn,
-    BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
+    BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
     MergingHooksPtr mergingHooksPtrIn,
     PartonLevel* trialPartonLevelPtrIn,
     ParticleData* particleDataPtrIn,

@@ -16,7 +16,6 @@
 #include <Pythia8/NucleonExcitations.h>
 #include <Pythia8/ParticleData.h>
 #include <Pythia8/ParticleDecays.h>
-#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
 #include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>

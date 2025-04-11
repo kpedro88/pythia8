@@ -2,24 +2,49 @@
  
 <h2>Close-packing</h2> 
  
+<p> 
 If strings are closely packed, e.g. as a consequence of MPIs, it is 
 likely that they receive an increased string tension, which translates 
 into a broader <ei>pT</ei> spectrum, see further 
-<ref>Fis16</ref>.  It also means an enhanced rate (or rather reduced 
-suppression) of strange quark production relative to up/down quark 
-production.  Close-packing effects are scaled by the effective number 
-of near strings, which is <ei>pT</ei> suppressed and given by 
+<ref>Fis16</ref>. It also means an enhanced rate (or rather reduced 
+suppression) of strange-quark (and optionally also diquark) production 
+relative to up/down quark production. 
+</p> 
+<p> 
+For each string undergoing fragmentation, close-packing effects, for 
+each string break, scale with the effective number of 
+nearby strings, determined according to rapidity measured along the 
+z-axis of the system. This should be quite appropriate for multi-string 
+systems produced by MPIs in pp collisions but would not make much sense 
+to apply to processes such as ee&rarr;WW&rarr;hadrons, for which the 
+z-axis does not play any special role; such studies would be 
+interesting but would require a generalisation of the current 
+implementation. 
+</p> 
+<p> 
+For each string break, the numbers of 
+overlapping strings with flux orientations parallel and 
+antiparallel to the string on which the break occurs, are denoted by 
+<ei>p</ei> and <ei>q</ei> respectively. The effective string tension 
+is then assumed to scale like 
 <eq> 
     &kappa;<sub>eff</sub> = (1 + (k<sub>p</sub>p + k<sub>q</sub>q) 
     /(1+p<sup>2</sup><sub>T had</sub>/p<sup>2</sup><sub>T0</sub>)) 
     <sup>2r</sup>&kappa;<sub>0</sub>. 
 </eq> 
- 
+where <ei>p<sub>T had</sub></ei> is the transverse momentum of the 
+hadron produced in the break. Close-packing effects are thus 
+suppressed for particles with <ei>p<sub>T</sub></ei> values greater than the 
+reference <ei>p<sub>T0</sub></ei> value. This reflects the expectation 
+that the high-<ei>p<sub>T</sub></ei> parts of hard jets are not 
+affected by close-packing. 
+</p> 
+<p> 
 This scales the probability <code>StringFlav:probStoUD</code> by 
 <eq> 
     P'(s:u/d) = P(s:u/d)<sup>(&kappa;<sub>0</sub>/&kappa;<sub>eff</sub>)</sup> 
 </eq> 
- 
+</p> 
 <code>StringFlav:probSQtoQQ</code> and <code>StringFlav:probQQ1toQQ0</code> 
 also scale in this way. The width of the <ei>pT</ei> spectrum, given by 
 <ei>&sigma;^2</ei> is scaled by 
@@ -41,25 +66,20 @@ and <ei>&alpha;'</ei> is <ei>&alpha;</ei> recalculated given
 We allow different parameters to set <ei>k<sub>p</sub></ei> depending 
 on what the effective string tension is scaling. In principle if the 
 close-packing mechanism were exact, <code>enhanceStrange</code>, 
-<code>enhanceStrange</code>, and <code>enhanceStrange</code> would be 
+<code>enhancePT</code>, and <code>enhanceDiquark</code> would be 
 equal, however we have built in extra degrees of freedom in the model. 
- 
- 
-<b>Note:</b> for the purpose of close-packing, string overlaps are 
-determined according to rapidity measured along the z axis. This 
-should be quite appropriate for multi-string 
-systems produced by MPI in pp collisions but would not make much sense 
-to apply to processes such as ee&rarr;WW&rarr;hadrons, for which the z 
-axis does not play any special role; such studies would be 
-interesting but would require a generalisation of the current 
-implementation. 
  
 <flag name="ClosePacking:doClosePacking" default="off"> 
 Turns on the close-packing model. 
 </flag> 
  
 <parm name="ClosePacking:fluxRatio" default="0.5" min="0.0" max="1.0"> 
-<ei>k<sub>q</sub>/k<sub>p</sub></ei> ratio. 
+<ei>k<sub>q</sub>/k<sub>p</sub></ei> ratio. The default value of 0.5 
+corresponds to the ratio obtained if the effective string tensions 
+scale like effective colour charges (Casimir scaling). A value of zero 
+would mean that antiparallel fluxes do not increase the tension at 
+all, while a value of unity would make the increase independent of 
+flux direction. 
 </parm> 
  
 <parm name="ClosePacking:PT0" default="2.0" min="0.0"> 

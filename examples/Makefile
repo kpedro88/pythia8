@@ -34,19 +34,19 @@ ifeq ($(RIVET_USE),true)
   COMMA=,
   RIVET_VERSION=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --version)
   RIVET_LPATH=$(filter -L%,$(shell $(RIVET_BIN)$(RIVET_CONFIG) --ldflags))
-  RIVET_OPTS=$(subst -L,-Wl$(COMMA)-rpath$(COMMA),$(RIVET_LPATH))
-  RIVET_OPTS+= $(shell $(RIVET_BIN)$(RIVET_CONFIG) --cppflags --libs)
+  RIVET_FLAGS=$(subst -L,-Wl$(COMMA)-rpath$(COMMA),$(RIVET_LPATH))
+  RIVET_FLAGS+= $(shell $(RIVET_BIN)$(RIVET_CONFIG) --cppflags --libs)
   RIVET_CSTD=c++14
   ifeq ("4.0.0","$(word 1, $(sort 4.0.0 $(RIVET_VERSION)))")
     RIVET_CSTD=c++17
     RIVET_LDIR=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --libdir)
     RIVET_HDF5=$(shell nm $(RIVET_LDIR)/libRivet$(LIB_SUFFIX) | grep H5open)
     ifneq ($(strip $(RIVET_HDF5)),)
-      RIVET_OPTS+= -lhdf5
+      RIVET_FLAGS+= -lhdf5
     endif
   endif
-  RIVET_OPTS+= $(RIVET_FLAGS) $(CXX_COMMON:c++11=$(RIVET_CSTD)) $(CXX_DTAGS)
-  RIVET_OPTS+= -DRIVET
+  RIVET_OPTS=$(CXX_COMMON:c++11=$(RIVET_CSTD)) $(RIVET_FLAGS)
+  RIVET_OPTS+= $(CXX_DTAGS) -DRIVET
 endif
 
 # Define additional dependency options.
@@ -86,24 +86,24 @@ lib%Lib.so: %Lib.cc
 	$(CXX) $< -o $@ -w $(CXX_COMMON) $(CXX_SHARED)\
 	 $(CXX_SONAME)$(notdir $@) -Wl,-undefined,dynamic_lookup
 
-# ROOT libraries generated via CINT.
-main%.so: main%Dct.cc
-	$(CXX) $< -o $@ -DPY8ROOT -w $(CXX_SHARED) $(CXX_COMMON)\
+# ROOT libraries generated via CLING.
+main%Dct.so: main%Dct.cc
+	$(CXX) $< -o $@ -w $(CXX_SHARED) $(CXX_COMMON)\
 	 $(ROOT_LIB) $(shell $(ROOT_CONFIG) --cflags)
-main%Dct.cc: main%.h main%LinkDef.h
+main%Dct.cc: main%Dct.h
 ifeq ($(ROOT_USE),true)
-	$(ROOT_BIN)rootcint -f $@ -DPY8ROOT -I$(PREFIX_INCLUDE) $^
+	$(ROOT_BIN)rootcling -f $@ -c $^
 else
 	$(error Error: $@ requires ROOT)
 endif
 
-# YODA histogramming. Requires YODA v. 2.0.0 or above.
+# YODA histogramming. Requires YODA version 2.0.0 or above.
 main114: $(PYTHIA) $$@.cc
 ifeq ($(YODA_USE),true)
-	$(CXX) $@.cc -o $@ $(CXX_COMMON:c++11=c++17)\
+	$(CXX) $@.cc -o $@ -w $(CXX_COMMON:c++11=c++17)\
 	 $(YODA_INCLUDE) $(YODA_LIB)
 else
-	$(error Error: $@ requires YODA2)
+	$(error Error: $@ requires YODA)
 endif
 
 # HEPMC2 or HEPMC3 (use HEPMC3 if both).
@@ -123,7 +123,7 @@ ifeq ($(HDF5_USE)$(HIGHFIVE_USE)$(HEPMC3_USE),truetruetrue)
 else ifeq ($(HDF5_USE)$(HIGHFIVE_USE)$(HEPMC2_USE),truetruetrue)
 	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(HEPMC2_OPTS) $(HDF5_OPTS)
 else
-	$(error Error: $@ requires MPICH, HDF5, HIGHFIVE, and HEPMC2 or HEPMC3)
+	$(error Error: $@ requires HDF5, HIGHFIVE, and HEPMC2 or HEPMC3)
 endif
 
 # General ROOT examples without other external dependencies. 
@@ -143,13 +143,10 @@ else
 endif
 
 # RIVET with optional ROOT and ROOT user library.
-main144: $(PYTHIA) $$@.cc $(if $(filter true,$(ROOT_USE)),$$@.so)
-ifeq ($(RIVET_USE),true)
-	$(CXX) $@.cc -o $@ -w -Wl,-rpath,./ $(RIVET_OPTS)\
-	 $(if $(filter true,$(ROOT_USE)),$@.so $(ROOT_OPTS))
-else
-	$(error Error: $@ requires RIVET)
-endif
+main144: $(PYTHIA) $$@.cc $(if $(filter true,$(ROOT_USE)),$$@Dct.so)
+	$(CXX) $@.cc -o $@ -w\
+	 $(if $(filter true,$(RIVET_USE)),-w $(RIVET_OPTS),$(CXX_COMMON))\
+	 $(if $(filter true,$(ROOT_USE)),$@Dct.so $(ROOT_OPTS))
 
 # FASTJET3.
 main161 main212 main213 main507: $(PYTHIA) $$@.cc
@@ -198,8 +195,8 @@ main421: $(PYTHIA) $$@.cc
 
 # Clean.
 clean:
-	@rm -f main*[0-9]; rm -f mymain*[0-9]; rm -f test*[0-9];\
-	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.*; rm -f *.so;\
+	@rm -f main*[0-9]; rm -f mymain*[0-9]; rm -f test*[0-9]; rm -f *.d;\
+	rm -f *~; rm -f \#*; rm -f core*; rm -f *Dct.cc; rm -f *.so;\
 	rm -f *.log; rm -f *out[0-9]*; rm -f *.dat; rm -f main*.pyc;\
 	rm -f plot*.py; rm -f *plot.py; rm -f fig*.pdf;\
 	rm -f *.hepmc; rm -f *.yoda; rm -f *.root; rm -f *.pcm;\

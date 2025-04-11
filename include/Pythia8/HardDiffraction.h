@@ -41,7 +41,7 @@ public:
   ~HardDiffraction() {}
 
   // Initialise constant and the beams to be considered.
-  void init(BeamParticle* beamAPtrIn,  BeamParticle* beamBPtrIn);
+  void init(BeamParticlePtr beamAPtrIn,  BeamParticlePtr beamBPtrIn);
 
   // Main routine to check if event is from diffractive PDF.
   bool isDiffractive(int iBeamIn = 1, int partonIn = 0,
@@ -73,7 +73,7 @@ private:
          xPomA, xPomB, tPomA, tPomB, thetaPomA, thetaPomB;
 
   // Pointer to temporary Pomeron PDF.
-  BeamParticle*   tmpPomPtr;
+  BeamParticlePtr tmpPomPtr;
 
   // Return Pomeron flux inside proton, integrated over t.
   double xfPom(double xIn = 0.);

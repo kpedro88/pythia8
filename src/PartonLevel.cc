@@ -244,7 +244,7 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
   // lepton, possibly VMD from photon.
   if (doSD || doDD || doSQ || ( doHardDiff && (hardDiffSide == 0
     || hardDiffSide == 1) && beamBPtr->getGammaMode() < 2 ) ) {
-    BeamParticle* tmpBeamA = (beamAhasGamma) ? beamGamAPtr : beamAPtr;
+    BeamParticlePtr tmpBeamA = (beamAhasGamma) ? beamGamAPtr : beamAPtr;
     if (infoPtr->isVMDstateA()) tmpBeamA = beamVMDAPtr;
     if (beamHasResGamma) doMPIinit = doMPIinitSave;
     doMPISDA = multiSDA.init( doMPIinit, 1, tmpBeamA,
@@ -252,7 +252,7 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
   }
   if (doSD || doDD || doSQ || ( doHardDiff && (hardDiffSide == 0
     || hardDiffSide == 2) && beamAPtr->getGammaMode() < 2 ) ) {
-    BeamParticle* tmpBeamB = (beamBhasGamma) ? beamGamBPtr : beamBPtr;
+    BeamParticlePtr tmpBeamB = (beamBhasGamma) ? beamGamBPtr : beamBPtr;
     if (infoPtr->isVMDstateB()) tmpBeamB = beamVMDBPtr;
     if (beamHasResGamma) doMPIinit = doMPIinitSave;
     doMPISDB = multiSDB.init( doMPIinit, 2, beamPomAPtr,
@@ -1272,7 +1272,7 @@ bool PartonLevel::setupUnresolvedSys( Event& process, Event& event) {
     // Beam Particle used for flavour content kicked out by Pomeron.
     // Randomize for central diffraction; misses closed gluon loop case.
     bool beamSideA = (iDS == 1 || (iDS == 3 && rndmPtr->flat() < 0.5));
-    BeamParticle* beamPtr = (beamSideA) ? beamAPtr    : beamBPtr;
+    BeamParticlePtr beamPtr = (beamSideA) ? beamAPtr    : beamBPtr;
     if (iDS == 3) beamPtr = (beamSideA) ? beamPomAPtr : beamPomBPtr;
 
     // Pick quark or gluon kicked out and flavour subdivision.

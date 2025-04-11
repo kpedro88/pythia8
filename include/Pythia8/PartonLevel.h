@@ -110,15 +110,15 @@ public:
   }
 
   // Spare copies of normal beam pointers.
-  BeamParticle*  beamHadAPtr{};
-  BeamParticle*  beamHadBPtr{};
+  BeamParticlePtr beamHadAPtr{};
+  BeamParticlePtr beamHadBPtr{};
 
   // Pointers to timelike showers for resonance decays and the rest.
-  TimeShowerPtr  timesDecPtr{};
-  TimeShowerPtr  timesPtr{};
+  TimeShowerPtr   timesDecPtr{};
+  TimeShowerPtr   timesPtr{};
 
   // Pointer to spacelike showers.
-  SpaceShowerPtr spacePtr{};
+  SpaceShowerPtr  spacePtr{};
 
 protected:
 

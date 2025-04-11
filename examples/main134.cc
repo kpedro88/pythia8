@@ -5,7 +5,7 @@
 
 // Authors: Stefan Prestel
 
-// Contact: Christian Preuss <preuss@uni-wuppertal.de>
+// Contact: Christian T. Preuss <christian.preuss@uni-goettingen.de>
 
 // Keywords: LHE file; hepmc
 

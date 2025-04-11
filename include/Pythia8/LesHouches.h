@@ -513,6 +513,11 @@ private:
 
 //==========================================================================
 
+// Forward declaration of Pythia needed by LHEF3FromPythia8.
+class Pythia;
+
+//--------------------------------------------------------------------------
+
 // A derived class with LHEF 3.0 information read from PYTHIA 8 itself, for
 // output.
 
@@ -521,6 +526,8 @@ class LHEF3FromPythia8 : public LHAup {
 public:
 
   // Constructor.
+  LHEF3FromPythia8(Pythia* pythiaPtrIn, int pDigitsIn = 15,
+    bool writeToFileIn = true);
   LHEF3FromPythia8(Event* eventPtrIn, const Info* infoPtrIn,
     int pDigitsIn = 15, bool writeToFileIn = true) :
     eventPtr(eventPtrIn),infoPtr(infoPtrIn),

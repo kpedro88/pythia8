@@ -503,8 +503,8 @@ void QEDsystem::updatePartonSystems() {
 
 // Initialize settings for current run.
 
-void QEDemitSystem::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
-  int verboseIn) {
+void QEDemitSystem::init(BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn, int verboseIn) {
 
   // Verbose setting.
   if (!isInitPtr)
@@ -1733,7 +1733,7 @@ double QEDemitSystem::aPhys(QEDemitElemental* ele, double sxj, double syj,
     // Eikonal.
     ant += 4.*sxy/sxj/syj - 4.*mx2/sxj/sxj - 4.*my2/syj/syj;
 
-    // Check if x is a W or a fermion.
+    // Check if x is a vector or a fermion.
     if (spinTypex ==2 && useSpinsQEDNow[0])
       ant += 2.*syj/sxj/s;
     else if (spinTypex ==3 && useSpinsQEDNow[1])
@@ -1743,7 +1743,7 @@ double QEDemitSystem::aPhys(QEDemitElemental* ele, double sxj, double syj,
     // determine spin three half expression.
       ant += 2.*syj/sxj/s;
 
-    // Check if y is a W or a fermion.
+    // Check if y is a vector or a fermion.
     if (spinTypey == 2 && useSpinsQEDNow[0])
       ant += 2.*sxj/syj/s;
     else if (spinTypey == 3 && useSpinsQEDNow[1])
@@ -1787,17 +1787,17 @@ double QEDemitSystem::aPhys(QEDemitElemental* ele, double sxj, double syj,
     // Eikonal.
     ant = 4.*sxy/sxj/syj - 4.*mx2/sxj/sxj - 4.*my2/syj/syj;
 
-    // Check if x is a W or a fermion
+    // Check if x is a vector or a fermion
     if (spinTypex == 3 && useSpinsQEDNow[1])
       ant += (8./3.)*( syj/(s+syj) + syj/s + pow2(syj)/pow2(s) )/sxj;
-    else
+    else if (spinTypex == 2 && useSpinsQEDNow[0])
       ant += 2.*syj/sxj/s;
 
-    // Check if y is a W or a fermion.
+    // Check if y is a vector or a fermion.
     if (spinTypey == 3 && useSpinsQEDNow[1])
       ant += (8./3.)*( sxj/(sxy + syj) + sxj/(s + syj)
           - pow2(sxj)/pow2(s + syj) )/syj;
-    else
+    else if (spinTypey == 2 && useSpinsQEDNow[0])
       ant += 2.*sxj/syj/s;
   }
   return ant;
@@ -1835,8 +1835,8 @@ double QEDemitSystem::pdfRatio(bool isA, double eOld, double eNew, int id,
 
 // Initialize.
 
-void QEDsplitSystem::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
-  int verboseIn) {
+void QEDsplitSystem::init(BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn, int verboseIn) {
   if (!isInitPtr) printOut(__METHOD_NAME__, "initPtr not called");
   verbose = verboseIn;
   q2Max   = pow2(settingsPtr->parm("Vincia:mMaxGamma"));
@@ -2247,8 +2247,8 @@ void QEDsplitSystem::print() {
 
 // Initialize the system.
 
-void QEDconvSystem::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
-  int verboseIn) {
+void QEDconvSystem::init(BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn, int verboseIn) {
 
   // Verbosity setting.
   if (!isInitPtr) printOut(__METHOD_NAME__, "initPtr not called");
@@ -2740,7 +2740,7 @@ void VinciaQED::initPtr(Info* infoPtrIn, VinciaCommon* vinComPtrIn) {
 
 // Initialize settings for current run.
 
-void VinciaQED::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn) {
+void VinciaQED::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
 
   // Verbose setting
   verbose = settingsPtr->mode("Vincia:verbose");

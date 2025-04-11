@@ -24,7 +24,7 @@ namespace Pythia8 {
 
 // The current Pythia (sub)version number, to agree with XML version.
 const double Pythia::VERSIONNUMBERHEAD = PYTHIA_VERSION;
-const double Pythia::VERSIONNUMBERCODE = 8.313;
+const double Pythia::VERSIONNUMBERCODE = 8.314;
 
 //--------------------------------------------------------------------------
 
@@ -191,6 +191,10 @@ void Pythia::initPtrs() {
   registerPhysicsBase(hadronWidths);
   registerPhysicsBase(junctionSplitting);
   registerPhysicsBase(beamSetup);
+
+  // Setup of beamPtrs.
+  beamAPtr = beamSetup.beamAPtr;
+  beamBPtr = beamSetup.beamBPtr;
 
   // Create the fragmentation model pointers (register the
   // fragmentation model vector after user interactions).
@@ -374,9 +378,14 @@ bool Pythia::checkVersion() {
   isConstructed = (abs(versionNumberXML - VERSIONNUMBERCODE) < 0.0005);
   if (!isConstructed) {
     ostringstream errCode;
-    errCode << fixed << setprecision(3) << ": in code " << VERSIONNUMBERCODE
+    errCode << fixed << setprecision(3) << "in code " << VERSIONNUMBERCODE
             << " but in XML " << versionNumberXML;
-    logger.ABORT_MSG("unmatched version numbers", errCode.str());
+    logger.ABORT_MSG("unmatched version numbers,", errCode.str());
+    logger.ABORT_MSG("PYTHIA8DATA is " + string(getenv("PYTHIA8DATA") ?
+        "set" : "not set"), "and using XML path " + xmlPath);
+    if (getenv("PYTHIA8DATA"))
+      logger.ABORT_MSG("try unsetting PYTHIA8DATA by running"
+        " \"export PYTHIA8DATA=''\"");
     return false;
   }
 
@@ -797,7 +806,7 @@ bool Pythia::init() {
 
   // Initialize timelike showers already here, since needed in decays.
   // The pointers to the beams are needed by some external plugin showers.
-  timesDecPtr->init( &beamSetup.beamA, &beamSetup.beamB);
+  timesDecPtr->init( beamSetup.beamAPtr, beamSetup.beamBPtr);
 
   // Alternatively only initialize resonance decays.
   if ( !doProcessLevel) processLevel.initDecays(lhaUpPtr);
@@ -1835,18 +1844,18 @@ bool Pythia::check() {
     int iA = 1;
     int iB = 2;
     if (!(beamSetup.beamA2gamma || beamSetup.beamB2gamma)) {
-      if (beamA.isLepton() && beamB.isHadron())
-        { iA = beamA[0].iPos(); iB = 2; }
-      if (beamB.isLepton() && beamA.isHadron())
-        { iB = beamB[0].iPos(); iA = 1; }
+      if (beamAPtr->isLepton() && beamBPtr->isHadron())
+        { iA = beamAPtr->at(0).iPos(); iB = 2; }
+      if (beamBPtr->isLepton() && beamAPtr->isHadron())
+        { iB = beamBPtr->at(0).iPos(); iA = 1; }
       int iPos = 0;
-      while ( beamA.isHadron() && iPos < beamB.size()
-           && beamA.id() == beamB[iPos].id() )
-        { iA = beamA[iPos].iPos(); iPos++;}
+      while ( beamAPtr->isHadron() && iPos < beamBPtr->size()
+        && beamAPtr->id() == beamBPtr->at(iPos).id() )
+        { iA = beamAPtr->at(iPos).iPos(); iPos++;}
       iPos = 0;
-      while ( beamB.isHadron() && iPos < beamB.size()
-           && beamB.id() == beamB[iPos].id() )
-        { iB = beamB[iPos].iPos(); iPos++; }
+      while ( beamBPtr->isHadron() && iPos < beamBPtr->size()
+        && beamBPtr->id() == beamBPtr->at(iPos).id() )
+        { iB = beamBPtr->at(iPos).iPos(); iPos++; }
     }
     // Count incoming momentum and charge.
     pSum      = - (event[iA].p() + event[iB].p());
@@ -1953,16 +1962,16 @@ bool Pythia::check() {
   // Check that beams and event records agree on incoming partons.
   // Only meaningful for resolved beams.
   if (infoPrivate.isResolved() && !info.hasUnresolvedBeams())
-  for (int iSys = 0; iSys < beamA.sizeInit(); ++iSys) {
+  for (int iSys = 0; iSys < beamAPtr->sizeInit(); ++iSys) {
     int eventANw  = partonSystems.getInA(iSys);
     int eventBNw  = partonSystems.getInB(iSys);
     // For photon sub-beams make sure to use correct beams.
-    int beamANw   = ( beamA.getGammaMode() == 0 || !beamSetup.beamA2gamma
-                 || (beamA.getGammaMode() == 2 && beamB.getGammaMode() == 2)) ?
-                 beamA[iSys].iPos() : beamSetup.beamGamA[iSys].iPos();
-    int beamBNw   = ( beamB.getGammaMode() == 0 || !beamSetup.beamB2gamma
-                 || (beamB.getGammaMode() == 2 && beamA.getGammaMode() == 2)) ?
-                 beamB[iSys].iPos() : beamSetup.beamGamB[iSys].iPos();
+    int beamANw   = ( beamAPtr->getGammaMode() == 0 || !beamSetup.beamA2gamma
+      || (beamAPtr->getGammaMode() == 2 && beamBPtr->getGammaMode() == 2)) ?
+      beamAPtr->at(iSys).iPos() : beamSetup.beamGamAPtr->at(iSys).iPos();
+    int beamBNw   = ( beamBPtr->getGammaMode() == 0 || !beamSetup.beamB2gamma
+      || (beamBPtr->getGammaMode() == 2 && beamAPtr->getGammaMode() == 2)) ?
+      beamBPtr->at(iSys).iPos() : beamSetup.beamGamBPtr->at(iSys).iPos();
     if (eventANw != beamANw || eventBNw != beamBNw) {
       logger.ERROR_MSG("event and beams records disagree");
       physical    = false;

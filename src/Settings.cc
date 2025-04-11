@@ -676,6 +676,8 @@ bool Settings::readString(string line, bool warn, int subrun) {
         if (isPath.good()) return readFile(isPath, warn, subrun);
       }
       loggerPtr->ERROR_MSG("did not find file", valueString);
+      loggerPtr->ERROR_MSG("searched along the following paths:");
+      for (string path : paths) loggerPtr->ERROR_MSG(path);
       return false;
     } else return readFile(isUser, warn, subrun);
   }
@@ -2077,7 +2079,7 @@ void Settings::initTunePP(int ppTune) {
     "ATLAS-UE-AU2-MRST2007LOx", "ATLAS-UE-AU2-MRST2007LOxx", "Monash2013",
     "CMS-CUETP8S1-CTEQ6L1", "CMS-CUETP8S1-HERAPDF1", "ATLAS-AZ",
     "CMS-CUETP8M1-NNPDF23LO", "ATLAS-A14-CTEQL1", "ATLAS-A14-MSTW2008LO",
-    "ATLAS-A14-NNPDF32LO", "ATLAS-A14-HERAPDF15LO", "ATLAS-A14-v+1",
+    "ATLAS-A14-NNPDF23LO", "ATLAS-A14-HERAPDF15LO", "ATLAS-A14-v+1",
     "ATLAS-A14-v-1", "ATLAS-A14-v+2", "ATLAS-A14-v-2", "ATLAS-A14-v+3a",
     "ATLAS-A14-v-3a", "ATLAS-A14-v+3b", "ATLAS-A14-v-3b", "ATLAS-A14-v+3c",
     "ATLAS-A14-v-3c"};

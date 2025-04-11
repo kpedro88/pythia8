@@ -44,7 +44,7 @@ public:
 
   // Initialize list of processes.
   bool init(int inState, int processLevel, Info* infoPtr,
-    BeamParticle* beamAPtr, BeamParticle* beamBPtr);
+    BeamParticlePtr beamAPtr, BeamParticlePtr beamBPtr);
 
   // Switch to new beam particle identities.
   void updateBeamIDs() {
@@ -135,7 +135,7 @@ public:
 
   // Initialize the generation process for given beams.
   bool init( bool doMPIinit, int iDiffSysIn,
-    BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
+    BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
     PartonVertexPtr partonVertexPtrIn, bool hasGammaIn = false);
 
   // Special setup to allow switching between beam PDFs for MPI handling.

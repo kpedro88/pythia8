@@ -3,21 +3,33 @@
 #include <Pythia8/BeamShape.h>
 #include <Pythia8/Event.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
+#include <Pythia8/HIInfo.h>
 #include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
 #include <Pythia8/Info.h>
 #include <Pythia8/LHEF3.h>
 #include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
 #include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
+#include <Pythia8/PhaseSpace.h>
+#include <Pythia8/Pythia.h>
 #include <Pythia8/ResonanceWidths.h>
 #include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
 #include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
 #include <Pythia8/SigmaTotal.h>
 #include <Pythia8/StandardModel.h>
 #include <Pythia8/SusyCouplings.h>
 #include <Pythia8/SusyLesHouches.h>
+#include <Pythia8/UserHooks.h>
 #include <Pythia8/Weights.h>
 #include <complex>
 #include <cwchar>
@@ -275,7 +287,7 @@ struct PyCallBack_Pythia8_LHAupFromPYTHIA8 : public Pythia8::LHAupFromPYTHIA8 {
 	}
 };
 
-// Pythia8::LHEF3FromPythia8 file:Pythia8/LesHouches.h line:519
+// Pythia8::LHEF3FromPythia8 file:Pythia8/LesHouches.h line:524
 struct PyCallBack_Pythia8_LHEF3FromPythia8 : public Pythia8::LHEF3FromPythia8 {
 	using Pythia8::LHEF3FromPythia8::LHEF3FromPythia8;
 
@@ -509,9 +521,13 @@ void bind_Pythia8_LesHouches_1(std::function< pybind11::module &(std::string con
 		cl.def("setEvent", (bool (Pythia8::LHAupFromPYTHIA8::*)(int)) &Pythia8::LHAupFromPYTHIA8::setEvent, "C++: Pythia8::LHAupFromPYTHIA8::setEvent(int) --> bool", pybind11::arg(""));
 		cl.def("updateSigma", (bool (Pythia8::LHAupFromPYTHIA8::*)()) &Pythia8::LHAupFromPYTHIA8::updateSigma, "C++: Pythia8::LHAupFromPYTHIA8::updateSigma() --> bool");
 	}
-	{ // Pythia8::LHEF3FromPythia8 file:Pythia8/LesHouches.h line:519
+	{ // Pythia8::LHEF3FromPythia8 file:Pythia8/LesHouches.h line:524
 		pybind11::class_<Pythia8::LHEF3FromPythia8, std::shared_ptr<Pythia8::LHEF3FromPythia8>, PyCallBack_Pythia8_LHEF3FromPythia8, Pythia8::LHAup> cl(M("Pythia8"), "LHEF3FromPythia8", "");
 		pybind11::handle cl_type = cl;
+
+		cl.def( pybind11::init( [](class Pythia8::Pythia * a0){ return new Pythia8::LHEF3FromPythia8(a0); }, [](class Pythia8::Pythia * a0){ return new PyCallBack_Pythia8_LHEF3FromPythia8(a0); } ), "doc");
+		cl.def( pybind11::init( [](class Pythia8::Pythia * a0, int const & a1){ return new Pythia8::LHEF3FromPythia8(a0, a1); }, [](class Pythia8::Pythia * a0, int const & a1){ return new PyCallBack_Pythia8_LHEF3FromPythia8(a0, a1); } ), "doc");
+		cl.def( pybind11::init<class Pythia8::Pythia *, int, bool>(), pybind11::arg("pythiaPtrIn"), pybind11::arg("pDigitsIn"), pybind11::arg("writeToFileIn") );
 
 		cl.def( pybind11::init( [](class Pythia8::Event * a0, const class Pythia8::Info * a1){ return new Pythia8::LHEF3FromPythia8(a0, a1); }, [](class Pythia8::Event * a0, const class Pythia8::Info * a1){ return new PyCallBack_Pythia8_LHEF3FromPythia8(a0, a1); } ), "doc");
 		cl.def( pybind11::init( [](class Pythia8::Event * a0, const class Pythia8::Info * a1, int const & a2){ return new Pythia8::LHEF3FromPythia8(a0, a1, a2); }, [](class Pythia8::Event * a0, const class Pythia8::Info * a1, int const & a2){ return new PyCallBack_Pythia8_LHEF3FromPythia8(a0, a1, a2); } ), "doc");

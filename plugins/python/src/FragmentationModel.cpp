@@ -367,6 +367,7 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("pyHad", &Pythia8::StringEnd::pyHad);
 		cl.def_readwrite("mHad", &Pythia8::StringEnd::mHad);
 		cl.def_readwrite("mT2Had", &Pythia8::StringEnd::mT2Had);
+		cl.def_readwrite("zHad", &Pythia8::StringEnd::zHad);
 		cl.def_readwrite("GammaOld", &Pythia8::StringEnd::GammaOld);
 		cl.def_readwrite("GammaNew", &Pythia8::StringEnd::GammaNew);
 		cl.def_readwrite("xPosOld", &Pythia8::StringEnd::xPosOld);
@@ -396,7 +397,7 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def("newHadron", [](Pythia8::StringEnd &o, double const & a0, bool const & a1) -> void { return o.newHadron(a0, a1); }, "", pybind11::arg("kappaModifier"), pybind11::arg("forbidPopcornNow"));
 		cl.def("newHadron", [](Pythia8::StringEnd &o, double const & a0, bool const & a1, double const & a2) -> void { return o.newHadron(a0, a1, a2); }, "", pybind11::arg("kappaModifier"), pybind11::arg("forbidPopcornNow"), pybind11::arg("strangeJunc"));
 		cl.def("newHadron", (void (Pythia8::StringEnd::*)(double, bool, double, double)) &Pythia8::StringEnd::newHadron, "C++: Pythia8::StringEnd::newHadron(double, bool, double, double) --> void", pybind11::arg("kappaModifier"), pybind11::arg("forbidPopcornNow"), pybind11::arg("strangeJunc"), pybind11::arg("probQQmod"));
-		cl.def("kinematicsHadron", (class Pythia8::Vec4 (Pythia8::StringEnd::*)(class Pythia8::StringSystem &, class Pythia8::StringVertex &, double)) &Pythia8::StringEnd::kinematicsHadron, "C++: Pythia8::StringEnd::kinematicsHadron(class Pythia8::StringSystem &, class Pythia8::StringVertex &, double) --> class Pythia8::Vec4", pybind11::arg("system"), pybind11::arg("newVertex"), pybind11::arg("zHad"));
+		cl.def("kinematicsHadron", (class Pythia8::Vec4 (Pythia8::StringEnd::*)(class Pythia8::StringSystem &, class Pythia8::StringVertex &, double)) &Pythia8::StringEnd::kinematicsHadron, "C++: Pythia8::StringEnd::kinematicsHadron(class Pythia8::StringSystem &, class Pythia8::StringVertex &, double) --> class Pythia8::Vec4", pybind11::arg("system"), pybind11::arg("newVertex"), pybind11::arg("zHadIn"));
 		cl.def("kinematicsHadronTmp", (class Pythia8::Vec4 (Pythia8::StringEnd::*)(class Pythia8::StringSystem, class Pythia8::Vec4, double, double)) &Pythia8::StringEnd::kinematicsHadronTmp, "C++: Pythia8::StringEnd::kinematicsHadronTmp(class Pythia8::StringSystem, class Pythia8::Vec4, double, double) --> class Pythia8::Vec4", pybind11::arg("system"), pybind11::arg("pRem"), pybind11::arg("phi"), pybind11::arg("mult"));
 		cl.def("update", (void (Pythia8::StringEnd::*)()) &Pythia8::StringEnd::update, "C++: Pythia8::StringEnd::update() --> void");
 		cl.def("storePrev", (void (Pythia8::StringEnd::*)()) &Pythia8::StringEnd::storePrev, "C++: Pythia8::StringEnd::storePrev() --> void");

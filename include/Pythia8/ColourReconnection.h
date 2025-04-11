@@ -181,8 +181,9 @@ public:
   bool init();
 
   // New beams possible for handling of hard diffraction.
-  void reassignBeamPtrs( BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn)
-    {beamAPtr = beamAPtrIn; beamBPtr = beamBPtrIn;}
+  void reassignBeamPtrs( BeamParticlePtr beamAPtrIn,
+    BeamParticlePtr beamBPtrIn) {
+    beamAPtr = beamAPtrIn; beamBPtr = beamBPtrIn;}
 
   // Do colour reconnection for current event.
   bool next( Event & event, int oldSize);

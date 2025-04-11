@@ -268,7 +268,7 @@ bool HiddenValleyFragmentation::init(
 
   // Minimal vector mass.
   mHVvecMin = particleDataPtr->m0(4900113);
-  for (int i = 2; i <= nFlav; ++i)
+  if (separateFlav) for (int i = 2; i <= nFlav; ++i)
   for (int j = 1; j <= i; ++j) mHVvecMin = min(mHVvecMin,
     particleDataPtr->m0(4900003 + 100 * i + 10 * j) );
   double vecMassRatio = mHVvecMin / particleDataPtr->m0(113);

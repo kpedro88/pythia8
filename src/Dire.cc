@@ -118,7 +118,7 @@ void Dire::initShowersAndWeights() {
 
 //--------------------------------------------------------------------------
 
-void Dire::setup(BeamParticle* beamA, BeamParticle* beamB) {
+void Dire::setup(BeamParticlePtr beamA, BeamParticlePtr beamB) {
 
   if (isInit) return;
 
@@ -141,7 +141,7 @@ void Dire::setup(BeamParticle* beamA, BeamParticle* beamB) {
 
   // Reset Pythia masses if necessary.
   if ( settingsPtr->flag("ShowerPDF:usePDFmasses")
-    && ( beamA != NULL || beamB != NULL) ) {
+    && ( beamA != nullptr || beamB != nullptr) ) {
     for (int i=1; i <= 5; ++i) {
       // Try to get masses from the hadron beams.
       double mPDF = (abs(beamA->id()) > 30)
@@ -149,9 +149,9 @@ void Dire::setup(BeamParticle* beamA, BeamParticle* beamB) {
                   : (abs(beamB->id()) > 30)
                     ? beamB->mQuarkPDF(i) : -1.0;
       // If there are no hadron beams, get the masses from either beam.
-      if (beamA != NULL && mPDF < 0.)
+      if (beamA != nullptr && mPDF < 0.)
         mPDF = beamA->mQuarkPDF(i);
-      if (beamB != NULL && mPDF < 0.)
+      if (beamB != nullptr && mPDF < 0.)
         mPDF = beamB->mQuarkPDF(i);
       if (mPDF > -1.) {
         stringstream resetMass;
@@ -194,7 +194,7 @@ void Dire::setup(BeamParticle* beamA, BeamParticle* beamB) {
 
 //--------------------------------------------------------------------------
 
-//bool Dire::init(BeamParticle* beamA, BeamParticle* beamB) {
+//bool Dire::init(BeamParticlePtr beamA, BeamParticlePtr beamB) {
 bool Dire::initAfterBeams() {
 
   if (isInit) return true;

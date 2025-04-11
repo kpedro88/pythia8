@@ -96,8 +96,8 @@ const double SimpleSpaceShower::PROBLIMIT = 0.99;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void SimpleSpaceShower::init( BeamParticle* beamAPtrIn,
-  BeamParticle* beamBPtrIn) {
+void SimpleSpaceShower::init( BeamParticlePtr beamAPtrIn,
+  BeamParticlePtr beamBPtrIn) {
 
   // Store input pointers for future use.
   beamAPtr        = beamAPtrIn;

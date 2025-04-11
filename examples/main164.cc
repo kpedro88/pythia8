@@ -3,7 +3,9 @@
 // PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Authors: Stefan Prestel, Christian T Preuss <preuss@uni-wuppertal.de>
+// Authors: Stefan Prestel, Christian T. Preuss
+
+// Contact: Christian T. Preuss <christian.preuss@uni-goettingen.de>
 
 // Keywords: matching; merging; leading order; NLO; powheg; madgraph; aMC@NLO;
 //           CKKW-L; UMEPS; NL3; UNLOPS; FxFx; MLM;

@@ -71,7 +71,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
 #endif
 
-// Pythia8::HIUserHooks file:Pythia8/HIInfo.h line:310
+// Pythia8::HIUserHooks file:Pythia8/HIInfo.h line:313
 struct PyCallBack_Pythia8_HIUserHooks : public Pythia8::HIUserHooks {
 	using Pythia8::HIUserHooks::HIUserHooks;
 
@@ -1333,7 +1333,7 @@ struct PyCallBack_Pythia8_Angantyr : public Pythia8::Angantyr {
 
 void bind_Pythia8_HIInfo(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // Pythia8::HIUserHooks file:Pythia8/HIInfo.h line:310
+	{ // Pythia8::HIUserHooks file:Pythia8/HIInfo.h line:313
 		pybind11::class_<Pythia8::HIUserHooks, std::shared_ptr<Pythia8::HIUserHooks>, PyCallBack_Pythia8_HIUserHooks> cl(M("Pythia8"), "HIUserHooks", "");
 		pybind11::handle cl_type = cl;
 

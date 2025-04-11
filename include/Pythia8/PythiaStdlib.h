@@ -46,6 +46,9 @@
 #include <atomic>
 #include <thread>
 
+// Handle floating point exceptions.
+#include "Pythia8/PythiaFpe.h"
+
 // Define pi if not yet done.
 #ifndef M_PI
 #define M_PI 3.1415926535897932385
@@ -54,18 +57,6 @@
 // Define the default subrun.
 #ifndef SUBRUNDEFAULT
 #define SUBRUNDEFAULT -999
-#endif
-
-// Set floating point exceptions from the gcc compiler for debug
-// purposes. Use the compilation flag -DGCCFPDEBUG to enable.
-#ifdef GCCFPDEBUG
-#ifndef __ENABLE_FP_DEBUG__
-#define __ENABLE_FP_DEBUG__
-#include <fenv.h>
-static void __attribute__((constructor)) raisefpe() {
-   feenableexcept (FE_DIVBYZERO | FE_OVERFLOW | FE_INVALID);
-}
-#endif
 #endif
 
 // By this declaration you do not need to use std:: qualifier everywhere.

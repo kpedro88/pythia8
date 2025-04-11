@@ -8,6 +8,130 @@ PYTHIA 8.243 version, which was the starting point for PYTHIA
 compatibility. The main change is that C++11 is now assumed. 
 The impact on existing used code should be mild, however. 
  
+<h3>8.314: 11 April 2025</h3> 
+<ul> 
+ 
+<li>Both authors of the DIRE parton shower code have now left the 
+Pythia team, and the field of particle physics. Since there is 
+currently not sufficient person power to properly maintain the code, 
+we are considering removing DIRE in a future release. Users of DIRE 
+who are interested in maintaining the code in the future should 
+contact authors@pythia.org.</li> 
+ 
+<li>A batch generation interface in Python is now available using 
+<a href="https://awkward-array.org" target="_top">Awkward 
+arrays</a>. Thanks to Aartem Havryliuk and Jim Pivarski for providing 
+this interface, as well as <a href="https://iris-hep.org/" 
+target="_top">IRIS-HEP</a> for funding this work.</li> 
+ 
+<li>Introduced new options to treat the <code>aLund</code> 
+and <code>bLund</code> parameters in the Lund symmetric 
+fragmentation function as derived quantities. Instead, the 
+user can specify a desired mean and RMS width of the 
+Lund FF. Options to allow <code>aExtraDiquark</code> and 
+<code>aExtraSQuark</code> to be derived from corresponding 
+multiplicative factors are also made available.</li> 
+ 
+<li>New option in <code>SimpleTimeShower</code> to interpolate 
+smoothly between applying and not applying the RF eikonal reweighting 
+factor for <code>recoilStrategyRF = 0</code>, in decays of coloured 
+resonances such as <ei>t&rarr;bW</ei>, via the new parameter 
+<code>weightRF</code>. New default behaviour is to apply the RF 
+reweighting factor at full strength (<code>weightRF = 1.</code>). 
+Does not affect the first emission in top decay (which is anyway ME 
+corrected) but will affect second and subsequent emissions. Thanks to 
+D. Hirschbuehl and E. Schmidt for suggesting and validating this 
+update.</li> 
+ 
+<li>The example <code>main144.cc</code> has been updated so that it 
+can be optionally run with ROOT or Rivet. The ROOT streamer dictionary 
+for <code>main144</code> has also been updated so that it has no 
+Pythia dependencies and is generated with CLING rather than 
+CINT. Finally, a ROOT macro <code>main144.C</code> has been added as 
+an example on how to read the generated ROOT file.</li> 
+ 
+<li>Reintroduced the <code>zHad</code> member to the 
+<code>StringEnd</code> class for access via 
+<code>UserHooks</code>.</li> 
+ 
+<li>The parsed user supplied configuration command is now written to 
+<code>Makefile.inc</code>. Thanks to Andy Buckley for the 
+suggestion.</li> 
+ 
+<li>Minor documentation updates for the string Close Packing 
+model.</li> 
+ 
+<li>The Glauber statistics in Angantyr are now reset any time the 
+beams are changed.</li> 
+ 
+<li>Internally, beam particles are now stored and passed as shared 
+pointers. This change should have no effect on public facing 
+interfaces such as <code>UserHooks</code>.</li> 
+ 
+<li>Fixed bug in VINCIA that caused <code>Print:verbosity</code> to be 
+increased by one. Also added more detailed warning message when 
+encountering <code>Paccept &gt; 1</code> in the VINCIA ISR 
+shower. Thanks to B. Tuncay.</li> 
+ 
+<li>Fixed incorrect verbosity setting in VINCIA's massive final-final 
+branching kinematics introduced in 8.313 that resulted in incorrect 
+warnings about failed kinematics.</li> 
+ 
+<li>Fixed typo in <code>main487.cc</code>, mildly affecting 
+results.</li> 
+ 
+<li>Fixed bug in Hidden Valley fragmentation, whereby the lowest 
+vector meson mass could be incorrectly identified. Thanks to Matt 
+Strassler, Rabia Husain and Junyi Cheng.</li> 
+ 
+<li>Explicitly declared inline methods in <code>Pythia.h</code> for 
+C++17 compatability. Thanks to Jonas Rembser.</li> 
+ 
+<li>Fixed bug where, if an initialisation file is read in, the beam A 
+id in <code>MultipartonInteractions</code> was set to the first beam 
+in the <code>MultipartonInteractions::beamAList</code>, rather than 
+keeping the one requested in <code>Beams:idA</code>.</li> 
+ 
+<li>Updated links to download the EPPS16 PDF sets. Thanks to Wilke van 
+der Schee.</li> 
+ 
+<li>Fixed issue with a high failure rate in fixed target Angantyr 
+events at very high energies due to momentum non-conservation. Thanks 
+to E. El&eacute;n.</li> 
+ 
+<li>Fixed issue when using <code>Tune:preferLHAPDF &gt; 0</code> which 
+resulted in an incorrect PDF set, thanks to Markus Seidel.</li> 
+ 
+<li>Added the constructor <code>LHEF3FromPythia8(Pythia*)</code> to 
+allow for writing of LHEF files via the Python interface. Thanks to 
+Andre Sznajder for bringing this to our attention.</li> 
+ 
+<li>Debug feature for catching floating point exceptions extended. 
+Enabled with compilation flag <code>-DGCCFPDEBUG</code>. This is only 
+available with <code>gcc</code> on <code>x86/x86_64</code> 
+platforms.</li> 
+ 
+<li>Fixed floating point exceptions in 
+<code>MultipartonInteractions.cc</code>, 
+<code>HISubCollisionModel.h</code> and 
+<code>HISubCollisionModel.cc</code>. Generallly, these exceptions 
+should not have effected the output of Pythia.</li> 
+ 
+<li>Fixed issue with RIVET linking in the examples.</li> 
+ 
+<li>Corrected a bug in the Vincia QED spin-dependent RF antennae where 
+scalars were previously treated the same as fermions. Thanks to 
+G. Morgante.</li> 
+ 
+<li>More verbose error message added when the XML directory is not 
+found. Thanks to Bjarne Stugy.</li> 
+ 
+<li>Corrected file name for the ATLAS A14 NNPDF2.3 LO tune. No physics 
+results should change as it was only the file name itself that was 
+incorrect. Thanks to A. Buckley.</li> 
+ 
+</ul> 
+ 
 <h3>8.313: 10 January 2025</h3> 
 <ul> 
  
@@ -23,8 +147,7 @@ now be used to set the merging scale dynamically according to a
 function that interpolates between the regions of large virtuality and 
 large transverse momentum. The new merging scheme is available only 
 for VINCIA and showcased in the <code>main164dis.cmnd</code> command 
-file for the <code>main164.cc</code> example. 
-</li> 
+file for the <code>main164.cc</code> example.</li> 
  
 <li>A new parameter <code>Diffraction:sigmaRefPomPom</code> is 
 introduced to describe the effective pomeron-pomeron total cross 

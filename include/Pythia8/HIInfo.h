@@ -117,6 +117,9 @@ public:
     ++nFailSave;
   }
 
+  // Reset Glauber statistics.
+  void glauberReset();
+
   // The total cross section from the Glauber calculation.
   double glauberTot() const {
     return sigmaTotSave*FMSQ2MB;

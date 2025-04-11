@@ -46,16 +46,16 @@ void DireSplittingQCD::init() {
   usePDFalphas       = settingsPtr->flag("ShowerPDF:usePDFalphas");
   pT2minVariations   = pow2(max(0.,settingsPtr->parm("Variations:pTmin")));
 
-  BeamParticle* beam = NULL;
-  if (beamAPtr != NULL || beamBPtr != NULL) {
-    beam = (beamAPtr != NULL && particleDataPtr->isHadron(beamAPtr->id())) ?
+  BeamParticlePtr beam = nullptr;
+  if (beamAPtr != nullptr || beamBPtr != nullptr) {
+    beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id())) ?
       beamAPtr
-         : (beamBPtr != NULL && particleDataPtr->isHadron(beamBPtr->id())) ?
-      beamBPtr : NULL;
-    if (beam == NULL && beamAPtr != 0) beam = beamAPtr;
-    if (beam == NULL && beamBPtr != 0) beam = beamBPtr;
+         : (beamBPtr != nullptr && particleDataPtr->isHadron(beamBPtr->id())) ?
+      beamBPtr : nullptr;
+    if (beam == nullptr && beamAPtr != 0) beam = beamAPtr;
+    if (beam == nullptr && beamBPtr != 0) beam = beamBPtr;
   }
-  alphaS2pi          = (usePDFalphas && beam != NULL)
+  alphaS2pi          = (usePDFalphas && beam != nullptr)
                         ? beam->alphaS(pTmin*pTmin) * 0.5/M_PI
                         : (alphaSorder > 0)
                         ? alphaS.alphaS(pTmin*pTmin) *0.5/M_PI
@@ -133,18 +133,18 @@ double DireSplittingQCD::getNF(double pT2) {
 
   pT2       = max( pT2, pow2(pTmin) );
 
-  BeamParticle* beam = NULL;
-  if (beamAPtr != NULL || beamBPtr != NULL) {
-    beam = (beamAPtr != NULL && particleDataPtr->isHadron(beamAPtr->id())) ?
+  BeamParticlePtr beam = nullptr;
+  if (beamAPtr != nullptr || beamBPtr != nullptr) {
+    beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id())) ?
       beamAPtr
-         : (beamBPtr != NULL && particleDataPtr->isHadron(beamBPtr->id())) ?
-      beamBPtr : NULL;
-    if (beam == NULL && beamAPtr != 0) beam = beamAPtr;
-    if (beam == NULL && beamBPtr != 0) beam = beamBPtr;
+         : (beamBPtr != nullptr && particleDataPtr->isHadron(beamBPtr->id())) ?
+      beamBPtr : nullptr;
+    if (beam == nullptr && beamAPtr != 0) beam = beamAPtr;
+    if (beam == nullptr && beamBPtr != 0) beam = beamBPtr;
   }
 
   // Get current number of flavours.
-  if ( !usePDFalphas || beam == NULL) {
+  if ( !usePDFalphas || beam == nullptr) {
     if ( pT2 > pow2( max(0., particleDataPtr->m0(5) ) )
       && pT2 < pow2( particleDataPtr->m0(6)) )                 NF = 5.;
     else if ( pT2 > pow2( max( 0., particleDataPtr->m0(4)) ) ) NF = 4.;
@@ -199,21 +199,21 @@ double DireSplittingQCD::as2Pi( double pT2, int orderNow,
   double renormMultFacNow) {
 
   // Get beam for PDF alphaS, if necessary.
-  BeamParticle* beam = NULL;
-  if (beamAPtr != NULL || beamBPtr != NULL) {
-    beam = (beamAPtr != NULL && particleDataPtr->isHadron(beamAPtr->id())) ?
+  BeamParticlePtr beam = nullptr;
+  if (beamAPtr != nullptr || beamBPtr != nullptr) {
+    beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id())) ?
       beamAPtr
-         : (beamBPtr != NULL && particleDataPtr->isHadron(beamBPtr->id())) ?
-      beamBPtr : NULL;
-    if (beam == NULL && beamAPtr != 0) beam = beamAPtr;
-    if (beam == NULL && beamBPtr != 0) beam = beamBPtr;
+         : (beamBPtr != nullptr && particleDataPtr->isHadron(beamBPtr->id())) ?
+      beamBPtr : nullptr;
+    if (beam == nullptr && beamAPtr != 0) beam = beamAPtr;
+    if (beam == nullptr && beamBPtr != 0) beam = beamBPtr;
   }
   double scale       = pT2 * ( (renormMultFacNow > 0.)
                               ? renormMultFacNow : renormMultFac);
   scale              = max(scale, pow2(pTmin) );
 
   // Get alphaS(k*pT^2) and subtractions.
-  double asPT2pi      = (usePDFalphas && beam != NULL)
+  double asPT2pi      = (usePDFalphas && beam != nullptr)
                       ? beam->alphaS(scale)  / (2.*M_PI)
                       : alphaS.alphaS(scale) / (2.*M_PI);
   int order = (orderNow > -1) ? orderNow : correctionOrder;
@@ -221,12 +221,12 @@ double DireSplittingQCD::as2Pi( double pT2, int orderNow,
 
   // Now find the necessary thresholds so that alphaS can be matched
   // correctly.
-  double m2cPhys = (usePDFalphas && beam != NULL)
+  double m2cPhys = (usePDFalphas && beam != nullptr)
                  ? pow2(max(0.,beam->mQuarkPDF(4)))
                  : alphaS.muThres2(4);
   if ( !( (scale > m2cPhys && pT2 < m2cPhys)
        || (scale < m2cPhys && pT2 > m2cPhys) ) ) m2cPhys = -1.;
-  double m2bPhys = (usePDFalphas && beam != NULL)
+  double m2bPhys = (usePDFalphas && beam != nullptr)
                  ? pow2(max(0.,beam->mQuarkPDF(5)))
                  : alphaS.muThres2(5);
   if ( !( (scale > m2bPhys && pT2 < m2bPhys)
@@ -861,7 +861,7 @@ double DireSplittingQCD::getJacobian( const Event& state, PartonSystems*
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2QGG::canRadiate (const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
@@ -870,7 +870,7 @@ bool Dire_fsr_qcd_Q2QGG::canRadiate (const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_Q2QGG::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -1216,7 +1216,7 @@ bool Dire_fsr_qcd_Q2QGG::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2GGG::canRadiate (const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
@@ -1225,7 +1225,7 @@ bool Dire_fsr_qcd_G2GGG::canRadiate (const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2GGG::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -1589,7 +1589,7 @@ bool Dire_fsr_qcd_G2GGG::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2Qqqbar::canRadiate (const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
@@ -1598,7 +1598,7 @@ bool Dire_fsr_qcd_Q2Qqqbar::canRadiate (const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_Q2Qqqbar::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -1929,7 +1929,7 @@ bool Dire_fsr_qcd_Q2Qqqbar::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2Gqqbar::canRadiate (const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
@@ -1938,7 +1938,7 @@ bool Dire_fsr_qcd_G2Gqqbar::canRadiate (const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2Gqqbar::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave != 4) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -2272,7 +2272,7 @@ bool Dire_fsr_qcd_G2Gqqbar::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2QG::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -2280,7 +2280,7 @@ bool Dire_fsr_qcd_Q2QG::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_Q2QG::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -2662,7 +2662,7 @@ bool Dire_fsr_qcd_Q2QG::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2GQ::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -2670,7 +2670,7 @@ bool Dire_fsr_qcd_Q2GQ::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_Q2GQ::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -2992,7 +2992,7 @@ bool Dire_fsr_qcd_Q2GQ::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2GG1::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -3000,7 +3000,7 @@ bool Dire_fsr_qcd_G2GG1::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2GG1::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -3409,7 +3409,7 @@ bool Dire_fsr_qcd_G2GG1::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2GG2::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -3417,7 +3417,7 @@ bool Dire_fsr_qcd_G2GG2::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2GG2::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -3827,7 +3827,7 @@ bool Dire_fsr_qcd_G2GG2::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2QQ1::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -3835,7 +3835,7 @@ bool Dire_fsr_qcd_G2QQ1::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2QQ1::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -4126,7 +4126,7 @@ bool Dire_fsr_qcd_G2QQ1::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2QQ2::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -4134,7 +4134,7 @@ bool Dire_fsr_qcd_G2QQ2::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qcd_G2QQ2::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -4426,7 +4426,7 @@ bool Dire_fsr_qcd_G2QQ2::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2qQqbarDist::canRadiate ( const Event& state,
   pair<int,int> ints, unordered_map<string,bool>, Settings*, PartonSystems*,
-  BeamParticle*) {
+  BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -4434,7 +4434,7 @@ bool Dire_fsr_qcd_Q2qQqbarDist::canRadiate ( const Event& state,
 }
 
 bool Dire_fsr_qcd_Q2qQqbarDist::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave < 3) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -4700,7 +4700,7 @@ bool Dire_fsr_qcd_Q2qQqbarDist::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2QbarQQId::canRadiate ( const Event& state,
   pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -4708,7 +4708,7 @@ bool Dire_fsr_qcd_Q2QbarQQId::canRadiate ( const Event& state,
 }
 
 bool Dire_fsr_qcd_Q2QbarQQId::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave < 3) return false;
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -4996,7 +4996,7 @@ bool Dire_fsr_qcd_Q2QbarQQId::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_Q2QG::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -5004,7 +5004,7 @@ bool Dire_isr_qcd_Q2QG::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qcd_Q2QG::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -5199,7 +5199,7 @@ bool Dire_isr_qcd_Q2QG::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_G2GG1::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -5207,7 +5207,7 @@ bool Dire_isr_qcd_G2GG1::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qcd_G2GG1::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -5455,7 +5455,7 @@ bool Dire_isr_qcd_G2GG1::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_G2GG2::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -5463,7 +5463,7 @@ bool Dire_isr_qcd_G2GG2::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qcd_G2GG2::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -5698,7 +5698,7 @@ bool Dire_isr_qcd_G2GG2::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_G2QQ::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -5706,7 +5706,7 @@ bool Dire_isr_qcd_G2QQ::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qcd_G2QQ::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -5894,7 +5894,7 @@ bool Dire_isr_qcd_G2QQ::calc(const Event& state, int orderNow) {
 
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_Q2GQ::canRadiate ( const Event& state, pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -5902,7 +5902,7 @@ bool Dire_isr_qcd_Q2GQ::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qcd_Q2GQ::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
         && hasSharedColor(state, iRadBef, iRecBef)
@@ -6120,7 +6120,7 @@ bool Dire_isr_qcd_Q2GQ::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_Q2qQqbarDist::canRadiate ( const Event& state,
   pair<int,int> ints, unordered_map<string,bool>, Settings*, PartonSystems*,
-  BeamParticle*) {
+  BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -6128,7 +6128,7 @@ bool Dire_isr_qcd_Q2qQqbarDist::canRadiate ( const Event& state,
 }
 
 bool Dire_isr_qcd_Q2qQqbarDist::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave < 3) return false;
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -6431,7 +6431,7 @@ bool Dire_isr_qcd_Q2qQqbarDist::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qcd_Q2QbarQQId::canRadiate ( const Event& state,
   pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return (!state[ints.first].isFinal()
         && state[ints.second].colType() != 0
         && hasSharedColor(state, ints.first, ints.second)
@@ -6439,7 +6439,7 @@ bool Dire_isr_qcd_Q2QbarQQId::canRadiate ( const Event& state,
 }
 
 bool Dire_isr_qcd_Q2QbarQQId::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   if (orderSave < 3) return false;
   return ( !state[iRadBef].isFinal()
         && state[iRecBef].colType() != 0
@@ -6758,14 +6758,14 @@ bool Dire_isr_qcd_Q2QbarQQId::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_Q2QG_notPartial::canRadiate ( const Event& state,
   pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() == 0
         && state[ints.first].isQuark() );
 }
 
 bool Dire_fsr_qcd_Q2QG_notPartial::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() == 0
         && state[iRadBef].isQuark());
@@ -6952,14 +6952,14 @@ bool Dire_fsr_qcd_Q2QG_notPartial::calc(const Event& state, int) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2GG_notPartial::canRadiate ( const Event& state,
    pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() == 0
         && state[ints.first].id() == 21 );
 }
 
 bool Dire_fsr_qcd_G2GG_notPartial::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() == 0
         && state[iRadBef].id() == 21);
@@ -7139,14 +7139,14 @@ bool Dire_fsr_qcd_G2GG_notPartial::calc(const Event& state, int) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qcd_G2QQ_notPartial::canRadiate ( const Event& state,
   pair<int,int> ints,
-  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticle*) {
+  unordered_map<string,bool>, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[ints.first].isFinal()
         && state[ints.second].colType() == 0
         && state[ints.first].id() == 21 );
 }
 
 bool Dire_fsr_qcd_G2QQ_notPartial::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
   return ( state[iRadBef].isFinal()
         && state[iRecBef].colType() == 0
         && state[iRadBef].id() == 21);
