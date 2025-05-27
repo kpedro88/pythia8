@@ -503,8 +503,8 @@ void QEDsystem::updatePartonSystems() {
 
 // Initialize settings for current run.
 
-void QEDemitSystem::init(BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn, int verboseIn) {
+void QEDemitSystem::init(BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn, int verboseIn) {
 
   // Verbose setting.
   if (!isInitPtr)
@@ -1835,8 +1835,8 @@ double QEDemitSystem::pdfRatio(bool isA, double eOld, double eNew, int id,
 
 // Initialize.
 
-void QEDsplitSystem::init(BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn, int verboseIn) {
+void QEDsplitSystem::init(BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn, int verboseIn) {
   if (!isInitPtr) printOut(__METHOD_NAME__, "initPtr not called");
   verbose = verboseIn;
   q2Max   = pow2(settingsPtr->parm("Vincia:mMaxGamma"));
@@ -2247,8 +2247,8 @@ void QEDsplitSystem::print() {
 
 // Initialize the system.
 
-void QEDconvSystem::init(BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn, int verboseIn) {
+void QEDconvSystem::init(BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn, int verboseIn) {
 
   // Verbosity setting.
   if (!isInitPtr) printOut(__METHOD_NAME__, "initPtr not called");
@@ -2740,7 +2740,7 @@ void VinciaQED::initPtr(Info* infoPtrIn, VinciaCommon* vinComPtrIn) {
 
 // Initialize settings for current run.
 
-void VinciaQED::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
+void VinciaQED::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn) {
 
   // Verbose setting
   verbose = settingsPtr->mode("Vincia:verbose");

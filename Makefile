@@ -152,6 +152,7 @@ install: all
 clean:
 	cd plugins/python && $(MAKE) clean
 	cd plugins/mg5mes && $(MAKE) clean
+	rm -rf $(LOCAL_TMP) $(LOCAL_LIB)
 	cd $(LOCAL_EXAMPLE) && $(MAKE) clean
 
 # Clean all temporary and generated files.

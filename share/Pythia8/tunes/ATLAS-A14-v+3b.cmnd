@@ -3,6 +3,7 @@
 ! Note that TimeShower:alphaSvalue is set here, although normally it would be
 ! in the domain of ee tunes.
 ! Previously set by "Tune:pp = 28".
+include                             = tunes/Monash2013.cmnd ! based on Monash
 PDF:pSet                            = 13       ! NNPDF23_lo_as_0130_qed
 SigmaProcess:alphaSvalue            = 0.140 
 TimeShower:alphaSvalue              = 0.114 

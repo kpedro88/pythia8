@@ -40,7 +40,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
 #include <pybind11/functional.h>
-#include <awkward/PythiaBatch.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -164,7 +163,6 @@ void bind_Pythia8_PythiaParallel(std::function< pybind11::module &(std::string c
 		cl.def("run", (class std::vector<long, class std::allocator<long> > (Pythia8::PythiaParallel::*)(long, class std::function<void (class Pythia8::Pythia *)>)) &Pythia8::PythiaParallel::run, pybind11::call_guard<pybind11::gil_scoped_release>(), "C++: Pythia8::PythiaParallel::run(long, class std::function<void (class Pythia8::Pythia *)>) --> class std::vector<long, class std::allocator<long> >", pybind11::arg("nEvents"), pybind11::arg("callback"));
 		cl.def("run", (class std::vector<long, class std::allocator<long> > (Pythia8::PythiaParallel::*)(class std::function<void (class Pythia8::Pythia *)>)) &Pythia8::PythiaParallel::run, pybind11::call_guard<pybind11::gil_scoped_release>(), "C++: Pythia8::PythiaParallel::run(class std::function<void (class Pythia8::Pythia *)>) --> class std::vector<long, class std::allocator<long> >", pybind11::arg("callback"));
 		cl.def("sigmaGen", (double (Pythia8::PythiaParallel::*)() const) &Pythia8::PythiaParallel::sigmaGen, "C++: Pythia8::PythiaParallel::sigmaGen() const --> double");
-		cl.def("nextBatch", &nextBatchParallel, pybind11::arg("nEvents"));
 		cl.def("weightSum", (double (Pythia8::PythiaParallel::*)() const) &Pythia8::PythiaParallel::weightSum, "C++: Pythia8::PythiaParallel::weightSum() const --> double");
 	}
 	{ // Pythia8::EventInfo file:Pythia8/HIBasics.h line:25

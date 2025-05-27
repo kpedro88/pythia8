@@ -8,20 +8,21 @@
  
 <h2>Update History</h2> 
 <ol id="toc">
-  <li><a href="#section0">8.314: 11 April 2025</a></li>
-  <li><a href="#section1">8.313: 10 January 2025</a></li>
-  <li><a href="#section2">8.312: 23 May 2024</a></li>
-  <li><a href="#section3">8.311: 08 March 2024</a></li>
-  <li><a href="#section4">8.310: 25 July 2023</a></li>
-  <li><a href="#section5">8.309: 16 February 2023</a></li>
-  <li><a href="#section6">8.308: 16 November 2022</a></li>
-  <li><a href="#section7">8.307: 25 February 2022</a></li>
-  <li><a href="#section8">8.306: 28 June 2021</a></li>
-  <li><a href="#section9">8.305: 03 May 2021</a></li>
-  <li><a href="#section10">8.304: 09 April 2021</a></li>
-  <li><a href="#section11">8.303: 01 September 2020</a></li>
-  <li><a href="#section12">8.302: 24 April 2020</a></li>
-  <li><a href="#section13">8.301: 30 October 2019</a></li>
+  <li><a href="#section0">8.315: 27 May 2025</a></li>
+  <li><a href="#section1">8.314: 11 April 2025</a></li>
+  <li><a href="#section2">8.313: 10 January 2025</a></li>
+  <li><a href="#section3">8.312: 23 May 2024</a></li>
+  <li><a href="#section4">8.311: 08 March 2024</a></li>
+  <li><a href="#section5">8.310: 25 July 2023</a></li>
+  <li><a href="#section6">8.309: 16 February 2023</a></li>
+  <li><a href="#section7">8.308: 16 November 2022</a></li>
+  <li><a href="#section8">8.307: 25 February 2022</a></li>
+  <li><a href="#section9">8.306: 28 June 2021</a></li>
+  <li><a href="#section10">8.305: 03 May 2021</a></li>
+  <li><a href="#section11">8.304: 09 April 2021</a></li>
+  <li><a href="#section12">8.303: 01 September 2020</a></li>
+  <li><a href="#section13">8.302: 24 April 2020</a></li>
+  <li><a href="#section14">8.301: 30 October 2019</a></li>
 </ol>
 
  
@@ -32,6 +33,89 @@ compatibility. The main change is that C++11 is now assumed.
 The impact on existing used code should be mild, however. 
  
 <a name="section0"></a> 
+<h3>8.315: 27 May 2025</h3> 
+<ul> 
+ 
+<li>The key topic addressed in this release is a fix for a serious bug 
+in the Lund symmetric fragmentation function (LSFF). It concerns the 
+case where diquarks or strange quarks are assumed to be produced at a 
+later average time than the up and down quarks. The LSFF then has to 
+be generalized to a form where both the <i>a</i> value of the old 
+and of the new flavour in a fragmentation step occur. Unfortunately, 
+in the transition from PYTHIA 6 to PYTHIA 8, a mistake was made, 
+whereby the role of the old and the new <i>a</i> values were flipped 
+in the <i>(1-z)^a</i> factor. By default diquarks are assumed to be 
+produced later, so the bug fix has an impact on correlations between 
+baryons and antibaryons, to some degree also on baryon spectra, 
+whereas overall event shapes are only mildly affected. Strangeness is 
+not modified in the current tunes. To maintain backwards 
+compatibility, a new switch <code>StringZ:useOldAExtra</code> has been 
+introduced, see the <a href="Fragmentation.html" target="page">String Fragmentation</a> 
+page. All current internal tunes have been set to use the old 
+handling, but new ones will use the bug-fixed LSFF expression. For 
+more details on the bug and its consequences, have a look at the 
+separate note <a href="../pdfdoc/aextra.pdf">linked here</a>. In 
+the near future we intend to present new tunes where this bug fix is 
+taken into account. Thanks to Tony Menzo for finding this bug.</li> 
+ 
+<li>Some changes in the Hidden Valley machinery. Several automatic 
+rescalings of (safety) parameters and constants to allow a broader 
+range of HV mass scales, including ones below the QCD one. Thanks to 
+Miho Wakai. The manual clarifies the vector vs. pseudoscalar 
+composition. Minor fix in <code>main509.cc</code>, so that the 
+<i>Lambda</i> value is used to define the coupling expression. 
+Furthermore the change of <code>recoilStrategyRF</code> default value 
+in 8.314 affects <code>main509.cc</code> results, so a switch is 
+introduced to recover the old behaviour, if so desired.</li> 
+ 
+<li>The prefix for custom weights can now be specified with the 
+setting <code>Weights:prefix</code> which is by default empty. The 
+previous behaviour was for this to be <code>AUX_</code>. The flag 
+<code>Weights:suppressAUX</code> still suppresses these weights, 
+regardless of the prefix provided by the user. To recover the old 
+behaviour, set <code>Weights:suppressAUX = AUX_</code>.</li> 
+ 
+<li>The logic behind the construction of parton-shower histories in 
+CKKW-L merging has been improved. This has previously resulted in 
+out-of-range errors for processes with resonance-decay chains, such as 
+ttbar production. Thanks to Andy Buckley for reporting the bug.</li> 
+ 
+<li>Fixed two bugs in <code>PartonLevel.cc</code>. 
+<ul> 
+<li>When checking if beams are point-like (to determine if ISR and 
+beam remnants), a lepton check was not performed for the second beam 
+(B).</li> 
+<li>An incorrect check was made when calculating maximum weights for 
+FSR decays with <i>W/Z</i>.</li> 
+</ul> 
+Thanks to Dmitry Konstantinov for reporting the bug.</li> 
+ 
+<li>Fixed a rare bug in 
+<code>StringFragmentation::setHadronVertices</code> that caused a 
+segmentation fault when the string endpoints are <i>c</i> or 
+<i>b</i> quarks, and a quark mass offset correction is 
+introduced. Thanks to Hao Yang for finding this bug.</li> 
+ 
+<li>Fixed typos in the documentation for 
+<a href="HadronizationVariations.html" target="page">Hadronization Variations</a> that 
+do not effect that results of Pythia. Thanks to Giancarlo Panizzo for 
+pointing this out.</li> 
+ 
+<li>Internally, reverted beam particles back to raw pointers for 
+technical reasons. This change should have no effect on public facing 
+interfaces such as <code>UserHooks</code>.</li> 
+ 
+<li>An incorrect type declaration in 8.314 invalidated the new option 
+to derive the <i>a</i> and <i>b</i> parameters from the average 
+and RMS width of the Lund FF, causing this option to fail for any 
+choice of input parameters, corrected now.</li> 
+ 
+<li>Fixed a typo in the MPI initialization when using saved grid which 
+caused an out-of-access memory read.</li> 
+ 
+</ul> 
+ 
+<a name="section1"></a> 
 <h3>8.314: 11 April 2025</h3> 
 <ul> 
  
@@ -156,7 +240,7 @@ incorrect. Thanks to A. Buckley.</li>
  
 </ul> 
  
-<a name="section1"></a> 
+<a name="section2"></a> 
 <h3>8.313: 10 January 2025</h3> 
 <ul> 
  
@@ -240,7 +324,7 @@ and Suchita Kulkarni for valuable input.</li>
 will now only enable <code>doChangeFragPar()</code>, while the new 
 function <code>canChangeVetoFragmentation()</code> enables the 
 <code>doChangeVetoFragmentation()</code> functions and the new 
-<code>doChangeVetoFnalTwo()</code> function.  See 
+<code>doChangeVetoFnalTwo()</code> function. See 
 <a href="UserHooks.html" target="page">User Hooks</a> for details.</li> 
  
 <li>An experimental feature has been introduced where the 
@@ -429,7 +513,7 @@ Laurent Dufour for alerting us to this bug.
  
 </ul> 
  
-<a name="section2"></a> 
+<a name="section3"></a> 
 <h3>8.312: 23 May 2024</h3> 
 <ul> 
  
@@ -442,7 +526,7 @@ up, empty slots were used more-or-less at random, before eventually
 also three-digit codes were introduced. Now all examples have been 
 regrouped by topic as three-digit codes <code>mainNNN.cc</code>, with 
 empty space within each group for future expansion. No program keeps 
-its old code.  Some new examples have been introduced and some 
+its old code. Some new examples have been introduced and some 
 existing ones have been modified. The matching and merging examples 
 have seen a significant restructuring, where 
 <a href="NLOMerging.html" target="page"><code>main162.cc</code></a> and 
@@ -508,7 +592,7 @@ quark mass is set to zero.</li>
  
 </ul> 
  
-<a name="section3"></a> 
+<a name="section4"></a> 
 <h3>8.311: 08 March 2024</h3> 
  
 <ul> 
@@ -646,7 +730,7 @@ more information, see <a href="Parallelism.html" target="page">Parallelism</a> o
 <li>New Vincia example programs for EW showers, 
 <code>main205.cc</code> - <code>main207.cc</code>. 
 <code>main205</code> illustrates electroweak showers in Z decays to 
-neutrinos (at very high Z mass).  <code>main206</code> illustrates EW 
+neutrinos (at very high Z mass). <code>main206</code> illustrates EW 
 showers for dijets at LHC and was previously named 
 <code>main203</code>. <code>main207.cc</code> illustrates read-in of 
 LHEF files for EW showering with Vincia.</li> 
@@ -740,7 +824,7 @@ fixed.</li>
 <code>PhaseSpace::setupSampling123</code>.</li> 
 </ul> 
  
-<a name="section4"></a> 
+<a name="section5"></a> 
 <h3>8.310: 25 July 2023</h3> 
  
 <ul> 
@@ -875,7 +959,7 @@ additional settings files to be directly read in.</li>
 <li>Fixed a bug in the bookkeeping the number of hadrons in the string 
 fragmentation.</li> 
  
-<a name="section5"></a> 
+<a name="section6"></a> 
 <h3>8.309: 16 February 2023</h3> 
  
 <ul> 
@@ -973,7 +1057,7 @@ input.</li>
 with GCC 12.2.</li> 
 </ul> 
  
-<a name="section6"></a> 
+<a name="section7"></a> 
 <h3>8.308: 16 November 2022</h3> 
  
 <ul> 
@@ -1081,7 +1165,7 @@ reference.</li>
 <li>Updating affiliation for Christian Bierlich.</li> 
 </ul> 
  
-<a name="section7"></a> 
+<a name="section8"></a> 
 <h3>8.307: 25 February 2022</h3> 
  
 <ul> 
@@ -1257,7 +1341,7 @@ events. Thanks to Giancarlo Panizzo and Marvin Flores for reporting
 the issue.</li> 
 </ul> 
  
-<a name="section8"></a> 
+<a name="section9"></a> 
 <h3>8.306: 28 June 2021</h3> 
  
 <ul> 
@@ -1289,7 +1373,7 @@ most collinear parent is the first mother.
 <li>Shortened Pythia constructor header.</li> 
 </ul> 
  
-<a name="section9"></a> 
+<a name="section10"></a> 
 <h3>8.305: 03 May 2021</h3> 
  
 <ul> 
@@ -1330,7 +1414,7 @@ small bug reported by Vittorio Zecca.</li>
 <code>main07.cc</code>. Thanks to M. Baker and A. Thamm.</li> 
 </ul> 
  
-<a name="section10"></a> 
+<a name="section11"></a> 
 <h3>8.304: 09 April 2021</h3> 
  
 <ul> 
@@ -1479,7 +1563,7 @@ called twice. Now all available cases are looped over, but easy to
 change back to study only one.</li> 
 </ul> 
  
-<a name="section11"></a> 
+<a name="section12"></a> 
 <h3>8.303: 01 September 2020</h3> 
  
 <ul> 
@@ -1534,7 +1618,7 @@ proton radius has been change from 0.7 to 0.85 fm.
 quark-antiquark string breakup vertices can give large shifts, see 
 further the new <code>HadronVertex:maxSmear</code> parameter. The new 
 <code>HadronVertex:maxTau</code> gives the possibility to reject 
-hadrons of suspected misreconstructed systems and try again.  The 
+hadrons of suspected misreconstructed systems and try again. The 
 introduction of MPI impact parameters is compensated by a reduced 
 transverse hadronization smearing. Also some other related 
 changes.</li> 
@@ -1571,7 +1655,7 @@ not fully validated for RPV.</li>
  
 <li>For LHE processes, the width of the primordial kT distribution is 
 now set solely by the <code>BeamRemnants:primordialKThard</code> 
-parameter, ignorning <code>BeamRemnants:primordialKTsoft</code>.  This 
+parameter, ignorning <code>BeamRemnants:primordialKTsoft</code>. This 
 change is so that LHE events with low-pT extra jets (e.g., in the 
 context of POWHEG-style merging) are given the same primordial kT as 
 their Born-level counterparts.</li> 
@@ -1627,7 +1711,7 @@ along the <i>+-z</i> direction.</li>
 <code>PythiaStdlib.h</code>.</li> 
  
 <li>It is now possible to use range-based for loops to iterate over 
-particles in an event, e.g.  <code>for (Particle&amp p : 
+particles in an event, e.g. <code>for (Particle&amp p : 
 pythia.event)</code>. Similarly, the particle data table can be 
 iterated over, with each entry being a <code>pair&lt;int, 
 ParticleDataEntry&amp&gt;</code>.</li> 
@@ -1713,7 +1797,7 @@ diffractive systems.</li>
 for diffraction. Thanks to Valentina Zaccolo.</li> 
 </ul> 
  
-<a name="section12"></a> 
+<a name="section13"></a> 
 <h3>8.302: 24 April 2020</h3> 
  
 <ul> 
@@ -1742,7 +1826,7 @@ had not been previously carried over to Pythia 8.3.</li>
 Zecca.</li> 
  
 <li>New particle property directive <code>tauCalc</code> allows for a 
-particle's proper lifetime to be set independently of its width.  This 
+particle's proper lifetime to be set independently of its width. This 
 is useful for studying the effect of lifetime for a particle when the 
 particle width is otherwise negligible.</li> 
  
@@ -1808,7 +1892,7 @@ with Vincia reverting to the same (in-code) way of setting tune
 presets as Dire and Pythia.</li> 
 </ul> 
  
-<a name="section13"></a> 
+<a name="section14"></a> 
 <h3>8.301: 30 October 2019</h3> 
 <ul> 
 <li>Compilation is done with a new <code>-std=c++11</code> flag.</li> 
@@ -1854,7 +1938,7 @@ postscript file.</li>
 so that these can be set separately in some situations. If an 
 <code>SLHA</code> file is used to set particle properties, then 
 <code>SLHA:allowUserOverride = true</code> allows the lifetime to be 
-set using a command file/string.  Otherwise, lifetime is calculated 
+set using a command file/string. Otherwise, lifetime is calculated 
 from particle width. The ability to have the width and lifetime as 
 independent properties is convenient for studies of new physics.</li> 
  
@@ -1881,7 +1965,7 @@ users to generate their own interface. Full details are given on the
 been made a constant reference, so that it cannot be externally 
 manipulated outside of the internal classes. This constant reference 
 points back to <code>Pythia::infoPrivate</code> instance, which is 
-for internal use only.  This instance now also contains pointers to 
+for internal use only. This instance now also contains pointers to 
 several other commonly used classes.</li> 
  
 <li>A new base class <code>PhysicsBase</code> has been created, from 
@@ -1901,7 +1985,7 @@ obligations. New header <code>SharedPointers.h</code>.</li>
  
 <li>The <code>CoupSM</code> and <code>CoupSUSY</code> couplings 
 classes are now separated, rather than the latter being derived from 
-the former.  This avoids the problem of the old <code>Couplings</code> 
+the former. This avoids the problem of the old <code>Couplings</code> 
 pointer potentially changing address, and some pointer casting.</li> 
  
 <li>Mathematical functions and methods have been extracted from the 
@@ -1935,7 +2019,7 @@ low-energy collisions between two hadrons. By default there is a smooh
 transition between this simple nonperturbative model and the full 
 MPI-based framework at higher energies. To be used e.g. within the 
 modelling of hadronic rescattering in the final state of high-energy 
-collisions.  This framework is still under development.</li> 
+collisions. This framework is still under development.</li> 
  
 <li>New <code>StringInteractions</code> base class to provide common 
 administrative framework for string shoving, rope hadronization, 

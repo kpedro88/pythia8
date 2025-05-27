@@ -5,10 +5,6 @@
 
 // This file contains the base class for physics classes used inside Pyhia8.
 
-// Still to convert:
-// BeamParticle
-// BeamShape
-
 #ifndef Pythia8_PhysicsBase_H
 #define Pythia8_PhysicsBase_H
 
@@ -98,15 +94,15 @@ protected:
 
   // Pointers to the two incoming beams and to Pomeron, photon or VMD
   // beam-inside-beam cases.
-  BeamSetup*      beamSetupPtr    = {};
-  BeamParticlePtr beamAPtr        = {};
-  BeamParticlePtr beamBPtr        = {};
-  BeamParticlePtr beamPomAPtr     = {};
-  BeamParticlePtr beamPomBPtr     = {};
-  BeamParticlePtr beamGamAPtr     = {};
-  BeamParticlePtr beamGamBPtr     = {};
-  BeamParticlePtr beamVMDAPtr     = {};
-  BeamParticlePtr beamVMDBPtr     = {};
+  BeamSetup*    beamSetupPtr    = {};
+  BeamParticle* beamAPtr        = {};
+  BeamParticle* beamBPtr        = {};
+  BeamParticle* beamPomAPtr     = {};
+  BeamParticle* beamPomBPtr     = {};
+  BeamParticle* beamGamAPtr     = {};
+  BeamParticle* beamGamBPtr     = {};
+  BeamParticle* beamVMDAPtr     = {};
+  BeamParticle* beamVMDBPtr     = {};
 
   // Pointer to information on subcollision parton locations.
   PartonSystems* partonSystemsPtr = {};

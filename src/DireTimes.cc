@@ -84,8 +84,8 @@ const double DireTimes::LEPTONZMAX     = 1. - 1e-4;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void DireTimes::init( BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn) {
+void DireTimes::init( BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn) {
 
   dryrun = false;
 
@@ -217,7 +217,7 @@ void DireTimes::init( BeamParticlePtr beamAPtrIn,
 
   usePDFalphas       = settingsPtr->flag("ShowerPDF:usePDFalphas");
   useSummedPDF       = settingsPtr->flag("ShowerPDF:useSummedPDF");
-  BeamParticlePtr beam = nullptr;
+  BeamParticle* beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id())) ?
       beamAPtr
@@ -2053,7 +2053,7 @@ double DireTimes::overheadFactors( DireTimesEnd* dip, const Event& state,
     && !state[dip->iRecoiler].isFinal()
     && particleDataPtr->colType(state[dip->iRecoiler].id()) != 0) {
 
-    BeamParticlePtr beam = nullptr;
+    BeamParticle* beam = nullptr;
     if (beamAPtr != nullptr || beamBPtr != nullptr) {
       if (dip->isrType == 1 && beamAPtr != nullptr) beam = beamAPtr;
       if (dip->isrType != 1 && beamBPtr != nullptr) beam = beamBPtr;
@@ -3658,7 +3658,7 @@ bool DireTimes::pT2nextQCD_FI(double pT2begDip, double pT2sel,
   if (pT2endForce >= 0.) pT2endDip = pT2endForce;
   if (pT2begDip < pT2endDip) { dip.pT2 = 0.; return false; }
 
-  BeamParticlePtr beam = (dip.isrType == 1) ? beamAPtr : beamBPtr;
+  BeamParticle* beam = (dip.isrType == 1) ? beamAPtr : beamBPtr;
 
   // Variables used inside evolution loop. (Mainly dummy start values.)
   dip.pT2              = pT2begDip;
@@ -8198,7 +8198,7 @@ void DireTimes::list() const {
 double DireTimes::alphasNow( double pT2, double renormMultFacNow, int iSys ) {
 
   // Get beam for PDF alphaS, if necessary.
-  BeamParticlePtr beam = nullptr;
+  BeamParticle* beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
          ? beamAPtr
@@ -8283,7 +8283,7 @@ double DireTimes::getNF(double pT2) {
 
   double NF = 6.;
 
-  BeamParticlePtr beam = nullptr;
+  BeamParticle* beam = nullptr;
   if (beamAPtr != nullptr || beamBPtr != nullptr) {
     beam = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))
          ? beamAPtr

@@ -736,7 +736,7 @@ class EWAntennaII : public EWAntenna {
 public:
 
   // Constructor.
-  EWAntennaII(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn):
+  EWAntennaII(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn):
     beamAPtr(beamAPtrIn), beamBPtr(beamBPtrIn), shh(0), xMot(0), xRec(0),
       vetoResonanceProduction(false), TINYPDFtrial(1e-10) {;}
 
@@ -753,7 +753,8 @@ private:
 
   // Members.
   // Beam pointers.
-  BeamParticlePtr beamAPtr{}, beamBPtr{};
+  BeamParticle* beamAPtr{};
+  BeamParticle* beamBPtr{};
   // Hadronic invariant mass.
   double shh;
   // Antenna hadronic momentum fractions.
@@ -804,7 +805,7 @@ public:
     al = alIn;}
 
   // Initialize.
-  void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn)  {
+  void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn)  {
   beamAPtr = beamAPtrIn; beamBPtr = beamBPtrIn;
   doVetoHardEmissions = settingsPtr->flag("Vincia:EWoverlapVeto");
   vetoHardEmissionsDeltaR2 =
@@ -943,8 +944,8 @@ private:
   double q2Cut;
 
   // Pointers.
-  BeamParticlePtr beamAPtr{};
-  BeamParticlePtr beamBPtr{};
+  BeamParticle* beamAPtr{};
+  BeamParticle* beamBPtr{};
   Info* infoPtr{};
   PartonSystems* partonSystemsPtr{};
   Rndm* rndmPtr{};
@@ -1006,8 +1007,8 @@ public:
     isInitPtr = true;}
 
   // Initialise settings for current run (called as part of Pythia::init()).
-  void init(BeamParticlePtr beamAPtrIn = nullptr,
-    BeamParticlePtr beamBPtrIn = nullptr) override;
+  void init(BeamParticle* beamAPtrIn = nullptr,
+    BeamParticle* beamBPtrIn = nullptr) override;
 
   // Select helicities for a resonance-decay system.
   bool polarise(vector<Particle> &state) override {

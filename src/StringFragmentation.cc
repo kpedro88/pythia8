@@ -38,7 +38,7 @@ const double StringEnd::MEANPT   = 0.4;
 
 void StringEnd::setUp(bool fromPosIn, int iEndIn, int idOldIn, int iMaxIn,
   double pxIn, double pyIn, double GammaIn, double xPosIn, double xNegIn,
-  int colIn) {
+  int colIn, double mVecRatioIn) {
 
   // Simple transcription from input.
   fromPos    = fromPosIn;
@@ -54,6 +54,9 @@ void StringEnd::setUp(bool fromPosIn, int iEndIn, int idOldIn, int iMaxIn,
   xPosOld    = xPosIn;
   xNegOld    = xNegIn;
   colOld     = colIn;
+  mVecRatio  = mVecRatioIn;
+  tinyEq     = mVecRatio * TINY;
+  pT2tiny    = pow2(mVecRatio) * PT2SAME;
 
 }
 
@@ -202,7 +205,7 @@ Vec4 StringEnd::kinematicsHadron( StringSystem& system,
       system.regionLowPos(iPosNew).pPos,
       system.regionLowNeg(iNegNew).pNeg,
       system.regionLowPos(iPosNew).colPos,
-      system.regionLowNeg(iNegNew).colNeg, true);
+      system.regionLowNeg(iNegNew).colNeg, true, mVecRatio);
 
     // If new region is vanishingly small, continue immediately to next.
     // Negative energy signals failure to do this, i.e. moved too low.
@@ -220,7 +223,7 @@ Vec4 StringEnd::kinematicsHadron( StringSystem& system,
     double pxNewTemp = -pTNew * region.eX;
     double pyNewTemp = -pTNew * region.eY;
     if (abs( pxNewTemp * pxNewTemp + pyNewTemp * pyNewTemp
-      - pxNew * pxNew - pyNew * pyNew) < PT2SAME) {
+      - pxNew * pxNew - pyNew * pyNew) < pT2tiny) {
       pxNew = pxNewTemp;
       pyNew = pyNewTemp;
     }
@@ -254,7 +257,7 @@ Vec4 StringEnd::kinematicsHadron( StringSystem& system,
           system.regionLowPos(iPos).pPos,
           system.regionLowNeg(iNeg).pNeg,
           system.regionLowPos(iPos).colPos,
-          system.regionLowNeg(iNeg).colNeg, true);
+          system.regionLowNeg(iNeg).colNeg, true, mVecRatio);
         double w2 = regionGam.w2;
         cGam1 += xDir * xInv * w2;
         if (iDir == iDirNew) cGam2 -= xInv * w2;
@@ -270,9 +273,9 @@ Vec4 StringEnd::kinematicsHadron( StringSystem& system,
     double r1    = cM4 * cGam0 - cM0 * cGam4 + cM3 * cGam2 - cM2 * cGam3;
     double r0    = cM2 * cGam0 - cM0 * cGam2;
     double root  = sqrtpos( r1*r1 - 4. * r2 * r0 );
-    if (abs(r2) < TINY || root < TINY) return Vec4(0., 0., 0., -1.);
+    if (abs(r2) < tinyEq || root < tinyEq) return Vec4(0., 0., 0., -1.);
     xInvHad      = 0.5 * (root / abs(r2) - r1 / r2);
-    if (abs(cM2 + cM4 * xInvHad) < TINY) return Vec4(0., 0., 0., -1.);
+    if (abs(cM2 + cM4 * xInvHad) < tinyEq) return Vec4(0., 0., 0., -1.);
     xDirHad      = (cM0 - cM3 * xInvHad) / (cM2 + cM4 * xInvHad);
 
     // Define position of new trial vertex.
@@ -422,7 +425,7 @@ Vec4 StringEnd::kinematicsHadronTmp( StringSystem system, Vec4 pRem,
       system.regionLowPos(iPosNewTmp).pPos,
       system.regionLowNeg(iNegNewTmp).pNeg,
       system.regionLowPos(iPosNewTmp).colPos,
-      system.regionLowNeg(iNegNewTmp).colNeg, true);
+      system.regionLowNeg(iNegNewTmp).colNeg, true, mVecRatio);
 
     // If new region is vanishingly small, continue immediately to next.
     // Negative energy signals failure to do this, i.e. moved too low.
@@ -440,7 +443,7 @@ Vec4 StringEnd::kinematicsHadronTmp( StringSystem system, Vec4 pRem,
     double pxNewRegNow = -pTNew * region.eX;
     double pyNewRegNow = -pTNew * region.eY;
     if (abs( pxNewRegNow * pxNewRegNow + pyNewRegNow * pyNewRegNow
-      - pxNewTmp * pxNewTmp - pyNewTmp * pyNewTmp) < PT2SAME) {
+      - pxNewTmp * pxNewTmp - pyNewTmp * pyNewTmp) < pT2tiny) {
       pxNewTmp = pxNewRegNow;
       pyNewTmp = pyNewRegNow;
     }
@@ -474,7 +477,7 @@ Vec4 StringEnd::kinematicsHadronTmp( StringSystem system, Vec4 pRem,
           system.regionLowPos(iPos).pPos,
           system.regionLowNeg(iNeg).pNeg,
           system.regionLowPos(iPos).colPos,
-          system.regionLowNeg(iNeg).colNeg, true);
+          system.regionLowNeg(iNeg).colNeg, true, mVecRatio);
         double w2 = regionGam.w2;
         cGam1 += xDir * xInv * w2;
         if (iDir == iDirNew) cGam2 -= xInv * w2;
@@ -490,7 +493,7 @@ Vec4 StringEnd::kinematicsHadronTmp( StringSystem system, Vec4 pRem,
     double r1    = cM4 * cGam0 - cM0 * cGam4 + cM3 * cGam2 - cM2 * cGam3;
     double r0    = cM2 * cGam0 - cM0 * cGam2;
     double root  = sqrtpos( r1*r1 - 4. * r2 * r0 );
-    if (abs(r2) < TINY || root < TINY) return Vec4(0., 0., 0., -1.);
+    if (abs(r2) < tinyEq || root < tinyEq) return Vec4(0., 0., 0., -1.);
     xInvHad      = 0.5 * (root / abs(r2) - r1 / r2);
     xDirHad      = (cM0 - cM3 * xInvHad) / (cM2 + cM4 * xInvHad);
 
@@ -639,10 +642,10 @@ bool StringFragmentation::init(StringFlav* flavSelPtrIn,
   // Save pointers.
   if (flavSelPtrIn == nullptr || pTSelPtrIn == nullptr || zSelPtrIn == nullptr)
     return false;
-  flavSelPtr      = flavSelPtrIn;
-  pTSelPtr        = pTSelPtrIn;
-  zSelPtr         = zSelPtrIn;
-  flavRopePtr     = fragModPtrIn;
+  flavSelPtr  = flavSelPtrIn;
+  pTSelPtr    = pTSelPtrIn;
+  zSelPtr     = zSelPtrIn;
+  flavRopePtr = fragModPtrIn;
 
   // Local copy of flavSel for possible dynamical modifications.
   flavSelNow = *flavSelPtr;
@@ -672,7 +675,7 @@ bool StringFragmentation::init(StringFlav* flavSelPtrIn,
   traceColours    = flag("StringFragmentation:TraceColours");
 
   // Joining of nearby partons along the string.
-  mJoin           = parm("FragmentationSystems:mJoin");
+  mJoin           = mVecRatio * parm("FragmentationSystems:mJoin");
 
   // Initialize the b parameter of the z spectrum, used when joining jets.
   bLund           = zSelPtr->bAreaLund();
@@ -707,6 +710,9 @@ bool StringFragmentation::init(StringFlav* flavSelPtrIn,
   // Optionally allow strangeness enhancement around the junction.
   doStrangeJunc   = flag("StringFragmentation:doStrangeJunctions");
   strangeJuncParm = parm("StringFragmentation:enhanceStrangeJunction");
+
+  // Rescale mass-squared reference for closed gluon loops.
+  closedM2max     = pow2(mVecRatio) * CLOSEDM2MAX;
 
   // Return.
   return true;
@@ -767,7 +773,7 @@ bool StringFragmentation::fragment(int iSub, ColConfig& colConfig,
   }
 
   // Set up kinematics of string evolution ( = motion).
-  system.setUp(iParton, event);
+  system.setUp(iParton, event, mVecRatio);
   stopMassNow = stopMass;
 
   // Fallback loop, when joining in the middle fails.  Bailout if stuck.
@@ -781,11 +787,11 @@ bool StringFragmentation::fragment(int iSub, ColConfig& colConfig,
     // After several failed tries join some (extra) nearby partons.
     if (iTry == NTRYJOIN / 3) {
       nExtraJoin += extraJoin( 2., event);
-      system.setUp(iParton, event);
+      system.setUp(iParton, event, mVecRatio);
     }
     if (iTry == 2 * NTRYJOIN / 3) {
       nExtraJoin += extraJoin( 4., event);
-      system.setUp(iParton, event);
+      system.setUp(iParton, event, mVecRatio);
     }
 
     // After several failed tries gradually allow larger stop mass.
@@ -1024,7 +1030,7 @@ const StringSystem& systemNow, int legNow) {
     px = pxy.first;
     py = pxy.second;
     double m2Region = systemNow.regionLowPos(0).w2;
-    double m2Temp   = min( CLOSEDM2MAX, CLOSEDM2FRAC * m2Region);
+    double m2Temp   = min( closedM2max, CLOSEDM2FRAC * m2Region);
     do {
       double zTemp = zSelPtr->zFrag( idPos, idNeg, m2Temp);
       xPosFromPos  = 1. - zTemp;
@@ -1038,10 +1044,10 @@ const StringSystem& systemNow, int legNow) {
   // Initialize two string endpoints.
   posEnd.setUp( true, iPos, idPos, systemNow.iMax,  px,  py,
                 Gamma, xPosFromPos, xNegFromPos,
-                systemNow.regionLowPos(0).colPos);
+                systemNow.regionLowPos(0).colPos, mVecRatio);
   negEnd.setUp( false, iNeg, idNeg, systemNow.iMax, -px, -py,
                 Gamma, xPosFromNeg, xNegFromNeg,
-                systemNow.regionLowNeg(0).colPos);
+                systemNow.regionLowNeg(0).colPos, mVecRatio);
   // Store breakup vertex information from the first and last points.
   if (setVertices) {
     if (legNow == legMin) legMinVertices.push_back(
@@ -1197,7 +1203,7 @@ bool StringFragmentation::setHadronVertices( Event& event) {
   for (int i = 0; i < vertexSize; ++i) {
     int iPosIn = orderedVertices[i].iRegPos;
     int iNegIn = orderedVertices[i].iRegNeg;
-    if (iPosIn != -1) {
+    if (iPosIn != -1 && iNegIn != -1) {
       StringRegion currentRegion = system.region( iPosIn, iNegIn);
       if ( currentRegion.massiveOffset( iPosIn, iNegIn, system.iMax,
         id1, id2, mc, mb) ) {
@@ -1210,7 +1216,8 @@ bool StringFragmentation::setHadronVertices( Event& event) {
           v2 = longitudinal[i + 1];
           double mHad =  event[event.size() + iHadJunc - hadrons.size()].m();
           double pPosMass = particleDataPtr->m0(id1);
-          if (iPosIn == iPosIn2 && iNegIn == iNegIn2) {
+          if ((iPosIn == iPosIn2 && iNegIn == iNegIn2)
+              || iPosIn2 == -1 || iNegIn2 == -1) {
             v1 = longitudinal[i];
             longitudinal[i] = v1 + (pPosMass / mHad) * (v2 - v1);
             if (longitudinal[i].m2Calc()
@@ -1238,7 +1245,8 @@ bool StringFragmentation::setHadronVertices( Event& event) {
           double mHad =  event[i - 1 + event.size() + iHadJunc
             - hadrons.size()].m();
           double pNegMass = particleDataPtr->m0(id2);
-          if (iPosIn == iPosIn2 && iNegIn == iNegIn2) {
+          if ((iPosIn == iPosIn2 && iNegIn == iNegIn2)
+             || iPosIn2 == -1 || iNegIn2 == -1) {
             v1 = longitudinal[i];
             v2 = longitudinal[i - 1] + currentRegion.massOffset / kappaVtx;
             longitudinal[i] = v1 + (pNegMass / mHad) * (v2 - v1);
@@ -1403,7 +1411,8 @@ bool StringFragmentation::setHadronVertices( Event& event) {
             v2 = longitudinalPos[i + 1];
             double mHad =  event[hadSoFar + event.size() - hadrons.size()].m();
             double pPosMass = particleDataPtr->m0(id);
-            if (iPosIn == iPosIn2 && iNegIn == iNegIn2) {
+            if ((iPosIn == iPosIn2 && iNegIn == iNegIn2)
+             || iPosIn2 == -1 || iNegIn2 == -1) {
               v1 = longitudinalPos[i];
               longitudinalPos[i] = v1 + (pPosMass / mHad) * (v2 - v1);
               if (longitudinalPos[i].m2Calc()
@@ -1910,7 +1919,7 @@ StringRegion StringFragmentation::finalRegion() {
   }
 
   // Construct a new region from remaining p+ and p-.
-  region.setUp( pPosJoin, pNegJoin, colPos, colNeg);
+  region.setUp( pPosJoin, pNegJoin, colPos, colNeg, false, mVecRatio);
   if (region.isEmpty) return region;
 
   // Project the existing pTold vectors onto the new directions.
@@ -2158,8 +2167,8 @@ bool StringFragmentation::fragmentToJunction(Event& event,
   iPartonMid.push_back( iOppose);
 
   // Set up kinematics of string evolution in low-energy temporary systems.
-  systemMin.setUp(iPartonMin, event);
-  systemMid.setUp(iPartonMid, event);
+  systemMin.setUp(iPartonMin, event, mVecRatio);
+  systemMid.setUp(iPartonMid, event, mVecRatio);
 
   // Outer fallback loop, when too little energy left for third leg.
   int idMin = 0;

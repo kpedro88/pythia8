@@ -44,7 +44,7 @@ public:
   ~DireSplittingLibrary() { clear();}
 
   // Initialisation.
-  void init(Info* infoPtr, BeamParticlePtr beamA, BeamParticlePtr beamB,
+  void init(Info* infoPtr, BeamParticle* beamA, BeamParticle* beamB,
     DireInfo* direInfo, DireHooks* hooks = nullptr);
   void initFSR();
   void initISR();
@@ -205,8 +205,8 @@ private:
   Settings* settingsPtr;
   ParticleData* particleDataPtr;
   Rndm* rndmPtr;
-  BeamParticlePtr beamAPtr;
-  BeamParticlePtr beamBPtr;
+  BeamParticle* beamAPtr;
+  BeamParticle* beamBPtr;
   CoupSM* coupSMPtr;
   DireInfo* direInfoPtr;
 

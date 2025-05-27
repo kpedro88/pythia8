@@ -54,7 +54,6 @@ const double HadronLevel::MTINY = 0.1;
 
 // Find settings. Initialize HadronLevel classes as required.
 
-
 bool HadronLevel::init( TimeShowerPtr timesDecPtrIn, RHadronsPtr rHadronsPtrIn,
   LundFragmentationPtr fragPtrIn, vector<FragmentationModelPtr>* fragPtrsIn,
   DecayHandlerPtr decayHandlePtr, vector<int> handledParticles,
@@ -99,7 +98,8 @@ bool HadronLevel::init( TimeShowerPtr timesDecPtrIn, RHadronsPtr rHadronsPtrIn,
   // Initialize auxiliary fragmentation classes.
   flavSel.init();
   pTSel.init();
-  zSel.init();
+  // If initialisation of z selection fails, abort.
+  if ( !zSel.init() ) return false;
 
   // Set the fragmentation weights container.
   if (wvec("VariationFrag:list").size() != 0)

@@ -678,6 +678,7 @@ bool Settings::readString(string line, bool warn, int subrun) {
       loggerPtr->ERROR_MSG("did not find file", valueString);
       loggerPtr->ERROR_MSG("searched along the following paths:");
       for (string path : paths) loggerPtr->ERROR_MSG(path);
+      readingFailedSave = true;
       return false;
     } else return readFile(isUser, warn, subrun);
   }

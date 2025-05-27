@@ -22,17 +22,6 @@ namespace Pythia8 {
 
 //==========================================================================
 
-// Functions for unnormalised, <z>, and RMSD(z) of Lund FF. The two latter
-// return negative values in case of failure.
-
-double LundFFRaw(double z, double a, double b, double c, double mT2);
-
-double LundFFAvg(double a, double b, double mT2, double tol);
-
-double LundFFRms(double a, double b, double mT2, double tol);
-
-//==========================================================================
-
 // The FlavContainer class is a simple container for flavour,
 // including the extra properties needed for popcorn baryon handling.
 // id = current flavour.
@@ -263,6 +252,17 @@ protected:
 
 //==========================================================================
 
+// Functions for unnormalised, <z>, and RMSD(z) of Lund FF. The two latter
+// return negative values in case of failure.
+
+double LundFFRaw(double z, double a, double b, double c, double mT2);
+
+double LundFFAvg(double a, double b, double mT2, double tol);
+
+double LundFFRms(double a, double b, double mT2, double tol);
+
+//==========================================================================
+
 // The StringZ class is used to sample the fragmentation function f(z).
 
 class StringZ : public PhysicsBase {
@@ -271,16 +271,17 @@ public:
 
   // Constructor.
   StringZ() : useNonStandC(), useNonStandB(), useNonStandH(), usePetersonC(),
-    usePetersonB(), usePetersonH(), mc2(), mb2(), aLund(), bLund(),
-    aExtraSQuark(), aExtraDiquark(), rFactC(), rFactB(), rFactH(), aNonC(),
-    aNonB(), aNonH(), bNonC(), bNonB(), bNonH(), epsilonC(), epsilonB(),
-    epsilonH(), stopM(), stopNF(), stopS() {}
+    usePetersonB(), usePetersonH(), useOldAExtra(), mc2(), mb2(),
+    aLund(), bLund(), aExtraSQuark(), aExtraDiquark(), rFactC(),
+    rFactB(), rFactH(), aNonC(), aNonB(), aNonH(), bNonC(), bNonB(),
+    bNonH(), epsilonC(), epsilonB(), epsilonH(), stopM(), stopNF(),
+    stopS() {}
 
   // Destructor.
   virtual ~StringZ() {}
 
   // Initialize data members.
-  virtual void init();
+  virtual bool init();
 
   // Fragmentation function: top-level to determine parameters.
   virtual double zFrag( int idOld, int idNew = 0, double mT2 = 1.);
@@ -315,7 +316,7 @@ public:
 
   // Initialization data, to be read from Settings.
   bool   useNonStandC, useNonStandB, useNonStandH,
-         usePetersonC, usePetersonB, usePetersonH;
+         usePetersonC, usePetersonB, usePetersonH, useOldAExtra;
   double mc2, mb2, aLund, bLund, aExtraSQuark, aExtraDiquark, rFactC,
          rFactB, rFactH, aNonC, aNonB, aNonH, bNonC, bNonB, bNonH,
          epsilonC, epsilonB, epsilonH, stopM, stopNF, stopS;

@@ -464,19 +464,6 @@ public:
 
 private:
 
-  // After initInfoPtr, remove circular dependencies.
-  virtual void onInitInfoPtr() override {
-    beamAPtr    = nullptr;
-    beamBPtr    = nullptr;
-    beamPomAPtr = nullptr;
-    beamPomBPtr = nullptr;
-    beamGamAPtr = nullptr;
-    beamGamBPtr = nullptr;
-    beamVMDAPtr = nullptr;
-    beamVMDBPtr = nullptr;
-    userHooksPtr = nullptr;
-  }
-
   // Constants: could only be changed in the code itself.
   static const double XMINUNRESOLVED, POMERONMASS, XMAXCOMPANION, TINYZREL;
   static const int NMAX, NRANDOMTRIES;

@@ -100,14 +100,14 @@ bool DireSplittingQED::aboveCutoff( double t, const Particle& radBef,
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qed_Q2QA::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isQuark() && state[ints.second].isCharged()
         && bools["doQEDshowerByQ"]);
 }
 
 bool Dire_fsr_qed_Q2QA::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isQuark() && state[iRecBef].isCharged()
         && doQEDshowerByQ);
@@ -322,14 +322,14 @@ bool Dire_fsr_qed_Q2QA::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qed_Q2AQ::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isQuark() && state[ints.second].isCharged()
         && bools["doQEDshowerByQ"]);
 }
 
 bool Dire_fsr_qed_Q2AQ::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isQuark() && state[iRecBef].isCharged()
         && doQEDshowerByQ);
@@ -543,7 +543,7 @@ bool Dire_fsr_qed_Q2AQ::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qed_L2LA::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isLepton() && state[ints.first].isCharged()
         && state[ints.second].isCharged()
@@ -551,7 +551,7 @@ bool Dire_fsr_qed_L2LA::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qed_L2LA::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isLepton() && state[iRadBef].isCharged()
         && state[iRecBef].isCharged()
@@ -768,7 +768,7 @@ bool Dire_fsr_qed_L2LA::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_fsr_qed_L2AL::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isLepton() && state[ints.first].isCharged()
 //        && state[ints.first].isLepton() && state[ints.second].isLepton()
@@ -777,7 +777,7 @@ bool Dire_fsr_qed_L2AL::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_fsr_qed_L2AL::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isLepton() && state[iRadBef].isCharged()
         && state[iRecBef].isCharged()
@@ -994,7 +994,7 @@ bool Dire_fsr_qed_L2AL::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_Q2QA::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].isQuark()
         && state[ints.second].isCharged()
@@ -1002,7 +1002,7 @@ bool Dire_isr_qed_Q2QA::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qed_Q2QA::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].isQuark()
         && state[iRecBef].isCharged()
@@ -1162,14 +1162,14 @@ bool Dire_isr_qed_Q2QA::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_A2QQ::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].isQuark()
         && bools["doQEDshowerByQ"] );
 }
 
 bool Dire_isr_qed_A2QQ::canRadiate ( const Event& state, int iRadBef,
-  int, Settings*, PartonSystems*, BeamParticlePtr) {
+  int, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].isQuark()
         && doQEDshowerByQ);
@@ -1264,14 +1264,14 @@ bool Dire_isr_qed_A2QQ::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_Q2AQ::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].id() == 22
         && bools["doQEDshowerByQ"] );
 }
 
 bool Dire_isr_qed_Q2AQ::canRadiate ( const Event& state, int iRadBef,
-  int, Settings*, PartonSystems*, BeamParticlePtr) {
+  int, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].id() == 22
         && doQEDshowerByQ);
@@ -1374,7 +1374,7 @@ bool Dire_isr_qed_Q2AQ::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_L2LA::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].isLepton() && state[ints.first].isCharged()
         && state[ints.second].isCharged()
@@ -1382,7 +1382,7 @@ bool Dire_isr_qed_L2LA::canRadiate ( const Event& state, pair<int,int> ints,
 }
 
 bool Dire_isr_qed_L2LA::canRadiate ( const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].isLepton()
         && state[iRadBef].isCharged()
@@ -1544,14 +1544,14 @@ bool Dire_isr_qed_L2LA::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_A2LL::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].isLepton() && state[ints.first].isCharged()
         && bools["doQEDshowerByL"]);
 }
 
 bool Dire_isr_qed_A2LL::canRadiate ( const Event& state, int iRadBef,
-  int, Settings*, PartonSystems*, BeamParticlePtr) {
+  int, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].isLepton()
         && state[iRadBef].isCharged()
@@ -1648,14 +1648,14 @@ bool Dire_isr_qed_A2LL::calc(const Event& state, int orderNow) {
 // Return true if this kernel should partake in the evolution.
 bool Dire_isr_qed_L2AL::canRadiate ( const Event& state, pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return (!state[ints.first].isFinal()
         && state[ints.first].id() == 22
         && bools["doQEDshowerByL"]);
 }
 
 bool Dire_isr_qed_L2AL::canRadiate ( const Event& state, int iRadBef,
-  int, Settings*, PartonSystems*, BeamParticlePtr) {
+  int, Settings*, PartonSystems*, BeamParticle*) {
   return (!state[iRadBef].isFinal()
         && state[iRadBef].id() == 22
         && doQEDshowerByL);
@@ -1756,14 +1756,14 @@ bool Dire_isr_qed_L2AL::calc(const Event& state, int orderNow) {
 bool Dire_fsr_qed_Q2QA_notPartial::canRadiate ( const Event& state,
   pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isQuark() && !state[ints.second].isCharged()
         && bools["doQEDshowerByQ"]);
 }
 
 bool Dire_fsr_qed_Q2QA_notPartial::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isQuark() && !state[iRecBef].isCharged()
         && doQEDshowerByQ);
@@ -1931,14 +1931,14 @@ bool Dire_fsr_qed_Q2QA_notPartial::calc(const Event& state, int orderNow) {
 bool Dire_fsr_qed_L2LA_notPartial::canRadiate ( const Event& state,
   pair<int,int> ints,
   unordered_map<string,bool> bools, Settings*, PartonSystems*,
-  BeamParticlePtr) {
+  BeamParticle*) {
   return ( state[ints.first].isFinal()
         && state[ints.first].isLepton()   && state[ints.first].isCharged()
         && !state[ints.second].isCharged() && bools["doQEDshowerByL"]);
 }
 
 bool Dire_fsr_qed_L2LA_notPartial::canRadiate (const Event& state, int iRadBef,
-  int iRecBef, Settings*, PartonSystems*, BeamParticlePtr) {
+  int iRecBef, Settings*, PartonSystems*, BeamParticle*) {
   return ( state[iRadBef].isFinal()
         && state[iRadBef].isLepton()   && state[iRadBef].isCharged()
         && !state[iRecBef].isCharged() && doQEDshowerByL);

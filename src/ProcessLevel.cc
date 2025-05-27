@@ -957,8 +957,8 @@ bool ProcessLevel::roomForRemnants() {
   bool beamAhasResGamma = beamAPtr->hasResGamma();
   bool beamBhasResGamma = beamBPtr->hasResGamma();
   bool beamHasResGamma  = beamAhasResGamma || beamBhasResGamma;
-  BeamParticlePtr tmpBeamAPtr = beamAhasResGamma ? beamGamAPtr : beamAPtr;
-  BeamParticlePtr tmpBeamBPtr = beamBhasResGamma ? beamGamBPtr : beamBPtr;
+  BeamParticle* tmpBeamAPtr = beamAhasResGamma ? beamGamAPtr : beamAPtr;
+  BeamParticle* tmpBeamBPtr = beamBhasResGamma ? beamGamBPtr : beamBPtr;
 
   // Check whether photons are unresolved.
   bool resGammaA = !(beamGamAPtr->isUnresolved());

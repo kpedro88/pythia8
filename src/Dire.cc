@@ -118,7 +118,7 @@ void Dire::initShowersAndWeights() {
 
 //--------------------------------------------------------------------------
 
-void Dire::setup(BeamParticlePtr beamA, BeamParticlePtr beamB) {
+void Dire::setup(BeamParticle* beamA, BeamParticle* beamB) {
 
   if (isInit) return;
 
@@ -194,7 +194,7 @@ void Dire::setup(BeamParticlePtr beamA, BeamParticlePtr beamB) {
 
 //--------------------------------------------------------------------------
 
-//bool Dire::init(BeamParticlePtr beamA, BeamParticlePtr beamB) {
+//bool Dire::init(BeamParticle* beamA, BeamParticle* beamB) {
 bool Dire::initAfterBeams() {
 
   if (isInit) return true;

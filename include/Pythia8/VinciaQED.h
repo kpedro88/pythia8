@@ -118,7 +118,7 @@ class QEDsystem {
     Settings* settingsPtrIn, VinciaCommon* vinComPtrIn);
 
   // Initialise settings for current run.
-  virtual void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  virtual void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
     int verboseIn) = 0;
   virtual void setVerbose(int verboseIn) { verbose = verboseIn; }
   // Prepare a parton system for evolution.
@@ -182,7 +182,7 @@ public:
     TINYPDF(-1.), kMapTypeFinal(0) {;}
 
   // Initialise settings for current run.
-  void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
     int verboseIn) override;
   // Prepare a parton system for photon emission evolution
   void prepare(const int iSysIn, Event &event, const double q2CutIn,
@@ -230,7 +230,8 @@ public:
   bool trialIsVec;
 
   // Beam pointers.
-  BeamParticlePtr beamAPtr{}, beamBPtr{};
+  BeamParticle* beamAPtr{};
+  BeamParticle* beamBPtr{};
 
   // Settings.
   int qedMode, qedModeMPI;
@@ -302,7 +303,7 @@ public:
     beamAPtr(nullptr), beamBPtr(nullptr), isInit(false), kMapTypeFinal(0) {;}
 
   // Initialize.
-  void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
     int verboseIn) override;
   // Prepare list of final-state photons - with recoilers - for splittings.
   void prepare(const int iSysIn, Event &event, const double q2CutIn,
@@ -348,8 +349,8 @@ private:
   int scaleRegion;
 
   // Pointers.
-  BeamParticlePtr  beamAPtr;
-  BeamParticlePtr  beamBPtr;
+  BeamParticle*  beamAPtr;
+  BeamParticle*  beamBPtr;
 
   // Initialization.
   bool isInit;
@@ -376,7 +377,7 @@ public:
     TINYPDF(-1.) {;}
 
   // Initialize.
-  void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
     int verboseIn) override;
   // Prepare for backwards-evolution of photons.
   void prepare(const int iSysIn, Event &event, const double q2CutIn,
@@ -433,8 +434,8 @@ private:
   int scaleRegion;
 
   // Pointers.
-  BeamParticlePtr  beamAPtr;
-  BeamParticlePtr  beamBPtr;
+  BeamParticle*  beamAPtr;
+  BeamParticle*  beamBPtr;
 
   // Initialization.
   bool isInit;
@@ -469,8 +470,8 @@ public:
   virtual void load() {;}
 
   // Initialise settings for current run (called as part of Pythia::init()).
-  virtual void init(BeamParticlePtr beamAPtrIn = nullptr,
-    BeamParticlePtr beamBPtrIn = nullptr) = 0;
+  virtual void init(BeamParticle* beamAPtrIn = nullptr,
+    BeamParticle* beamBPtrIn = nullptr) = 0;
   bool isInit() {return isInitSav;}
 
   // Select helicities for a system of particles.
@@ -517,8 +518,8 @@ public:
   virtual unsigned int nResDec() = 0;
 
   // Members.
-  BeamParticlePtr beamAPtr{};
-  BeamParticlePtr beamBPtr{};
+  BeamParticle* beamAPtr{};
+  BeamParticle* beamBPtr{};
   Info* infoPtr{};
   ParticleData* particleDataPtr{};
   Logger* loggerPtr{};
@@ -551,7 +552,7 @@ public:
   // Initialise pointers (called at construction time).
   void initPtr(Info* infoPtrIn, VinciaCommon* vinComPtrIn) override;
   // Initialise settings for current run (called as part of Pythia::init()).
-  void init(BeamParticlePtr beamAPtrIn = 0, BeamParticlePtr beamBPtrIn = 0)
+  void init(BeamParticle* beamAPtrIn = 0, BeamParticle* beamBPtrIn = 0)
     override;
   // Prepare to shower a system.
   bool prepare(int iSysIn, Event& event, int scaleRegionIn) override;

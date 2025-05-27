@@ -35,7 +35,7 @@ const double SigmaMultiparton::OTHERFRAC  = 0.2;
 // Initialize the generation process for given beams.
 
 bool SigmaMultiparton::init(int inState, int processLevel, Info* infoPtr,
-  BeamParticlePtr beamAPtr, BeamParticlePtr beamBPtr) {
+  BeamParticle* beamAPtr, BeamParticle* beamBPtr) {
 
   // Store input pointer for future use.
   particleDataPtr           = infoPtr->particleDataPtr;
@@ -348,7 +348,7 @@ const double MultipartonInteractions::SIGMAMBLIMIT  = 1.;
 // Initialize the generation process for given beams.
 
 bool MultipartonInteractions::init( bool doMPIinit, int iDiffSysIn,
-  BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
   PartonVertexPtr partonVertexPtrIn,  bool hasGammaIn) {
 
   // Store input pointers for future use. Done if no initialization.
@@ -1880,7 +1880,7 @@ bool MultipartonInteractions::loadMPIdata() {
   eCMsave   = eCM;
   eStepMix  = log(eCM / eStepMin)     / eStepSize;
   iStepFrom = max( 0, min( nStep - 2, int( eStepMix) ) );
-  iStepTo   = iStepFrom + 1;
+  iStepTo   = min(iStepFrom + 1, nStep - 1);
   eStepTo   = max( 0., min( 1., eStepMix - iStepFrom) );
   eStepFrom = 1. - eStepTo;
 

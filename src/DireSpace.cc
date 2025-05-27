@@ -98,8 +98,8 @@ const double DireSpace::KERNEL_HEADROOM = 1.;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void DireSpace::init( BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn) {
+void DireSpace::init( BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn) {
 
   dryrun = false;
 
@@ -242,7 +242,7 @@ void DireSpace::init( BeamParticlePtr beamAPtrIn,
   alphaS2piOverestimate = (usePDFalphas) ? beam.alphaS(pT2min) * 0.5/M_PI
     : (alphaSorder > 0) ? alphaS.alphaS(pT2min) * 0.5/M_PI : 0.5 * 0.5/M_PI;
   usePDFmasses       = settingsPtr->flag("ShowerPDF:usePDFmasses");
-  BeamParticlePtr bb = ( particleDataPtr->isHadron(beamAPtr->id()))
+  BeamParticle* bb = ( particleDataPtr->isHadron(beamAPtr->id()))
     ? beamAPtr : ( particleDataPtr->isHadron(beamBPtr->id())) ?
     beamBPtr : nullptr;
   m2cPhys            = (usePDFalphas && bb != nullptr)
@@ -1759,7 +1759,7 @@ void DireSpace::getNewOverestimates( int idDau, DireSpaceEnd* dip,
 double DireSpace::getPDFOverestimates( int idDau, double tOld, double xDau,
   string name, bool pickMother, double RN, int& idMother, int& idSister) {
 
-  BeamParticlePtr beam = (sideA) ? beamAPtr : beamBPtr;
+  BeamParticle* beam = (sideA) ? beamAPtr : beamBPtr;
   DireSplitting* splitNow = splits[name];
 
   // Get old PDF for PDF weights.
@@ -1916,7 +1916,7 @@ void DireSpace::getNewSplitting( const Event& state, DireSpaceEnd* dip,
   int idDau, string name, bool forceFixedAs, int& idMother, int& idSister,
   double& z, double& wt, unordered_map<string,double>& full, double& over ) {
 
-  BeamParticlePtr beam = (sideA) ? beamAPtr : beamBPtr;
+  BeamParticle* beam = (sideA) ? beamAPtr : beamBPtr;
   bool   isValence   = (usePDF) ? beam->at(iSysNow).isValence() : false;
   // Pointer to splitting for easy/fast access.
   DireSplitting* splitNow = splits[name];
@@ -2643,7 +2643,7 @@ bool DireSpace::pT2nextQCD_II( double pT2begDip, double pT2sel,
   dip.m2Dip  = m2Dip;
 
   // Some properties and kinematical starting values.
-  BeamParticlePtr beam = (sideA) ? beamAPtr : beamBPtr;
+  BeamParticle* beam = (sideA) ? beamAPtr : beamBPtr;
   double tnow    = pT2begDip;
   double xMaxAbs = beam->xMax(iSysNow);
   double zMinAbs = xDaughter;
@@ -3167,7 +3167,7 @@ bool DireSpace::pT2nextQCD_IF( double pT2begDip, double pT2sel,
   dip.m2Dip  = m2Dip;
 
   // Some properties and kinematical starting values.
-  BeamParticlePtr beam = (sideA && particleDataPtr->isHadron(beamAPtr->id()))
+  BeamParticle* beam = (sideA && particleDataPtr->isHadron(beamAPtr->id()))
     ? beamAPtr : (particleDataPtr->isHadron(beamBPtr->id()) ? beamBPtr
       : beamAPtr );
   double tnow        = pT2begDip;
@@ -7779,7 +7779,7 @@ void DireSpace::list() const {
 double DireSpace::alphasNow( double pT2, double renormMultFacNow, int iSys ) {
 
   // Get beam for PDF alphaS, if necessary.
-  BeamParticlePtr beam = (particleDataPtr->isHadron(beamAPtr->id()))
+  BeamParticle* beam = (particleDataPtr->isHadron(beamAPtr->id()))
                      ? beamAPtr
                      : (particleDataPtr->isHadron(beamBPtr->id()) ? beamBPtr :
                         nullptr );
@@ -7839,7 +7839,7 @@ double DireSpace::alphasNow( double pT2, double renormMultFacNow, int iSys ) {
 
 double DireSpace::getNF(double pT2) {
   double NF = 6.;
-  BeamParticlePtr beam = (particleDataPtr->isHadron(beamAPtr->id()))
+  BeamParticle* beam = (particleDataPtr->isHadron(beamAPtr->id()))
                      ? beamAPtr
                      : (particleDataPtr->isHadron(beamBPtr->id()) ? beamBPtr :
                         nullptr );

@@ -28,3 +28,6 @@ ColourReconnection:range            = 2.1720
 BeamRemnants:primordialKThard       = 2.2873
 BeamRemnants:primordialKTsoft       =  0.25
 BeamRemnants:reducedKTatHighY       =  0.47
+
+! Reproduce hadronization behavior of the Pythia version used for this tune.
+StringZ:useOldAExtra                = on

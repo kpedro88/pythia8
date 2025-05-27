@@ -2,12 +2,14 @@
 #include <Pythia8/BeamParticle.h>
 #include <Pythia8/BeamSetup.h>
 #include <Pythia8/Event.h>
+#include <Pythia8/FragmentationFlavZpT.h>
 #include <Pythia8/HadronWidths.h>
 #include <Pythia8/Info.h>
 #include <Pythia8/LHEF3.h>
 #include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
 #include <Pythia8/PhysicsBase.h>
 #include <Pythia8/ResonanceWidths.h>
@@ -859,8 +861,8 @@ void bind_Pythia8_SusyCouplings(std::function< pybind11::module &(std::string co
 		cl.def_readwrite("sinThetaT", &Pythia8::SigmaProcess::sinThetaT);
 		cl.def_readwrite("phiT", &Pythia8::SigmaProcess::phiT);
 		cl.def_readwrite("swapTU", &Pythia8::SigmaProcess::swapTU);
-		cl.def("init", [](Pythia8::SigmaProcess &o, class std::shared_ptr<class Pythia8::BeamParticle> const & a0, class std::shared_ptr<class Pythia8::BeamParticle> const & a1) -> void { return o.init(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
-		cl.def("init", (void (Pythia8::SigmaProcess::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, class Pythia8::SLHAinterface *)) &Pythia8::SigmaProcess::init, "C++: Pythia8::SigmaProcess::init(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>, class Pythia8::SLHAinterface *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("slhaInterfacePtrIn"));
+		cl.def("init", [](Pythia8::SigmaProcess &o, class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) -> void { return o.init(a0, a1); }, "", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("init", (void (Pythia8::SigmaProcess::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, class Pythia8::SLHAinterface *)) &Pythia8::SigmaProcess::init, "C++: Pythia8::SigmaProcess::init(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *, class Pythia8::SLHAinterface *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"), pybind11::arg("slhaInterfacePtrIn"));
 		cl.def("setLHAPtr", (void (Pythia8::SigmaProcess::*)(class std::shared_ptr<class Pythia8::LHAup>)) &Pythia8::SigmaProcess::setLHAPtr, "C++: Pythia8::SigmaProcess::setLHAPtr(class std::shared_ptr<class Pythia8::LHAup>) --> void", pybind11::arg("lhaUpPtrIn"));
 		cl.def("updateBeamIDs", (void (Pythia8::SigmaProcess::*)()) &Pythia8::SigmaProcess::updateBeamIDs, "C++: Pythia8::SigmaProcess::updateBeamIDs() --> void");
 		cl.def("initProc", (void (Pythia8::SigmaProcess::*)()) &Pythia8::SigmaProcess::initProc, "C++: Pythia8::SigmaProcess::initProc() --> void");

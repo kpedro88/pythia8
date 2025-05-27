@@ -26,7 +26,7 @@ public:
   // Constructor.
   MiniStringFragmentation() : FragmentationModel(), setVertices(),
     constantTau(), smearOn(), nTryMass(), hadronVertex(), bLund(), xySmear(),
-    kappaVtx(), mc(), mb(), isClosed(), mSum(), m2Sum() {}
+    kappaVtx(), mc(), mb(), mVecRatio(1.), isClosed(), mSum(), m2Sum() {}
 
   // Initialize and save pointers.
   bool init(StringFlav* flavSelPtrIn = nullptr, StringPT* pTSelPtrIn = nullptr,
@@ -36,6 +36,9 @@ public:
   bool fragment(int iSub, ColConfig& colConfig, Event& event,
     bool isDiff = false, bool systemRecoil = true) override;
 
+  // Set the vector mass ratio.
+  void setMVecRatio(double mVecRatioIn) {mVecRatio = mVecRatioIn;}
+
 private:
 
   // Constants: could only be changed in the code itself.
@@ -44,7 +47,7 @@ private:
   // Initialization data, read from Settings.
   bool   setVertices, constantTau, smearOn;
   int    nTryMass, hadronVertex;
-  double bLund, xySmear, kappaVtx, mc, mb;
+  double bLund, xySmear, kappaVtx, mc, mb, mVecRatio;
 
   // Data members.
   bool   isClosed, isJunctionSystem;

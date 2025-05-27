@@ -12,94 +12,6 @@ namespace Pythia8 {
 
 //==========================================================================
 
-// Functions for unnormalised and average Lund FF.
-
-//--------------------------------------------------------------------------
-
-// The unnormalised Lund FF
-
-double LundFFRaw(double z, double a, double b, double c, double mT2) {
-
-  if (z <= 0. || z >= 1.) return 0.;
-  return pow(1. - z, a) / pow(z, c) * exp(-b * mT2 / z);
-
-}
-
-//--------------------------------------------------------------------------
-
-// Average, <z>, of Lund FF.
-// Return values:
-//   > 0. : <z>.
-//    -1. : failed to compute normalisation.
-//    -2. : failed to compute <z>.
-
-double LundFFAvg(double a, double b, double mT2, double tol = 1.e-6) {
-
-  // Checks whether the integration succeeded.
-  bool check;
-
-  // Fragmentation function dependent on only z (defined as a lambda function).
-  function<bool(double)> lundFF;
-
-  // Get denominator (lundFF is function of only z, c = 1).
-  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
-  double denominator = 1.;
-  check = integrateGauss(denominator, lundFF, 0., 1., tol);
-  if (!check || denominator <= 0.) return -1.;
-
-  // Get numerator (lundFF is function of only z, c = 0).
-  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
-  double numerator = 0.;
-  check = integrateGauss(numerator, lundFF, 0., 1., tol);
-  if (!check || numerator <= 0.) return -2.;
-
-  // Done.
-  return numerator / denominator;
-
-}
-
-//--------------------------------------------------------------------------
-
-// RMSD(z) = sqrt(<z^2> - <z>^2) of Lund FF.
-// Return values:
-//   > 0. : rmsd
-//    -1. : failed to compute normalisation.
-//    -2. : failed to compute <z>.
-//    -3. : failed to compute <z^2>.
-
-double LundFFRms(double a, double b, double mT2, double tol = 1.e-6) {
-
-  // Checks whether the integration succeeded.
-  bool check;
-
-  // Fragmentation function dependent on only z (defined as a lambda function).
-  function<bool(double)> lundFF;
-
-  // Get denominator (lundFF is function of only z, c = 1).
-  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
-  double denominator = 1.;
-  check = integrateGauss(denominator, lundFF, 0., 1., tol);
-  if (!check || denominator <= 0.) return -1.;
-
-  // Get first moment (lundFF is function of only z, c = 0).
-  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
-  double moment1 = 0.;
-  check = integrateGauss(moment1, lundFF, 0., 1., tol);
-  if (!check || moment1 <= 0.) return -2.;
-
-  // Get second moment (lundFF is function of only z, c = -1).
-  lundFF = [=](double z) { return LundFFRaw(z, a, b, -1., mT2); };
-  double moment2 = 0.;
-  check = integrateGauss(moment2, lundFF, 0., 1., tol);
-  if (!check || moment2 <= 0.) return -3.;
-
-  // Done.
-  return sqrt(moment2 / denominator - pow2(moment1 / denominator));
-
-}
-
-//==========================================================================
-
 // The StringFlav class.
 
 //--------------------------------------------------------------------------
@@ -1521,6 +1433,94 @@ void StringFlav::initDerived() {
 
 //==========================================================================
 
+// Functions for the Lund symmetric FF: unnormalised, average, and RMSD.
+
+//--------------------------------------------------------------------------
+
+// The unnormalised Lund FF
+
+double LundFFRaw(double z, double a, double b, double c, double mT2) {
+
+  if (z <= 0. || z >= 1.) return 0.;
+  return pow(1. - z, a) / pow(z, c) * exp(-b * mT2 / z);
+
+}
+
+//--------------------------------------------------------------------------
+
+// Average, <z>, of Lund FF.
+// Return values:
+//   > 0. : <z>.
+//    -1. : failed to compute normalisation.
+//    -2. : failed to compute <z>.
+
+double LundFFAvg(double a, double b, double mT2, double tol = 1.e-6) {
+
+  // Checks whether the integration succeeded.
+  bool check;
+
+  // Fragmentation function dependent on only z (defined as a lambda function).
+  function<double(double)> lundFF;
+
+  // Get denominator (lundFF is function of only z, c = 1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
+  double denominator = 1.;
+  check = integrateGauss(denominator, lundFF, 0., 1., tol);
+  if (!check || denominator <= 0.) return -1.;
+
+  // Get numerator (lundFF is function of only z, c = 0).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
+  double numerator = 0.;
+  check = integrateGauss(numerator, lundFF, 0., 1., tol);
+  if (!check || numerator <= 0.) return -2.;
+
+  // Done.
+  return numerator / denominator;
+
+}
+
+//--------------------------------------------------------------------------
+
+// RMSD(z) = sqrt(<z^2> - <z>^2) of Lund FF.
+// Return values:
+//   > 0. : rmsd
+//    -1. : failed to compute normalisation.
+//    -2. : failed to compute <z>.
+//    -3. : failed to compute <z^2>.
+
+double LundFFRms(double a, double b, double mT2, double tol = 1.e-6) {
+
+  // Checks whether the integration succeeded.
+  bool check;
+
+  // Fragmentation function dependent on only z (defined as a lambda function).
+  function<double(double)> lundFF;
+
+  // Get denominator (lundFF is function of only z, c = 1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 1., mT2); };
+  double denominator = 1.;
+  check = integrateGauss(denominator, lundFF, 0., 1., tol);
+  if (!check || denominator <= 0.) return -1.;
+
+  // Get first moment (lundFF is function of only z, c = 0).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, 0., mT2); };
+  double moment1 = 0.;
+  check = integrateGauss(moment1, lundFF, 0., 1., tol);
+  if (!check || moment1 <= 0.) return -2.;
+
+  // Get second moment (lundFF is function of only z, c = -1).
+  lundFF = [=](double z) { return LundFFRaw(z, a, b, -1., mT2); };
+  double moment2 = 0.;
+  check = integrateGauss(moment2, lundFF, 0., 1., tol);
+  if (!check || moment2 <= 0.) return -3.;
+
+  // Done.
+  return sqrt(moment2 / denominator - pow2(moment1 / denominator));
+
+}
+
+//==========================================================================
+
 // The StringZ class.
 
 //--------------------------------------------------------------------------
@@ -1539,8 +1539,9 @@ const double StringZ::EXPMAX     = 50.;
 //--------------------------------------------------------------------------
 
 // Initialize data members of the string z selection.
+// Returns true if initialisation succeeded, false if failed.
 
-void StringZ::init() {
+bool StringZ::init() {
 
   // Set the fragmentation weights container.
   if (!infoPtr->weightContainerPtr->weightsFragmentation.weightParms[
@@ -1566,8 +1567,14 @@ void StringZ::init() {
     bool deriveA   = mode("StringZ:deriveLundPars") >= 2;
     bool deriveAQQ = mode("StringZ:deriveLundPars") >= 3;
     bool deriveAS  = mode("StringZ:deriveLundPars") >= 4;
-    deriveABLund( deriveA, deriveAQQ, deriveAS );
+    if (!deriveABLund( deriveA, deriveAQQ, deriveAS )) {
+      loggerPtr->ABORT_MSG("derivation of Lund FF parameters failed");
+      return false;
+    }
   }
+
+  // Use old or new behavior for aExtraSQuark and aExtraDiquark
+  useOldAExtra  = flag("StringZ:useOldAExtra");
 
   // Flags and parameters of nonstandard Lund fragmentation functions.
   useNonStandC  = flag("StringZ:useNonstandardC");
@@ -1593,6 +1600,9 @@ void StringZ::init() {
   stopNF        = parm("StringFragmentation:stopNewFlav");
   stopS         = parm("StringFragmentation:stopSmear");
 
+  // All is well.
+  return true;
+
 }
 
 //--------------------------------------------------------------------------
@@ -1603,8 +1613,7 @@ void StringZ::init() {
 double StringZ::deriveBLund(double avgZ, double a, double mT2ref) {
 
   // Define lundFF as a function of only b, fixing a, and mT2 as parameters.
-  function<bool(double)> lundFF =
-    [=](double b) { return LundFFAvg(a, b, mT2ref); };
+  auto lundFF = [=](double b) { return LundFFAvg(a, b, mT2ref); };
 
   // Solve for b and return.
   double bNow = -1;
@@ -1638,8 +1647,8 @@ bool StringZ::deriveABLund( bool deriveA, bool deriveAExtraDiquark,
   double rmsZ        = parm("StringZ:rmsZLund");
   double facAQQ      = parm("StringZ:facALundDiquark");
   double facAS       = parm("StringZ:facALundSQuark");
-  double aNow        = parm("StringZ:aLund");
-  double bNow        = parm("StringZ:bLund");
+  double aNow        = 0.5;
+  double bNow        = 1.0;
   double aExtraQQNow = parm("StringZ:aExtraDiquark");
   double aExtraSNow  = parm("StringZ:aExtraSQuark");
 
@@ -1668,9 +1677,8 @@ bool StringZ::deriveABLund( bool deriveA, bool deriveAExtraDiquark,
     }
     bNow = deriveBLund( avgZ, aNow, mT2ref);
     if (bNow < 0) {
-      loggerPtr->ERROR_MSG("unable to converge on bLund: "
-        "forcing bLund = 0");
-      bNow = 0.;
+      loggerPtr->ERROR_MSG("unable to converge on bLund");
+      return false;
     }
   } else {
     // Derive both aLund and bLund from requested avgZ and rmsZ.
@@ -1693,11 +1701,11 @@ bool StringZ::deriveABLund( bool deriveA, bool deriveAExtraDiquark,
 
       // Take big steps in the beginning, then smaller ones.
       double step;
-      if (nLoop < 500) step = 10.;
-      else if (nLoop < 1000) step = 5.;
-      else if (nLoop < 2000) step = 2.;
-      else if (nLoop < 5000) step = 1.;
-      else step = 0.3;
+      if (nLoop < 500) step = 20.;
+      else if (nLoop < 1000) step = 10.;
+      else if (nLoop < 2000) step = 5.;
+      else if (nLoop < 5000) step = 2.;
+      else step = 1.;
 
       if ( abs(deltaRms) > TOLRMSZ ) {
         // First see if we can get the right RMS.
@@ -1719,6 +1727,11 @@ bool StringZ::deriveABLund( bool deriveA, bool deriveAExtraDiquark,
         bNow = deriveBLund( avgZ, aNow, mT2ref);
       }
       else accept = true;
+    }
+    // Check if method produced physical values.
+    if (aNow < 0. || bNow < 0.) {
+      loggerPtr->ERROR_MSG("unable to converge");
+      return false;
     }
   }
 
@@ -1849,8 +1862,17 @@ double StringZ::zFrag( int idOld, int idNew, double mT2) {
 
   // Shape parameters of Lund symmetric fragmentation function.
   double aShape = aNow;
-  if (isOldSQuark)  aShape += aExtraSQuark;
-  if (isOldDiquark) aShape += aExtraDiquark;
+  // Old behavior used a_old instead of a_new in the
+  // (1-z)^a factor for strange quarks and diquarks.
+  // This is a bug but is kept for older tune compatibility.
+  if (useOldAExtra) {
+    if (isOldSQuark)  aShape += aExtraSQuark;
+    if (isOldDiquark) aShape += aExtraDiquark;
+  // This is the correct behavior that should by default be used.
+  } else {
+    if (isNewSQuark)  aShape += aExtraSQuark;
+    if (isNewDiquark) aShape += aExtraDiquark;
+  }
   double bShape = bNow * mT2;
   double cShape = 1.;
   if (isOldSQuark)  cShape -= aExtraSQuark;

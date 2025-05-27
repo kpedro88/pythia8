@@ -13,9 +13,6 @@
 
 namespace Pythia8 {
 
-class BeamParticle;
-typedef shared_ptr<BeamParticle> BeamParticlePtr;
-
 class BeamShape;
 typedef shared_ptr<BeamShape> BeamShapePtr;
 

@@ -45,7 +45,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
 #endif
 
-// Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:27
+// Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:23
 struct PyCallBack_Pythia8_PhysicsBase : public Pythia8::PhysicsBase {
 	using Pythia8::PhysicsBase::PhysicsBase;
 
@@ -165,7 +165,7 @@ void bind_Pythia8_MathTools(std::function< pybind11::module &(std::string const 
 		cl.def( pybind11::init( [](){ return new Pythia8::HungarianAlgorithm(); } ) );
 		cl.def("solve", (double (Pythia8::HungarianAlgorithm::*)(class std::vector<class std::vector<double, class std::allocator<double> >, class std::allocator<class std::vector<double, class std::allocator<double> > > > &, class std::vector<int, class std::allocator<int> > &)) &Pythia8::HungarianAlgorithm::solve, "C++: Pythia8::HungarianAlgorithm::solve(class std::vector<class std::vector<double, class std::allocator<double> >, class std::allocator<class std::vector<double, class std::allocator<double> > > > &, class std::vector<int, class std::allocator<int> > &) --> double", pybind11::arg("distMatrix"), pybind11::arg("assignment"));
 	}
-	{ // Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:27
+	{ // Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:23
 		pybind11::class_<Pythia8::PhysicsBase, std::shared_ptr<Pythia8::PhysicsBase>, PyCallBack_Pythia8_PhysicsBase> cl(M("Pythia8"), "PhysicsBase", "");
 		pybind11::handle cl_type = cl;
 
@@ -192,14 +192,6 @@ void bind_Pythia8_MathTools(std::function< pybind11::module &(std::string const 
 			.value("HADRONLEVEL_USERVETO", Pythia8::PhysicsBase::Status::HADRONLEVEL_USERVETO)
 			.export_values();
 
-		cl.def_readwrite("beamAPtr", &Pythia8::PhysicsBase::beamAPtr);
-		cl.def_readwrite("beamBPtr", &Pythia8::PhysicsBase::beamBPtr);
-		cl.def_readwrite("beamPomAPtr", &Pythia8::PhysicsBase::beamPomAPtr);
-		cl.def_readwrite("beamPomBPtr", &Pythia8::PhysicsBase::beamPomBPtr);
-		cl.def_readwrite("beamGamAPtr", &Pythia8::PhysicsBase::beamGamAPtr);
-		cl.def_readwrite("beamGamBPtr", &Pythia8::PhysicsBase::beamGamBPtr);
-		cl.def_readwrite("beamVMDAPtr", &Pythia8::PhysicsBase::beamVMDAPtr);
-		cl.def_readwrite("beamVMDBPtr", &Pythia8::PhysicsBase::beamVMDBPtr);
 		cl.def_readwrite("subObjects", &Pythia8::PhysicsBase::subObjects);
 		cl.def_readwrite("userHooksPtr", &Pythia8::PhysicsBase::userHooksPtr);
 		cl.def("initInfoPtr", (void (Pythia8::PhysicsBase::*)(class Pythia8::Info &)) &Pythia8::PhysicsBase::initInfoPtr, "C++: Pythia8::PhysicsBase::initInfoPtr(class Pythia8::Info &) --> void", pybind11::arg("infoPtrIn"));
@@ -218,16 +210,7 @@ void bind_Pythia8_MathTools(std::function< pybind11::module &(std::string const 
 		cl.def("registerSubObject", (void (Pythia8::PhysicsBase::*)(class Pythia8::PhysicsBase &)) &Pythia8::PhysicsBase::registerSubObject, "C++: Pythia8::PhysicsBase::registerSubObject(class Pythia8::PhysicsBase &) --> void", pybind11::arg("pb"));
 		cl.def("assign", (class Pythia8::PhysicsBase & (Pythia8::PhysicsBase::*)(const class Pythia8::PhysicsBase &)) &Pythia8::PhysicsBase::operator=, "C++: Pythia8::PhysicsBase::operator=(const class Pythia8::PhysicsBase &) --> class Pythia8::PhysicsBase &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	// Pythia8::LundFFRaw(double, double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:28
-	M("Pythia8").def("LundFFRaw", (double (*)(double, double, double, double, double)) &Pythia8::LundFFRaw, "C++: Pythia8::LundFFRaw(double, double, double, double, double) --> double", pybind11::arg("z"), pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("c"), pybind11::arg("mT2"));
-
-	// Pythia8::LundFFAvg(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:30
-	M("Pythia8").def("LundFFAvg", (double (*)(double, double, double, double)) &Pythia8::LundFFAvg, "C++: Pythia8::LundFFAvg(double, double, double, double) --> double", pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("mT2"), pybind11::arg("tol"));
-
-	// Pythia8::LundFFRms(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:32
-	M("Pythia8").def("LundFFRms", (double (*)(double, double, double, double)) &Pythia8::LundFFRms, "C++: Pythia8::LundFFRms(double, double, double, double) --> double", pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("mT2"), pybind11::arg("tol"));
-
-	{ // Pythia8::FlavContainer file:Pythia8/FragmentationFlavZpT.h line:44
+	{ // Pythia8::FlavContainer file:Pythia8/FragmentationFlavZpT.h line:33
 		pybind11::class_<Pythia8::FlavContainer, std::shared_ptr<Pythia8::FlavContainer>> cl(M("Pythia8"), "FlavContainer", "");
 		pybind11::handle cl_type = cl;
 

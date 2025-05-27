@@ -91,7 +91,7 @@ public:
   virtual ~SigmaProcess() {}
 
   // Perform simple initialization and store pointers.
-  void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+  void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
     SLHAinterface* slhaInterfacePtrIn = 0);
 
   // Store or replace Les Houches pointer.

@@ -93,8 +93,6 @@ void bind_Pythia8_Pythia(std::function< pybind11::module &(std::string const &na
 		cl.def_readwrite("heavyIonsPtr", &Pythia8::Pythia::heavyIonsPtr);
 		cl.def_readwrite("hiHooksPtr", &Pythia8::Pythia::hiHooksPtr);
 		cl.def_readwrite("hadronWidths", &Pythia8::Pythia::hadronWidths);
-		cl.def_readwrite("beamAPtr", &Pythia8::Pythia::beamAPtr);
-		cl.def_readwrite("beamBPtr", &Pythia8::Pythia::beamBPtr);
 		cl.def("checkVersion", (bool (Pythia8::Pythia::*)()) &Pythia8::Pythia::checkVersion, "C++: Pythia8::Pythia::checkVersion() --> bool");
 		cl.def("readString", [](Pythia8::Pythia &o, class std::basic_string<char> const & a0) -> bool { return o.readString(a0); }, "", pybind11::arg("line"));
 		cl.def("readString", [](Pythia8::Pythia &o, class std::basic_string<char> const & a0, bool const & a1) -> bool { return o.readString(a0, a1); }, "", pybind11::arg("line"), pybind11::arg("warn"));

@@ -234,7 +234,7 @@ public:
   virtual ~DireSpace() {}
 
   // Initialize generation. Possibility to force re-initialization by hand.
-  virtual void init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn);
+  virtual void init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn);
 
   bool initSplits() {
     if (splittingsPtr) splits = splittingsPtr->getSplittings();
@@ -441,8 +441,8 @@ public:
     int iSys = -1);
 
   // Pointers to the two incoming beams.
-  BeamParticlePtr  getBeamA () { return beamAPtr; }
-  BeamParticlePtr  getBeamB () { return beamBPtr; }
+  BeamParticle*  getBeamA () { return beamAPtr; }
+  BeamParticle*  getBeamB () { return beamBPtr; }
 
   // Pointer to Standard Model couplings.
   CoupSM* getCoupSM () { return coupSMPtr; }
@@ -657,12 +657,12 @@ private:
 
   // Wrapper around PDF calls.
   double getXPDF( int id, double x, double t, int iSys = 0,
-    BeamParticlePtr beam = nullptr, bool finalRec = false, double z = 0.,
+    BeamParticle* beam = nullptr, bool finalRec = false, double z = 0.,
     double m2dip = 0.) {
     // Return one if no PDF should be used.
     if (!hasPDF(id)) return 1.0;
     // Else get PDF from beam particle.
-    BeamParticlePtr b = beam;
+    BeamParticle* b = beam;
     if (b == nullptr) {
       if (beamAPtr != nullptr || beamBPtr != nullptr) {
         b = (beamAPtr != nullptr && particleDataPtr->isHadron(beamAPtr->id()))

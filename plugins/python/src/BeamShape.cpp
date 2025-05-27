@@ -326,7 +326,8 @@ void bind_Pythia8_BeamShape(std::function< pybind11::module &(std::string const 
 		cl.def( pybind11::init( [](){ return new Pythia8::ColConfig(); } ) );
 		cl.def( pybind11::init( [](Pythia8::ColConfig const &o){ return new Pythia8::ColConfig(o); } ) );
 		cl.def_readwrite("rapPairs", &Pythia8::ColConfig::rapPairs);
-		cl.def("init", (void (Pythia8::ColConfig::*)(class Pythia8::Info *, class Pythia8::StringFlav *)) &Pythia8::ColConfig::init, "C++: Pythia8::ColConfig::init(class Pythia8::Info *, class Pythia8::StringFlav *) --> void", pybind11::arg("infoPtrIn"), pybind11::arg("flavSelPtrIn"));
+		cl.def("init", [](Pythia8::ColConfig &o, class Pythia8::Info * a0, class Pythia8::StringFlav * a1) -> void { return o.init(a0, a1); }, "", pybind11::arg("infoPtrIn"), pybind11::arg("flavSelPtrIn"));
+		cl.def("init", (void (Pythia8::ColConfig::*)(class Pythia8::Info *, class Pythia8::StringFlav *, double)) &Pythia8::ColConfig::init, "C++: Pythia8::ColConfig::init(class Pythia8::Info *, class Pythia8::StringFlav *, double) --> void", pybind11::arg("infoPtrIn"), pybind11::arg("flavSelPtrIn"), pybind11::arg("mVecRatio"));
 		cl.def("size", (int (Pythia8::ColConfig::*)() const) &Pythia8::ColConfig::size, "C++: Pythia8::ColConfig::size() const --> int");
 		cl.def("__getitem__", (class Pythia8::ColSinglet & (Pythia8::ColConfig::*)(int)) &Pythia8::ColConfig::operator[], "C++: Pythia8::ColConfig::operator[](int) --> class Pythia8::ColSinglet &", pybind11::return_value_policy::reference, pybind11::arg("iSub"));
 		cl.def("clear", (void (Pythia8::ColConfig::*)()) &Pythia8::ColConfig::clear, "C++: Pythia8::ColConfig::clear() --> void");

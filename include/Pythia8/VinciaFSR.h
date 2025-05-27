@@ -602,8 +602,8 @@ public:
   // TimeShower method is appended with (TimeShower).
 
   // Initialize alphaStrong and related pTmin parameters (TimeShower).
-  void init(BeamParticlePtr beamAPtrIn = nullptr,
-    BeamParticlePtr beamBPtrIn = nullptr) override;
+  void init(BeamParticle* beamAPtrIn = nullptr,
+    BeamParticle* beamBPtrIn = nullptr) override;
 
   // Force reset at beginning of each event.
   void onBeginEvent() override { isPrepared = false; }

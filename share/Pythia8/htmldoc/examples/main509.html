@@ -34,6 +34,10 @@ int main() {
   bool onlyFSR     = false;
   bool onlyHVinFSR = false;
 
+  // Recover default recoil strategy behaviour in resonance decays (like Dv)
+  // prior to Pythia 8.314. Affects Hidden Valley activity by some amount.
+  bool oldRecoil   = false;
+
   // Number of events.
   int nEvent = 1000;
 
@@ -69,6 +73,7 @@ int main() {
   // Hidden-Valley parton shower.
   pythia.readString(&quot;Hiddenvalley:FSR = on&quot;);
   if (doHVQCD) pythia.readString(&quot;Hiddenvalley:alphaOrder = 1&quot;);
+  pythia.readString(&quot;HiddenValley:setLambda = on&quot;);
   pythia.readString(&quot;Hiddenvalley:Lambda = 4.&quot;);
   pythia.readString(&quot;HiddenValley:pTminFSR = 6.&quot;);
 
@@ -94,6 +99,9 @@ int main() {
     pythia.readString(&quot;TimeShower:QEDshowerByL = off&quot;);
     pythia.readString(&quot;TimeShower:QEDshowerByGamma = off&quot;);
   }
+
+  // Revert to old (prior t0 8.314) shower recoil handling.
+  if (oldRecoil) pythia.readString(&quot;TimeShower:recoilStrategyRF = 1&quot;);
 
   // Restrict output.
   pythia.readString(&quot;Next:numberShowInfo = 0&quot;);

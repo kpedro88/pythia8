@@ -325,10 +325,11 @@ vector<double> WeightsSimpleShower::getMuRWeightVector() {
 // Collect shower weight names.
 
 void WeightsSimpleShower::collectWeightNames(vector<string>& outputNames) {
+  string prefix = infoPtr->settingsPtr->word("Weights:prefix");
   for (int iwt=1; iwt < getWeightsSize(); ++iwt)
-    outputNames.push_back("AUX_" + getWeightsName(iwt));
+    outputNames.push_back(prefix + getWeightsName(iwt));
   for (int iwtGrp = 1; iwtGrp < nWeightGroups(); ++iwtGrp)
-    outputNames.push_back("AUX_" + getGroupName(iwtGrp));
+    outputNames.push_back(prefix + getGroupName(iwtGrp));
 }
 
 //--------------------------------------------------------------------------
@@ -397,20 +398,20 @@ void WeightsLHEF::collectWeightValues(vector<double>& ret, double norm) {
 // Function to return processed weight names to weight container.
 
 void WeightsLHEF::collectWeightNames(vector<string>& ret) {
-
   // Attach the LHEF weights, starting with well-defined MUF and MUR
   // variations, and then followed by any other LHEF weight.
+  string prefix = infoPtr->settingsPtr->word("Weights:prefix");
   for (int iwt = 0; iwt < getWeightsSize(); ++iwt) {
     string name = getWeightsName(iwt);
     if (name.find("MUR") == string::npos || name.find("MUF") == string::npos)
       continue;
-    ret.push_back("AUX_"+name);
+    ret.push_back(prefix + name);
   }
   for (int iwt=0; iwt < getWeightsSize(); ++iwt) {
     string name  = getWeightsName(iwt);
     if (name.find("MUR") != string::npos || name.find("MUF") != string::npos)
       continue;
-    ret.push_back("AUX_"+name);
+    ret.push_back(prefix + name);
   }
 }
 
@@ -824,10 +825,11 @@ void WeightsFragmentation::init() {
 // Collect fragmentation weight names.
 
 void WeightsFragmentation::collectWeightNames(vector<string>& outputNames) {
+  string prefix = infoPtr->settingsPtr->word("Weights:prefix");
   for (int iWgt = 1; iWgt < getWeightsSize(); ++iWgt)
-    outputNames.push_back("AUX_" + getWeightsName(iWgt));
+    outputNames.push_back(prefix + getWeightsName(iWgt));
   for (int iWG = 0; iWG < nWeightGroups(); ++iWG)
-    outputNames.push_back("AUX_" + getGroupName(iWG));
+    outputNames.push_back(prefix + getGroupName(iWG));
 }
 
 //--------------------------------------------------------------------------

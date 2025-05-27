@@ -29,3 +29,6 @@ TimeShower:alphaSorder              = 1
 TimeShower:alphaSuseCMW             = false 
 TimeShower:pTmin                    = 0.5   
 TimeShower:pTminChgQ                = 0.5   
+
+! Reproduce hadronization behavior of the Pythia version used for this tune.
+StringZ:useOldAExtra                = on

@@ -222,7 +222,8 @@ void bind_Pythia8_FragmentationSystems(std::function< pybind11::module &(std::st
 		cl.def("gluonOffsetJRF", (class Pythia8::Vec4 (Pythia8::StringRegion::*)(class std::vector<int, class std::allocator<int> > &, class Pythia8::Event &, int, int, class Pythia8::RotBstMatrix)) &Pythia8::StringRegion::gluonOffsetJRF, "C++: Pythia8::StringRegion::gluonOffsetJRF(class std::vector<int, class std::allocator<int> > &, class Pythia8::Event &, int, int, class Pythia8::RotBstMatrix) --> class Pythia8::Vec4", pybind11::arg("iSys"), pybind11::arg("event"), pybind11::arg("iPos"), pybind11::arg("iNeg"), pybind11::arg("MtoJRF"));
 		cl.def("massiveOffset", (bool (Pythia8::StringRegion::*)(int, int, int, int, int, double, double)) &Pythia8::StringRegion::massiveOffset, "C++: Pythia8::StringRegion::massiveOffset(int, int, int, int, int, double, double) --> bool", pybind11::arg("iPos"), pybind11::arg("iNeg"), pybind11::arg("iMax"), pybind11::arg("id1"), pybind11::arg("id2"), pybind11::arg("mc"), pybind11::arg("mb"));
 		cl.def("setUp", [](Pythia8::StringRegion &o, class Pythia8::Vec4 const & a0, class Pythia8::Vec4 const & a1, int const & a2, int const & a3) -> void { return o.setUp(a0, a1, a2, a3); }, "", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("col1"), pybind11::arg("col2"));
-		cl.def("setUp", (void (Pythia8::StringRegion::*)(class Pythia8::Vec4, class Pythia8::Vec4, int, int, bool)) &Pythia8::StringRegion::setUp, "C++: Pythia8::StringRegion::setUp(class Pythia8::Vec4, class Pythia8::Vec4, int, int, bool) --> void", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("col1"), pybind11::arg("col2"), pybind11::arg("isMassless"));
+		cl.def("setUp", [](Pythia8::StringRegion &o, class Pythia8::Vec4 const & a0, class Pythia8::Vec4 const & a1, int const & a2, int const & a3, bool const & a4) -> void { return o.setUp(a0, a1, a2, a3, a4); }, "", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("col1"), pybind11::arg("col2"), pybind11::arg("isMassless"));
+		cl.def("setUp", (void (Pythia8::StringRegion::*)(class Pythia8::Vec4, class Pythia8::Vec4, int, int, bool, double)) &Pythia8::StringRegion::setUp, "C++: Pythia8::StringRegion::setUp(class Pythia8::Vec4, class Pythia8::Vec4, int, int, bool, double) --> void", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("col1"), pybind11::arg("col2"), pybind11::arg("isMassless"), pybind11::arg("mVecRatio"));
 		cl.def("pHad", (class Pythia8::Vec4 (Pythia8::StringRegion::*)(double, double, double, double) const) &Pythia8::StringRegion::pHad, "C++: Pythia8::StringRegion::pHad(double, double, double, double) const --> class Pythia8::Vec4", pybind11::arg("xPosIn"), pybind11::arg("xNegIn"), pybind11::arg("pxIn"), pybind11::arg("pyIn"));
 		cl.def("project", (void (Pythia8::StringRegion::*)(class Pythia8::Vec4)) &Pythia8::StringRegion::project, "C++: Pythia8::StringRegion::project(class Pythia8::Vec4) --> void", pybind11::arg("pIn"));
 		cl.def("project", (void (Pythia8::StringRegion::*)(double, double, double, double)) &Pythia8::StringRegion::project, "C++: Pythia8::StringRegion::project(double, double, double, double) --> void", pybind11::arg("pxIn"), pybind11::arg("pyIn"), pybind11::arg("pzIn"), pybind11::arg("eIn"));
@@ -231,7 +232,7 @@ void bind_Pythia8_FragmentationSystems(std::function< pybind11::module &(std::st
 		cl.def("px", (double (Pythia8::StringRegion::*)() const) &Pythia8::StringRegion::px, "C++: Pythia8::StringRegion::px() const --> double");
 		cl.def("py", (double (Pythia8::StringRegion::*)() const) &Pythia8::StringRegion::py, "C++: Pythia8::StringRegion::py() const --> double");
 	}
-	{ // Pythia8::StringSystem file:Pythia8/FragmentationSystems.h line:185
+	{ // Pythia8::StringSystem file:Pythia8/FragmentationSystems.h line:186
 		pybind11::class_<Pythia8::StringSystem, std::shared_ptr<Pythia8::StringSystem>> cl(M("Pythia8"), "StringSystem", "");
 		pybind11::handle cl_type = cl;
 
@@ -245,14 +246,15 @@ void bind_Pythia8_FragmentationSystems(std::function< pybind11::module &(std::st
 		cl.def_readwrite("iMax", &Pythia8::StringSystem::iMax);
 		cl.def_readwrite("mJoin", &Pythia8::StringSystem::mJoin);
 		cl.def_readwrite("m2Join", &Pythia8::StringSystem::m2Join);
-		cl.def("setUp", (void (Pythia8::StringSystem::*)(const class std::vector<int, class std::allocator<int> > &, const class Pythia8::Event &)) &Pythia8::StringSystem::setUp, "C++: Pythia8::StringSystem::setUp(const class std::vector<int, class std::allocator<int> > &, const class Pythia8::Event &) --> void", pybind11::arg("iSys"), pybind11::arg("event"));
+		cl.def("setUp", [](Pythia8::StringSystem &o, const class std::vector<int, class std::allocator<int> > & a0, const class Pythia8::Event & a1) -> void { return o.setUp(a0, a1); }, "", pybind11::arg("iSys"), pybind11::arg("event"));
+		cl.def("setUp", (void (Pythia8::StringSystem::*)(const class std::vector<int, class std::allocator<int> > &, const class Pythia8::Event &, double)) &Pythia8::StringSystem::setUp, "C++: Pythia8::StringSystem::setUp(const class std::vector<int, class std::allocator<int> > &, const class Pythia8::Event &, double) --> void", pybind11::arg("iSys"), pybind11::arg("event"), pybind11::arg("mVecRatio"));
 		cl.def("iReg", (int (Pythia8::StringSystem::*)(int, int) const) &Pythia8::StringSystem::iReg, "C++: Pythia8::StringSystem::iReg(int, int) const --> int", pybind11::arg("iPos"), pybind11::arg("iNeg"));
 		cl.def("region", (class Pythia8::StringRegion & (Pythia8::StringSystem::*)(int, int)) &Pythia8::StringSystem::region, "C++: Pythia8::StringSystem::region(int, int) --> class Pythia8::StringRegion &", pybind11::return_value_policy::reference, pybind11::arg("iPos"), pybind11::arg("iNeg"));
 		cl.def("regionLowPos", (const class Pythia8::StringRegion & (Pythia8::StringSystem::*)(int) const) &Pythia8::StringSystem::regionLowPos, "C++: Pythia8::StringSystem::regionLowPos(int) const --> const class Pythia8::StringRegion &", pybind11::return_value_policy::reference, pybind11::arg("iPos"));
 		cl.def("regionLowNeg", (const class Pythia8::StringRegion & (Pythia8::StringSystem::*)(int) const) &Pythia8::StringSystem::regionLowNeg, "C++: Pythia8::StringSystem::regionLowNeg(int) const --> const class Pythia8::StringRegion &", pybind11::return_value_policy::reference, pybind11::arg("iNeg"));
 		cl.def("assign", (class Pythia8::StringSystem & (Pythia8::StringSystem::*)(const class Pythia8::StringSystem &)) &Pythia8::StringSystem::operator=, "C++: Pythia8::StringSystem::operator=(const class Pythia8::StringSystem &) --> class Pythia8::StringSystem &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::StringVertex file:Pythia8/FragmentationSystems.h line:223
+	{ // Pythia8::StringVertex file:Pythia8/FragmentationSystems.h line:225
 		pybind11::class_<Pythia8::StringVertex, std::shared_ptr<Pythia8::StringVertex>> cl(M("Pythia8"), "StringVertex", "");
 		pybind11::handle cl_type = cl;
 

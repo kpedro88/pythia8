@@ -4533,7 +4533,7 @@ double EWSystem::q2Next(double q2Start,double q2End) {
 
 // Initialize.
 
-void VinciaEW::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
+void VinciaEW::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn) {
 
   // Did we load the data?
   if (!isLoaded) return;

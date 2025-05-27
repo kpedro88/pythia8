@@ -90,18 +90,17 @@ class HVStringZ : public StringZ {
 public:
 
   // Constructor.
-  HVStringZ() : setabsigma(), rescalebsigma(), vecMassRatio(),
+  HVStringZ() : setabsigma(), rescalebsigma(), mVecRatio(),
     rFactBowler() {}
 
   // Destructor.
   virtual ~HVStringZ() {}
 
   // Feed in extra parameters for HV handling, not part of base class.
-  void preinit( int setabsigmaIn, double rescalebsigmaIn,
-    double rescalestopMIn);
+  void preinit( int setabsigmaIn, double rescalebsigmaIn, double mVecRatioIn);
 
   // Initialize data members.
-  void init() override;
+  bool init() override;
 
   // Fragmentation function: top-level to determine parameters.
   double zFrag( int idOld, int idNew = 0, double mT2 = 1.) override;
@@ -115,7 +114,7 @@ private:
 
   // Initialization data, from preinit, Settings and ParticleData.
   int    setabsigma;
-  double rescalebsigma, vecMassRatio;
+  double rescalebsigma, mVecRatio;
   vector<double> rFactBowler;
 
 };

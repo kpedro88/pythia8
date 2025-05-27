@@ -81,8 +81,8 @@ const double SimpleTimeShower::PROBLIMIT = 0.99;
 
 // Initialize alphaStrong, alphaEM and related pTmin parameters.
 
-void SimpleTimeShower::init( BeamParticlePtr beamAPtrIn,
-  BeamParticlePtr beamBPtrIn) {
+void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
+  BeamParticle* beamBPtrIn) {
 
   // Store input pointers for future use.
   beamAPtr           = beamAPtrIn;
@@ -484,7 +484,6 @@ int SimpleTimeShower::showerQED( int i1, int i2, Event& event, double pTmax) {
 
   //Check that the shower is meant to handle non-leptonic decays
   if (showerMode == 1 && !leptonFinalState) return -1;
-
 
   // Add new system, automatically with two empty beam slots.
   int iSys = partonSystemsPtr->addSys();
@@ -2323,7 +2322,6 @@ double SimpleTimeShower::pTnext( Event& event, double pTbegAll,
     // Find maximum evolution scale for dipole.
     dip.m2DipCorr    = pow2(dip.mDip - dip.mRec) - dip.m2Rad;
     double pTbegDip = min( pTbegAll, dip.pTmax );
-
     double pT2begDip = min( pow2(pTbegDip), 0.25 * dip.m2DipCorr);
 
     // For global recoil, always set the starting scale for first emission.
@@ -4025,8 +4023,8 @@ bool SimpleTimeShower::branch( Event& event, bool isInterleaved) {
       pTcorr, pzRadPlusEmt, pzRad, pzEmt, mRad, m2Rad, mEmt)) return false;
 
   // Reject g/gv emission where mass effects have reduced pT below cutoff.
-  // Separate cut for gv _could_ be added if needed.
-  if ( (idEmt == 21 || idEmt == 4900021) && pTorig < pTcolCut) return false;
+  if (idEmt == 21 && pTorig < pTcolCut) return false;
+  if (idEmt == 4900021 && pTorig < pThvCut) return false;
 
   // Find rest frame and angles of original dipole.
   RotBstMatrix M;

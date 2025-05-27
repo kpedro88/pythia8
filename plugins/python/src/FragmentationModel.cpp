@@ -220,7 +220,7 @@ struct PyCallBack_Pythia8_MiniStringFragmentation : public Pythia8::MiniStringFr
 	}
 };
 
-// Pythia8::StringFragmentation file:Pythia8/StringFragmentation.h line:105
+// Pythia8::StringFragmentation file:Pythia8/StringFragmentation.h line:106
 struct PyCallBack_Pythia8_StringFragmentation : public Pythia8::StringFragmentation {
 	using Pythia8::StringFragmentation::StringFragmentation;
 
@@ -336,6 +336,7 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def("fragment", [](Pythia8::MiniStringFragmentation &o, int const & a0, class Pythia8::ColConfig & a1, class Pythia8::Event & a2) -> bool { return o.fragment(a0, a1, a2); }, "", pybind11::arg("iSub"), pybind11::arg("colConfig"), pybind11::arg("event"));
 		cl.def("fragment", [](Pythia8::MiniStringFragmentation &o, int const & a0, class Pythia8::ColConfig & a1, class Pythia8::Event & a2, bool const & a3) -> bool { return o.fragment(a0, a1, a2, a3); }, "", pybind11::arg("iSub"), pybind11::arg("colConfig"), pybind11::arg("event"), pybind11::arg("isDiff"));
 		cl.def("fragment", (bool (Pythia8::MiniStringFragmentation::*)(int, class Pythia8::ColConfig &, class Pythia8::Event &, bool, bool)) &Pythia8::MiniStringFragmentation::fragment, "C++: Pythia8::MiniStringFragmentation::fragment(int, class Pythia8::ColConfig &, class Pythia8::Event &, bool, bool) --> bool", pybind11::arg("iSub"), pybind11::arg("colConfig"), pybind11::arg("event"), pybind11::arg("isDiff"), pybind11::arg("systemRecoil"));
+		cl.def("setMVecRatio", (void (Pythia8::MiniStringFragmentation::*)(double)) &Pythia8::MiniStringFragmentation::setMVecRatio, "C++: Pythia8::MiniStringFragmentation::setMVecRatio(double) --> void", pybind11::arg("mVecRatioIn"));
 		cl.def("assign", (class Pythia8::MiniStringFragmentation & (Pythia8::MiniStringFragmentation::*)(const class Pythia8::MiniStringFragmentation &)) &Pythia8::MiniStringFragmentation::operator=, "C++: Pythia8::MiniStringFragmentation::operator=(const class Pythia8::MiniStringFragmentation &) --> class Pythia8::MiniStringFragmentation &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
 	{ // Pythia8::StringEnd file:Pythia8/StringFragmentation.h line:23
@@ -386,13 +387,16 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("GammaOldPrev", &Pythia8::StringEnd::GammaOldPrev);
 		cl.def_readwrite("xPosOldPrev", &Pythia8::StringEnd::xPosOldPrev);
 		cl.def_readwrite("xNegOldPrev", &Pythia8::StringEnd::xNegOldPrev);
+		cl.def_readwrite("mVecRatio", &Pythia8::StringEnd::mVecRatio);
+		cl.def_readwrite("tinyEq", &Pythia8::StringEnd::tinyEq);
+		cl.def_readwrite("pT2tiny", &Pythia8::StringEnd::pT2tiny);
 		cl.def_readwrite("flavOld", &Pythia8::StringEnd::flavOld);
 		cl.def_readwrite("flavNew", &Pythia8::StringEnd::flavNew);
 		cl.def_readwrite("flavOldPrev", &Pythia8::StringEnd::flavOldPrev);
 		cl.def_readwrite("pHad", &Pythia8::StringEnd::pHad);
 		cl.def_readwrite("pSoFar", &Pythia8::StringEnd::pSoFar);
 		cl.def("init", (void (Pythia8::StringEnd::*)(class Pythia8::ParticleData *, class Pythia8::StringFlav *, class Pythia8::StringPT *, class Pythia8::StringZ *, class Pythia8::Settings &)) &Pythia8::StringEnd::init, "C++: Pythia8::StringEnd::init(class Pythia8::ParticleData *, class Pythia8::StringFlav *, class Pythia8::StringPT *, class Pythia8::StringZ *, class Pythia8::Settings &) --> void", pybind11::arg("particleDataPtrIn"), pybind11::arg("flavSelPtrIn"), pybind11::arg("pTSelPtrIn"), pybind11::arg("zSelPtrIn"), pybind11::arg("settings"));
-		cl.def("setUp", (void (Pythia8::StringEnd::*)(bool, int, int, int, double, double, double, double, double, int)) &Pythia8::StringEnd::setUp, "C++: Pythia8::StringEnd::setUp(bool, int, int, int, double, double, double, double, double, int) --> void", pybind11::arg("fromPosIn"), pybind11::arg("iEndIn"), pybind11::arg("idOldIn"), pybind11::arg("iMaxIn"), pybind11::arg("pxIn"), pybind11::arg("pyIn"), pybind11::arg("GammaIn"), pybind11::arg("xPosIn"), pybind11::arg("xNegIn"), pybind11::arg("colIn"));
+		cl.def("setUp", (void (Pythia8::StringEnd::*)(bool, int, int, int, double, double, double, double, double, int, double)) &Pythia8::StringEnd::setUp, "C++: Pythia8::StringEnd::setUp(bool, int, int, int, double, double, double, double, double, int, double) --> void", pybind11::arg("fromPosIn"), pybind11::arg("iEndIn"), pybind11::arg("idOldIn"), pybind11::arg("iMaxIn"), pybind11::arg("pxIn"), pybind11::arg("pyIn"), pybind11::arg("GammaIn"), pybind11::arg("xPosIn"), pybind11::arg("xNegIn"), pybind11::arg("colIn"), pybind11::arg("mVecRatioIn"));
 		cl.def("newHadron", [](Pythia8::StringEnd &o, double const & a0) -> void { return o.newHadron(a0); }, "", pybind11::arg("kappaModifier"));
 		cl.def("newHadron", [](Pythia8::StringEnd &o, double const & a0, bool const & a1) -> void { return o.newHadron(a0, a1); }, "", pybind11::arg("kappaModifier"), pybind11::arg("forbidPopcornNow"));
 		cl.def("newHadron", [](Pythia8::StringEnd &o, double const & a0, bool const & a1, double const & a2) -> void { return o.newHadron(a0, a1, a2); }, "", pybind11::arg("kappaModifier"), pybind11::arg("forbidPopcornNow"), pybind11::arg("strangeJunc"));
@@ -404,7 +408,7 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def("updateToPrev", (void (Pythia8::StringEnd::*)()) &Pythia8::StringEnd::updateToPrev, "C++: Pythia8::StringEnd::updateToPrev() --> void");
 		cl.def("assign", (class Pythia8::StringEnd & (Pythia8::StringEnd::*)(const class Pythia8::StringEnd &)) &Pythia8::StringEnd::operator=, "C++: Pythia8::StringEnd::operator=(const class Pythia8::StringEnd &) --> class Pythia8::StringEnd &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::StringFragmentation file:Pythia8/StringFragmentation.h line:105
+	{ // Pythia8::StringFragmentation file:Pythia8/StringFragmentation.h line:106
 		pybind11::class_<Pythia8::StringFragmentation, std::shared_ptr<Pythia8::StringFragmentation>, PyCallBack_Pythia8_StringFragmentation, Pythia8::FragmentationModel> cl(M("Pythia8"), "StringFragmentation", "");
 		pybind11::handle cl_type = cl;
 
@@ -422,6 +426,7 @@ void bind_Pythia8_FragmentationModel(std::function< pybind11::module &(std::stri
 		cl.def("fragment", (bool (Pythia8::StringFragmentation::*)(int, class Pythia8::ColConfig &, class Pythia8::Event &, bool, bool)) &Pythia8::StringFragmentation::fragment, "C++: Pythia8::StringFragmentation::fragment(int, class Pythia8::ColConfig &, class Pythia8::Event &, bool, bool) --> bool", pybind11::arg("iSub"), pybind11::arg("colConfig"), pybind11::arg("event"), pybind11::arg("isDiff"), pybind11::arg("systemRecoil"));
 		cl.def("junctionRestFrame", [](Pythia8::StringFragmentation const &o, const class Pythia8::Vec4 & a0, const class Pythia8::Vec4 & a1, const class Pythia8::Vec4 & a2) -> Pythia8::Vec4 { return o.junctionRestFrame(a0, a1, a2); }, "", pybind11::arg("p0"), pybind11::arg("p1"), pybind11::arg("p2"));
 		cl.def("junctionRestFrame", (class Pythia8::Vec4 (Pythia8::StringFragmentation::*)(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const bool) const) &Pythia8::StringFragmentation::junctionRestFrame, "C++: Pythia8::StringFragmentation::junctionRestFrame(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const bool) const --> class Pythia8::Vec4", pybind11::arg("p0"), pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("angleCheck"));
+		cl.def("setMVecRatio", (void (Pythia8::StringFragmentation::*)(double)) &Pythia8::StringFragmentation::setMVecRatio, "C++: Pythia8::StringFragmentation::setMVecRatio(double) --> void", pybind11::arg("mVecRatioIn"));
 		cl.def("assign", (class Pythia8::StringFragmentation & (Pythia8::StringFragmentation::*)(const class Pythia8::StringFragmentation &)) &Pythia8::StringFragmentation::operator=, "C++: Pythia8::StringFragmentation::operator=(const class Pythia8::StringFragmentation &) --> class Pythia8::StringFragmentation &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
 }

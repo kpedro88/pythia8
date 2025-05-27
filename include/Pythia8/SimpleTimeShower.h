@@ -121,8 +121,8 @@ public:
   virtual ~SimpleTimeShower() override {}
 
   // Initialize alphaStrong and related pTmin parameters.
-  virtual void init( BeamParticlePtr beamAPtrIn = nullptr,
-    BeamParticlePtr beamBPtrIn = nullptr) override;
+  virtual void init( BeamParticle* beamAPtrIn = nullptr,
+    BeamParticle* beamBPtrIn = nullptr) override;
 
   // Find whether to limit maximum scale of emissions, and whether to dampen.
   virtual bool limitPTmax( Event& event, double Q2Fac = 0.,

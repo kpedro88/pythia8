@@ -32,7 +32,7 @@ public:
     zHad(), GammaOld(), GammaNew(), xPosOld(), xPosNew(), xPosHad(), xNegOld(),
     xNegNew(), xNegHad(), aLund(), bLund(), iPosOldPrev(), iNegOldPrev(),
     colOldPrev(), pxOldPrev(), pyOldPrev(), GammaOldPrev(), xPosOldPrev(),
-    xNegOldPrev() {}
+    xNegOldPrev(), mVecRatio(1.), tinyEq(), pT2tiny() {}
 
   // Save pointers.
   void init( ParticleData* particleDataPtrIn, StringFlav* flavSelPtrIn,
@@ -48,7 +48,7 @@ public:
   // Set up initial endpoint values from input.
   void setUp(bool fromPosIn, int iEndIn, int idOldIn, int iMaxIn,
     double pxIn, double pyIn, double GammaIn, double xPosIn,
-    double xNegIn, int colIn);
+    double xNegIn, int colIn, double mVecRatioIn);
 
   // Fragment off one hadron from the string system, in flavour and pT.
   void newHadron(double kappaModifier, bool forbidPopcornNow = false,
@@ -91,7 +91,8 @@ public:
          GammaOld, GammaNew, xPosOld, xPosNew, xPosHad, xNegOld, xNegNew,
          xNegHad, aLund, bLund;
   int    iPosOldPrev, iNegOldPrev, colOldPrev;
-  double pxOldPrev, pyOldPrev, GammaOldPrev, xPosOldPrev, xNegOldPrev;
+  double pxOldPrev, pyOldPrev, GammaOldPrev, xPosOldPrev, xNegOldPrev,
+         mVecRatio, tinyEq, pT2tiny;
   FlavContainer flavOld, flavNew, flavOldPrev;
   Vec4   pHad, pSoFar;
 
@@ -108,15 +109,16 @@ public:
 
   // Constructor.
   StringFragmentation() :
-    FragmentationModel(), flavRopePtr(),
-    closePacking(), setVertices(), constantTau(), smearOn(),
-    traceColours(false), hadronVertex(), stopMass(), stopNewFlav(),
-    stopSmear(), pNormJunction(), pMaxJunction(), eBothLeftJunction(),
+    FragmentationModel(), flavRopePtr(), closePacking(),
+    setVertices(), constantTau(), smearOn(), traceColours(false),
+    hadronVertex(), stopMass(), stopNewFlav(), stopSmear(),
+    pNormJunction(), pMaxJunction(), eBothLeftJunction(),
     eMaxLeftJunction(), eMinLeftJunction(), mJoin(), bLund(),
-    closePackingFluxRatio(1.), closePackingPT20(1.), pT20(), xySmear(),
-    maxSmear(), maxTau(), kappaVtx(), mc(), mb(), hasJunction(), isClosed(),
-    iPos(), iNeg(), nExtraJoin(), w2Rem(), stopMassNow(), idDiquark(),
-    legMin(), legMid() {}
+    closePackingFluxRatio(1.), closePackingPT20(1.), pT20(),
+    xySmear(), maxSmear(), maxTau(), kappaVtx(), mc(), mb(),
+    hasJunction(), isClosed(), iPos(), iNeg(), nExtraJoin(),
+    w2Rem(), stopMassNow(), mVecRatio(1.), closedM2max(),
+    idDiquark(), legMin(), legMid() {}
 
   // Initialize and save pointers.
   bool init(StringFlav* flavSelPtrIn = nullptr, StringPT* pTSelPtrIn = nullptr,
@@ -132,6 +134,9 @@ public:
   // Find the boost matrix to the rest frame of a junction.
   Vec4 junctionRestFrame(const Vec4& p0, const Vec4& p1, const Vec4& p2,
     const bool angleCheck = true) const;
+
+  // Set the vector mass ratio.
+  void setMVecRatio(double mVecRatioIn) {mVecRatio = mVecRatioIn;}
 
 private:
 
@@ -158,7 +163,7 @@ private:
   // Data members.
   bool   hasJunction, isClosed;
   int    iPos, iNeg, nExtraJoin;
-  double w2Rem, stopMassNow, kappaModifier, probQQmod;
+  double w2Rem, stopMassNow, kappaModifier, probQQmod, mVecRatio, closedM2max;
   Vec4   pSum, pRem, pJunctionHadrons;
 
   // UserHooks flags.

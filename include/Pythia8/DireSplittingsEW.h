@@ -28,8 +28,8 @@ public:
 
   // Constructor and destructor.
   DireSplittingEW(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingQCD(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM,info, direInfo) {init();}
   virtual ~DireSplittingEW() {}
@@ -74,16 +74,16 @@ class Dire_fsr_ew_Q2QZ : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_Q2QZ(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -124,16 +124,16 @@ class Dire_fsr_ew_Q2ZQ : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_Q2ZQ(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -174,16 +174,16 @@ class Dire_fsr_ew_Z2QQ1 : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_Z2QQ1(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -224,16 +224,16 @@ class Dire_fsr_ew_Z2QQ2 : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_Z2QQ2(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -274,16 +274,16 @@ class Dire_fsr_ew_W2QQ1 : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_W2QQ1(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -324,16 +324,16 @@ class Dire_fsr_ew_W2QQ2 : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_W2QQ2(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -376,16 +376,16 @@ class Dire_fsr_ew_H2WW : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_H2WW(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();
@@ -428,8 +428,8 @@ class Dire_fsr_ew_H2AA : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_H2AA(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo) {
     widthToAA = particleDataPtr->particleDataEntryPtr(25)->resWidthChan(
@@ -439,9 +439,9 @@ public:
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int iRadBef, int iRecBef,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool isPartial()  { return false; }
 
   bool isSymmetric( const Particle* rad, const Particle* emt) {
@@ -497,8 +497,8 @@ class Dire_fsr_ew_H2GG : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_H2GG(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo) {
     widthToGG = particleDataPtr->particleDataEntryPtr(25)->resWidthChan(
@@ -508,9 +508,9 @@ public:
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int iRadBef, int iRecBef,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool isPartial()  { return false; }
 
   bool isSymmetric( const Particle* rad, const Particle* emt) {
@@ -566,16 +566,16 @@ class Dire_fsr_ew_W2WA : public DireSplittingEW {
 public:
 
   Dire_fsr_ew_W2WA(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int iRadBef, int iRecBef,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
 
   int kinMap ();
 
@@ -626,16 +626,16 @@ class Dire_isr_ew_Q2QZ : public DireSplittingEW {
 public:
 
   Dire_isr_ew_Q2QZ(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSM, Info* info, DireInfo* direInfo) :
     DireSplittingEW(idIn, softRS, settings, particleData, rndm, beamA, beamB,
       coupSM, info, direInfo){}
 
   bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr);
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr);
   bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   int kinMap ();

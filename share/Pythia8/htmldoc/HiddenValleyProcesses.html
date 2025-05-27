@@ -854,7 +854,7 @@ then so are the longitudinal and transverse momentum spectra of (HV)
 hadrons, with a constant average number of hadrons. 
  
 <p/> 
-The fragmentation parameters are as follows. 
+The HV fragmentation parameters are as follows. 
  
 <a name="anchor40"></a>
 <p/><code>flag&nbsp; </code><strong> HiddenValley:fragment &nbsp;</strong> 
@@ -918,6 +918,9 @@ fraction of HV-mesons that are assigned spin 1 (vector), with the
 remainder spin 0 (pseudoscalar). Assuming the <i>qv</i> have 
 spin <i>1/2</i> and the mass splitting is small, spin counting 
 predicts that <i>3/4</i> of the mesons should have spin 1. 
+Note the difference relative to <code>StringFlav:mesonUDvector</code> 
+and related ones, which set the ratio V/PS, whereas here V/(V+PS) 
+is set. 
    
  
 <a name="anchor46"></a>
@@ -1067,6 +1070,27 @@ irrespective of the  <code>HiddenValley:setabsigma</code> value.
 for all HV quarks. The default value has also been changed from 1 to 
 0, to be in line with a HV sector of light quarks. 
    
+ 
+<p/> 
+In PYTHIA there are also a few more fragmentation parameters and 
+constants that are defined with our QCD world in mind. Largely this 
+poses no problem for HV scenarios with mass scales above the QCD one, 
+but would preclude studies with HV scales significantly below QCD 
+ditto. To this end, a rescaling has been introduced for them in the 
+HV option, so that the QCD values can be kept unchanged. 
+The rescaling factor is the <i>k = m(rho_HV) / m(rho_QCD)</i> 
+already introduced above. 
+Included in this rescaling are the input parameters 
+<code>FragmentationSystems:mJoin</code>, 
+(<code>FragmentationSystems:mJoinJunction</code>, but not used currently), 
+<code>HadronLevel:mStringMin</code>, and 
+<code>StringFragmentation:stopMass</code>. 
+Local rescaled parameters are also defined from the constants 
+<code>ColConfig::CONSTITUENTMASS</code>, 
+<code>StringRegion::MJOIN</code>, 
+<code>StringEnd::TINY</code>, 
+<code>StringEnd::PT2SAME</code>, and 
+<code>StringFragmentation::CLOSEDM2MAX</code>. 
  
 <a name="section4"></a> 
 <h3>Event information</h3> 

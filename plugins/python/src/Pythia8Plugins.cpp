@@ -7464,6 +7464,7 @@ void bind_Pythia8Plugins_LHAHelaconia(std::function< pybind11::module &(std::str
 #include <Pythia8/NucleonExcitations.h>
 #include <Pythia8/ParticleData.h>
 #include <Pythia8/ParticleDecays.h>
+#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>

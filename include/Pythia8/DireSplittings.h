@@ -62,8 +62,8 @@ public:
       is_qcd(false), is_qed(false), is_ewk(false), is_fsr(false),
       is_isr(false), is_dire(false), nameHash(0) {}
   DireSplitting(string idIn, int softRS, Settings* settings,
-    ParticleData* particleData, Rndm* rndm, BeamParticlePtr beamA,
-    BeamParticlePtr beamB, CoupSM* coupSMPtrIn, Info* infoPtrIn,
+    ParticleData* particleData, Rndm* rndm, BeamParticle* beamA,
+    BeamParticle* beamB, CoupSM* coupSMPtrIn, Info* infoPtrIn,
                 DireInfo* direInfo) :
     renormMultFac(0), id(idIn), correctionOrder(softRS),
       settingsPtr(settings), particleDataPtr(particleData), rndmPtr(rndm),
@@ -84,8 +84,8 @@ public:
   Settings* settingsPtr;
   ParticleData* particleDataPtr;
   Rndm* rndmPtr;
-  BeamParticlePtr beamAPtr;
-  BeamParticlePtr beamBPtr;
+  BeamParticle* beamAPtr;
+  BeamParticle* beamBPtr;
   CoupSM* coupSMPtr;
   Info* infoPtr;
   DireInfo* direInfoPtr;
@@ -104,7 +104,7 @@ public:
 
   virtual bool canRadiate ( const Event&, pair<int,int>,
     unordered_map<string,bool> = unordered_map<string,bool>(),
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   // Discard below the cut-off for the splitting.
@@ -113,7 +113,7 @@ public:
 
   virtual bool useFastFunctions() { return false; }
   virtual bool canRadiate ( const Event&, int, int,
-    Settings* = nullptr, PartonSystems* = nullptr, BeamParticlePtr = nullptr)
+    Settings* = nullptr, PartonSystems* = nullptr, BeamParticle* = nullptr)
     {return false;}
 
   // Function to return an identifier for the phase space mapping

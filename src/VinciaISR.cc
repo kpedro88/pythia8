@@ -201,7 +201,7 @@ double TrialGeneratorISR::getSj2(double Qt2, double zeta, double sAB) {
 
 // Compute trial PDF ratio.
 
-double TrialGeneratorISR::trialPDFratio(BeamParticlePtr, BeamParticlePtr,
+double TrialGeneratorISR::trialPDFratio(BeamParticle*, BeamParticle*,
   int, int, int, double, double, double, double) {
   trialPDFratioSav = 1.0;
   return trialPDFratioSav;
@@ -535,7 +535,7 @@ double TrialIISplitA::getSj2(double Qt2, double zeta, double sAB) {
 
 // Trial PDF ratio.
 
-double TrialIISplitA::trialPDFratio(BeamParticlePtr beamAPtr, BeamParticlePtr,
+double TrialIISplitA::trialPDFratio(BeamParticle* beamAPtr, BeamParticle*,
   int iSys, int idA, int, double eA, double, double Qt2A, double) {
   const double xA = eA/infoPtr->eA();
   double newPdf = max(beamAPtr->xfISR(iSys,  21, xA, Qt2A), TINYPDFtrial);
@@ -694,7 +694,7 @@ double TrialIIConvA::getSj2(double Qt2, double zeta, double sAB) {
 
 // Trial PDF ratio.
 
-double TrialIIConvA::trialPDFratio(BeamParticlePtr beamAPtr, BeamParticlePtr,
+double TrialIIConvA::trialPDFratio(BeamParticle* beamAPtr, BeamParticle*,
   int iSys, int, int, double eA, double, double Qt2A, double) {
 
   const double xA = eA/infoPtr->eA();
@@ -869,7 +869,7 @@ double TrialIFSoft::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio.
 
-double TrialIFSoft::trialPDFratio(BeamParticlePtr, BeamParticlePtr,
+double TrialIFSoft::trialPDFratio(BeamParticle*, BeamParticle*,
   int, int, int, double, double, double, double) {
   trialPDFratioSav = 1.3;
   return trialPDFratioSav;
@@ -1042,7 +1042,7 @@ double TrialIFGCollA::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio (= just a simple headroom factor).
 
-double TrialIFGCollA::trialPDFratio(BeamParticlePtr, BeamParticlePtr,
+double TrialIFGCollA::trialPDFratio(BeamParticle*, BeamParticle*,
   int, int, int, double, double, double, double) {
   trialPDFratioSav = 1.3;
   return trialPDFratioSav;
@@ -1190,7 +1190,7 @@ double TrialIFGCollK::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio.
 
-double TrialIFGCollK::trialPDFratio(BeamParticlePtr, BeamParticlePtr, int,
+double TrialIFGCollK::trialPDFratio(BeamParticle*, BeamParticle*, int,
   int, int, double, double, double, double) {
   trialPDFratioSav = 1.0;
   return trialPDFratioSav;
@@ -1361,7 +1361,7 @@ double TrialIFSplitA::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio.
 
-double TrialIFSplitA::trialPDFratio(BeamParticlePtr beamAPtr, BeamParticlePtr,
+double TrialIFSplitA::trialPDFratio(BeamParticle* beamAPtr, BeamParticle*,
   int iSys, int idA, int, double eA, double, double Qt2A, double) {
   const double xA = eA/infoPtr->eA();
   double newPdf = max(beamAPtr->xfISR(iSys,  21, xA, Qt2A), TINYPDFtrial);
@@ -1510,7 +1510,7 @@ double TrialIFSplitK::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio.
 
-double TrialIFSplitK::trialPDFratio(BeamParticlePtr, BeamParticlePtr,
+double TrialIFSplitK::trialPDFratio(BeamParticle*, BeamParticle*,
   int, int, int, double, double, double, double) {
   trialPDFratioSav = 1.0;
   return trialPDFratioSav;
@@ -1656,7 +1656,7 @@ double TrialIFConvA::getSj2(double Qt2, double zeta, double sAK) {
 
 // Trial PDF ratio.
 
-double TrialIFConvA::trialPDFratio(BeamParticlePtr beamAPtr, BeamParticlePtr,
+double TrialIFConvA::trialPDFratio(BeamParticle* beamAPtr, BeamParticle*,
   int iSys, int, int, double eOldA, double, double Qt2A, double) {
 
   // Number of active flavours.
@@ -1949,7 +1949,7 @@ void BranchElementalISR::list(bool header, bool footer) const {
 
 // Initialize shower.
 
-void VinciaISR::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
+void VinciaISR::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn) {
 
   // Verbose level.
   verbose         = settingsPtr->mode("Vincia:verbose");
@@ -2059,7 +2059,7 @@ void VinciaISR::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn) {
 
   // If we want to get rid of heavy quarks we need to change the masses
   // to the ones in the pdfs.
-  BeamParticlePtr beamUsePtr =
+  BeamParticle* beamUsePtr =
     ((abs(beamAPtr->id()) < 100) ? beamBPtr : beamAPtr);
   if ((abs(beamUsePtr->id()) > 100) && (nFlavZeroMass < 5)) {
     vector<double> masses;
@@ -4827,7 +4827,7 @@ bool VinciaISR::generateKinematicsIF(Event& event,
   // with the sum of quark flavours but at the same time a trial
   // flavour is selected and the saved trial PDF ratio only contains
   // that flavour/glue, so we don't need to know the sum here.
-  BeamParticlePtr beamPtr = is1A ? beamAPtr : beamBPtr;
+  BeamParticle* beamPtr = is1A ? beamAPtr : beamBPtr;
   double PDFscale = q2new;
   int idOld = idA;
   int idNew = trialPtr->new1.id();

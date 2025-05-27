@@ -220,7 +220,7 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
   bool hasPointGammaLepton = ( beamAPtr->isUnresolved()
     && ( beamAisGamma || beamAPtr->isLepton() ) )
     && ( beamBPtr->isUnresolved()
-    && ( beamBisGamma || beamAPtr->isLepton() ) );
+    && ( beamBisGamma || beamBPtr->isLepton() ) );
   if ( (hasTwoLeptonBeams && hasPointLeptons) || hasPointGammaLepton ) {
     doISR            = false;
     doRemnants       = false;
@@ -244,7 +244,7 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
   // lepton, possibly VMD from photon.
   if (doSD || doDD || doSQ || ( doHardDiff && (hardDiffSide == 0
     || hardDiffSide == 1) && beamBPtr->getGammaMode() < 2 ) ) {
-    BeamParticlePtr tmpBeamA = (beamAhasGamma) ? beamGamAPtr : beamAPtr;
+    BeamParticle* tmpBeamA = (beamAhasGamma) ? beamGamAPtr : beamAPtr;
     if (infoPtr->isVMDstateA()) tmpBeamA = beamVMDAPtr;
     if (beamHasResGamma) doMPIinit = doMPIinitSave;
     doMPISDA = multiSDA.init( doMPIinit, 1, tmpBeamA,
@@ -252,7 +252,7 @@ bool PartonLevel::init( TimeShowerPtr timesDecPtrIn,
   }
   if (doSD || doDD || doSQ || ( doHardDiff && (hardDiffSide == 0
     || hardDiffSide == 2) && beamAPtr->getGammaMode() < 2 ) ) {
-    BeamParticlePtr tmpBeamB = (beamBhasGamma) ? beamGamBPtr : beamBPtr;
+    BeamParticle* tmpBeamB = (beamBhasGamma) ? beamGamBPtr : beamBPtr;
     if (infoPtr->isVMDstateB()) tmpBeamB = beamVMDBPtr;
     if (beamHasResGamma) doMPIinit = doMPIinitSave;
     doMPISDB = multiSDB.init( doMPIinit, 2, beamPomAPtr,
@@ -1272,7 +1272,7 @@ bool PartonLevel::setupUnresolvedSys( Event& process, Event& event) {
     // Beam Particle used for flavour content kicked out by Pomeron.
     // Randomize for central diffraction; misses closed gluon loop case.
     bool beamSideA = (iDS == 1 || (iDS == 3 && rndmPtr->flat() < 0.5));
-    BeamParticlePtr beamPtr = (beamSideA) ? beamAPtr    : beamBPtr;
+    BeamParticle* beamPtr = (beamSideA) ? beamAPtr    : beamBPtr;
     if (iDS == 3) beamPtr = (beamSideA) ? beamPomAPtr : beamPomBPtr;
 
     // Pick quark or gluon kicked out and flavour subdivision.
@@ -3088,12 +3088,12 @@ bool PartonLevel::wzDecayShowers( Event& event) {
       for (int j = 0; j < 6; ++j) {
         Vec4 pDec1Test( 0., 0., 0., pDec1.e());
         Vec4 pDec2Test( 0., 0., 0., pDec2.e());
-        if      (j == 0) { pDec1Test.px(  pAbs12);  pDec1Test.px( -pAbs12);}
-        else if (j == 1) { pDec1Test.px( -pAbs12);  pDec1Test.px(  pAbs12);}
-        else if (j == 2) { pDec1Test.py(  pAbs12);  pDec1Test.py( -pAbs12);}
-        else if (j == 3) { pDec1Test.py( -pAbs12);  pDec1Test.py(  pAbs12);}
-        else if (j == 4) { pDec1Test.pz(  pAbs12);  pDec1Test.pz( -pAbs12);}
-        else if (j == 5) { pDec1Test.pz( -pAbs12);  pDec1Test.pz(  pAbs12);}
+        if      (j == 0) { pDec1Test.px(  pAbs12);  pDec2Test.px( -pAbs12);}
+        else if (j == 1) { pDec1Test.px( -pAbs12);  pDec2Test.px(  pAbs12);}
+        else if (j == 2) { pDec1Test.py(  pAbs12);  pDec2Test.py( -pAbs12);}
+        else if (j == 3) { pDec1Test.py( -pAbs12);  pDec2Test.py(  pAbs12);}
+        else if (j == 4) { pDec1Test.pz(  pAbs12);  pDec2Test.pz( -pAbs12);}
+        else if (j == 5) { pDec1Test.pz( -pAbs12);  pDec2Test.pz(  pAbs12);}
 
         // Evaluate matrix element and compare with current maximum.
         double p2p4Test = p4 * pDec1Test;

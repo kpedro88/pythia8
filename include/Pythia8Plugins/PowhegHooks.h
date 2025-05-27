@@ -695,10 +695,12 @@ public:
 
   //--------------------------------------------------------------------------
 
+ protected:
+  double pThard, pTMPI;
+
  private:
   int    showerModel, nFinal, vetoMode, MPIvetoMode, QEDvetoMode, vetoCount;
   int    pThardMode, pTemtMode, emittedMode, pTdefMode;
-  double pThard, pTMPI;
   bool   accepted, isEmt;
   // The number of accepted emissions (in a row)
   // Flag for PowHeg Born or Radiation

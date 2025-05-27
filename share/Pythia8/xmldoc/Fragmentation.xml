@@ -104,6 +104,27 @@ allows a larger <ei>a</ei> for diquarks, with total
 <ei>a = aLund + aExtraDiquark</ei>. 
 </parm> 
  
+<flag name="StringZ:useOldAExtra" default="off"> 
+flag which, when on, reproduces an old incorrect behavior of updating 
+<code>aExtra</code>. This bug was introduced in the transition from 
+Pythia 6 to Pythia 8, and fixed in Pythia 8.315, when also this flag 
+was introduced. Inadvertently, the type of the old and new strange quark 
+or diquark was flipped in the <ei>(1-z)^a</ei> factor when updating 
+<code>aExtra</code> between string breaks. This flag has now been 
+set to <code>on</code> for all past tunes distributed with Pythia, 
+to ensure that these tunes still are valid, since they were tuned 
+with this old behavior. All future tunes should be made with 
+this flag set to <code>off</code> (the default value). 
+<note>Note:</note> If you are using an old custom tune file with 
+Pythia 8.315 or beyond, you should include 
+<code>StringZ:useOldAExtra = on</code> to ensure that such a tune 
+remains valid. Conversely, if you are using an old tune but want to 
+study how it would be impacted by a correct <ei>z</ei> selection, 
+you need to set <code>StringZ:useOldAExtra = off</code> to 
+annul the change from the default <code>off</code> to <code>on</code> 
+when the tune is read. 
+</flag> 
+ 
 <p/> 
 In the context of fits to experimental data, the <ei>a</ei> 
 and <ei>b</ei> parameters typically exhibit a very high degree of 

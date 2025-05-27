@@ -101,7 +101,7 @@ public:
   }
   void setup();
 
-  void initPtrs(BeamParticlePtr beamAIn, BeamParticlePtr beamBIn,
+  void initPtrs(BeamParticle* beamAIn, BeamParticle* beamBIn,
     Settings* settingsPtrIn, Info* infoPtrIn, DireInfo* direInfoPtrIn) {
     beamA    = beamAIn;
     beamB    = beamBIn;
@@ -219,8 +219,8 @@ private:
   unordered_map<string,double> enhanceFactors;
   map<ulong, double> trialEnhancements;
 
-  BeamParticlePtr beamA;
-  BeamParticlePtr beamB;
+  BeamParticle* beamA;
+  BeamParticle* beamB;
   Info* infoPtr;
   DireInfo* direInfoPtr;
 

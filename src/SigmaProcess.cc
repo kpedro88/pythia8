@@ -35,7 +35,7 @@ const int    SigmaProcess::NCOMPSTEP  = 10;
 
 // Perform simple initialization and store pointers.
 
-void SigmaProcess::init(BeamParticlePtr beamAPtrIn, BeamParticlePtr beamBPtrIn,
+void SigmaProcess::init(BeamParticle* beamAPtrIn, BeamParticle* beamBPtrIn,
   SLHAinterface* slhaInterfacePtrIn) {
 
   // Beam pointers can differ from the main beam pointers in PhysicsBase.

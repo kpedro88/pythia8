@@ -49,8 +49,8 @@ public:
     ColRecPtr colourReconnectionPtrIn);
 
   // New beams possible for handling of hard diffraction.
-  void reassignBeamPtrs( BeamParticlePtr beamAPtrIn,
-    BeamParticlePtr beamBPtrIn, int iDSin) {
+  void reassignBeamPtrs( BeamParticle* beamAPtrIn,
+    BeamParticle* beamBPtrIn, int iDSin) {
     beamAPtr = beamAPtrIn; beamBPtr = beamBPtrIn; iDS = iDSin;}
 
   // Select the flavours/kinematics/colours of the two beam remnants.

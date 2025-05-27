@@ -52,13 +52,13 @@ public:
   }
 
   // New beams possible for handling of hard diffraction. (Not virtual.)
-  void reassignBeamPtrs( BeamParticlePtr beamAPtrIn,
-    BeamParticlePtr beamBPtrIn, int beamOffsetIn = 0) {
+  void reassignBeamPtrs( BeamParticle* beamAPtrIn,
+    BeamParticle* beamBPtrIn, int beamOffsetIn = 0) {
     beamAPtr = beamAPtrIn; beamBPtr = beamBPtrIn; beamOffset = beamOffsetIn;}
 
   // Initialize alphaStrong and related pTmin parameters.
   // Usage: init( beamAPtr, beamBPtr).
-  virtual void init( BeamParticlePtr = nullptr, BeamParticlePtr = nullptr) {}
+  virtual void init( BeamParticle* = nullptr, BeamParticle* = nullptr) {}
 
   // Find whether to limit maximum scale of emissions, and whether to dampen.
   // Usage: limitPTmax( event, Q2Fac, double Q2Ren).

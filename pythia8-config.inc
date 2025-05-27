@@ -104,7 +104,7 @@ if [ $# -eq 0 ]; then echo "$USAGE"; exit; fi
 for VAR in "$@"; do
     if [ "$VAR" = "-h" ] || [ "$VAR" = "--h" ] || [ "$VAR" = "-help" ] \
            || [ "$VAR" = "--help" ]; then echo "$USAGE"; exit;
-    elif [ "$VAR" = "--version" ]; then echo "8.314"; exit; fi
+    elif [ "$VAR" = "--version" ]; then echo "8.315"; exit; fi
 done
 
 # Read the configuration (use local version first, then installed version).

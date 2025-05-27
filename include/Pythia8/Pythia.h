@@ -10,8 +10,8 @@
 #define Pythia8_Pythia_H
 
 // Version number defined for use in macros and for consistency checks.
-#define PYTHIA_VERSION 8.314
-#define PYTHIA_VERSION_INTEGER 8314
+#define PYTHIA_VERSION 8.315
+#define PYTHIA_VERSION_INTEGER 8315
 
 // Header files for the Pythia class and for what else the user may need.
 #include "Pythia8/Analysis.h"
@@ -417,8 +417,8 @@ public:
   HadronWidths    hadronWidths = {};
 
   // The two incoming beams.
-  BeamParticlePtr beamAPtr;
-  BeamParticlePtr beamBPtr;
+  const BeamParticle& beamA = beamSetup.beamA;
+  const BeamParticle& beamB = beamSetup.beamB;
 
 private:
 

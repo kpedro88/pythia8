@@ -1113,7 +1113,7 @@ bool HistoryNode::doClustering(VinciaClustering& clus, Event& clusEvent,
 // Constructor.
 
 VinciaHistory::VinciaHistory(Event& stateIn,
-  BeamParticlePtr beamAPtrIn,  BeamParticlePtr beamBPtrIn,
+  BeamParticle* beamAPtrIn,  BeamParticle* beamBPtrIn,
   MergingHooksPtr mergingHooksPtrIn,
   PartonLevel* trialPartonLevelPtrIn,
   ParticleData* particleDataPtrIn,

@@ -42,3 +42,6 @@ ColourReconnection:range            = 1.75
 ! Diffraction: switch off Pythia's perturbative MPI
 ! (colours in diffractive systems not yet handled by Vincia)
 Diffraction:mMinPert                = 1000000.0
+
+! Reproduce hadronization behavior of the Pythia version used for this tune.
+StringZ:useOldAExtra                = on

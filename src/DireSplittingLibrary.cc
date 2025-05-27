@@ -27,8 +27,8 @@ void DireSplittingLibrary::clear() {
 //--------------------------------------------------------------------------
 
 // Initialisation.
-void DireSplittingLibrary::init( Info* infoPtrIn, BeamParticlePtr beamA,
-  BeamParticlePtr beamB, DireInfo* direInfo, DireHooks* hooks) {
+void DireSplittingLibrary::init( Info* infoPtrIn, BeamParticle* beamA,
+  BeamParticle* beamB, DireInfo* direInfo, DireHooks* hooks) {
 
   // Store infrastructure pointers.
   infoPtr      = infoPtrIn;

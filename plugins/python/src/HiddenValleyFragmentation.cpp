@@ -385,16 +385,16 @@ struct PyCallBack_Pythia8_HVStringPT : public Pythia8::HVStringPT {
 struct PyCallBack_Pythia8_HVStringZ : public Pythia8::HVStringZ {
 	using Pythia8::HVStringZ::HVStringZ;
 
-	void init() override { 
+	bool init() override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringZ *>(this), "init");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
 		}
 		return HVStringZ::init();
 	}
@@ -569,7 +569,7 @@ struct PyCallBack_Pythia8_HVStringZ : public Pythia8::HVStringZ {
 	}
 };
 
-// Pythia8::HiddenValleyFragmentation file:Pythia8/HiddenValleyFragmentation.h line:128
+// Pythia8::HiddenValleyFragmentation file:Pythia8/HiddenValleyFragmentation.h line:127
 struct PyCallBack_Pythia8_HiddenValleyFragmentation : public Pythia8::HiddenValleyFragmentation {
 	using Pythia8::HiddenValleyFragmentation::HiddenValleyFragmentation;
 
@@ -802,8 +802,8 @@ void bind_Pythia8_HiddenValleyFragmentation(std::function< pybind11::module &(st
 		cl.def( pybind11::init( [](){ return new Pythia8::HVStringZ(); }, [](){ return new PyCallBack_Pythia8_HVStringZ(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_HVStringZ const &o){ return new PyCallBack_Pythia8_HVStringZ(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::HVStringZ const &o){ return new Pythia8::HVStringZ(o); } ) );
-		cl.def("preinit", (void (Pythia8::HVStringZ::*)(int, double, double)) &Pythia8::HVStringZ::preinit, "C++: Pythia8::HVStringZ::preinit(int, double, double) --> void", pybind11::arg("setabsigmaIn"), pybind11::arg("rescalebsigmaIn"), pybind11::arg("rescalestopMIn"));
-		cl.def("init", (void (Pythia8::HVStringZ::*)()) &Pythia8::HVStringZ::init, "C++: Pythia8::HVStringZ::init() --> void");
+		cl.def("preinit", (void (Pythia8::HVStringZ::*)(int, double, double)) &Pythia8::HVStringZ::preinit, "C++: Pythia8::HVStringZ::preinit(int, double, double) --> void", pybind11::arg("setabsigmaIn"), pybind11::arg("rescalebsigmaIn"), pybind11::arg("mVecRatioIn"));
+		cl.def("init", (bool (Pythia8::HVStringZ::*)()) &Pythia8::HVStringZ::init, "C++: Pythia8::HVStringZ::init() --> bool");
 		cl.def("zFrag", [](Pythia8::HVStringZ &o, int const & a0) -> double { return o.zFrag(a0); }, "", pybind11::arg("idOld"));
 		cl.def("zFrag", [](Pythia8::HVStringZ &o, int const & a0, int const & a1) -> double { return o.zFrag(a0, a1); }, "", pybind11::arg("idOld"), pybind11::arg("idNew"));
 		cl.def("zFrag", (double (Pythia8::HVStringZ::*)(int, int, double)) &Pythia8::HVStringZ::zFrag, "C++: Pythia8::HVStringZ::zFrag(int, int, double) --> double", pybind11::arg("idOld"), pybind11::arg("idNew"), pybind11::arg("mT2"));
@@ -812,7 +812,7 @@ void bind_Pythia8_HiddenValleyFragmentation(std::function< pybind11::module &(st
 		cl.def("stopSmear", (double (Pythia8::HVStringZ::*)()) &Pythia8::HVStringZ::stopSmear, "C++: Pythia8::HVStringZ::stopSmear() --> double");
 		cl.def("assign", (class Pythia8::HVStringZ & (Pythia8::HVStringZ::*)(const class Pythia8::HVStringZ &)) &Pythia8::HVStringZ::operator=, "C++: Pythia8::HVStringZ::operator=(const class Pythia8::HVStringZ &) --> class Pythia8::HVStringZ &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::HiddenValleyFragmentation file:Pythia8/HiddenValleyFragmentation.h line:128
+	{ // Pythia8::HiddenValleyFragmentation file:Pythia8/HiddenValleyFragmentation.h line:127
 		pybind11::class_<Pythia8::HiddenValleyFragmentation, std::shared_ptr<Pythia8::HiddenValleyFragmentation>, PyCallBack_Pythia8_HiddenValleyFragmentation, Pythia8::FragmentationModel> cl(M("Pythia8"), "HiddenValleyFragmentation", "");
 		pybind11::handle cl_type = cl;
 

@@ -1,11 +1,13 @@
 #include <Pythia8/Basics.h>
 #include <Pythia8/BeamParticle.h>
 #include <Pythia8/Event.h>
+#include <Pythia8/FragmentationFlavZpT.h>
 #include <Pythia8/GammaKinematics.h>
 #include <Pythia8/HardDiffraction.h>
 #include <Pythia8/LesHouches.h>
 #include <Pythia8/MergingHooks.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonLevel.h>
 #include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>
@@ -458,7 +460,7 @@ void bind_Pythia8_HardDiffraction(std::function< pybind11::module &(std::string 
 		cl.def( pybind11::init( [](){ return new Pythia8::HardDiffraction(); }, [](){ return new PyCallBack_Pythia8_HardDiffraction(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_HardDiffraction const &o){ return new PyCallBack_Pythia8_HardDiffraction(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::HardDiffraction const &o){ return new Pythia8::HardDiffraction(o); } ) );
-		cl.def("init", (void (Pythia8::HardDiffraction::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>)) &Pythia8::HardDiffraction::init, "C++: Pythia8::HardDiffraction::init(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("init", (void (Pythia8::HardDiffraction::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *)) &Pythia8::HardDiffraction::init, "C++: Pythia8::HardDiffraction::init(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
 		cl.def("isDiffractive", [](Pythia8::HardDiffraction &o) -> bool { return o.isDiffractive(); }, "");
 		cl.def("isDiffractive", [](Pythia8::HardDiffraction &o, int const & a0) -> bool { return o.isDiffractive(a0); }, "", pybind11::arg("iBeamIn"));
 		cl.def("isDiffractive", [](Pythia8::HardDiffraction &o, int const & a0, int const & a1) -> bool { return o.isDiffractive(a0, a1); }, "", pybind11::arg("iBeamIn"), pybind11::arg("partonIn"));
@@ -492,8 +494,6 @@ void bind_Pythia8_HardDiffraction(std::function< pybind11::module &(std::string 
 		cl.def( pybind11::init( [](){ return new Pythia8::PartonLevel(); }, [](){ return new PyCallBack_Pythia8_PartonLevel(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_PartonLevel const &o){ return new PyCallBack_Pythia8_PartonLevel(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::PartonLevel const &o){ return new Pythia8::PartonLevel(o); } ) );
-		cl.def_readwrite("beamHadAPtr", &Pythia8::PartonLevel::beamHadAPtr);
-		cl.def_readwrite("beamHadBPtr", &Pythia8::PartonLevel::beamHadBPtr);
 		cl.def_readwrite("timesDecPtr", &Pythia8::PartonLevel::timesDecPtr);
 		cl.def_readwrite("timesPtr", &Pythia8::PartonLevel::timesPtr);
 		cl.def_readwrite("spacePtr", &Pythia8::PartonLevel::spacePtr);

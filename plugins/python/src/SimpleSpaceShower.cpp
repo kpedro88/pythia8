@@ -44,7 +44,7 @@
 struct PyCallBack_Pythia8_SimpleSpaceShower : public Pythia8::SimpleSpaceShower {
 	using Pythia8::SimpleSpaceShower::SimpleSpaceShower;
 
-	void init(class std::shared_ptr<class Pythia8::BeamParticle> a0, class std::shared_ptr<class Pythia8::BeamParticle> a1) override { 
+	void init(class Pythia8::BeamParticle * a0, class Pythia8::BeamParticle * a1) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::SimpleSpaceShower *>(this), "init");
 		if (overload) {
@@ -410,7 +410,7 @@ void bind_Pythia8_SimpleSpaceShower(std::function< pybind11::module &(std::strin
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_SimpleSpaceShower const &o){ return new PyCallBack_Pythia8_SimpleSpaceShower(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::SimpleSpaceShower const &o){ return new Pythia8::SimpleSpaceShower(o); } ) );
 		cl.def_readwrite("pdfMode", &Pythia8::SimpleSpaceShower::pdfMode);
-		cl.def("init", (void (Pythia8::SimpleSpaceShower::*)(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>)) &Pythia8::SimpleSpaceShower::init, "C++: Pythia8::SimpleSpaceShower::init(class std::shared_ptr<class Pythia8::BeamParticle>, class std::shared_ptr<class Pythia8::BeamParticle>) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
+		cl.def("init", (void (Pythia8::SimpleSpaceShower::*)(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *)) &Pythia8::SimpleSpaceShower::init, "C++: Pythia8::SimpleSpaceShower::init(class Pythia8::BeamParticle *, class Pythia8::BeamParticle *) --> void", pybind11::arg("beamAPtrIn"), pybind11::arg("beamBPtrIn"));
 		cl.def("limitPTmax", [](Pythia8::SimpleSpaceShower &o, class Pythia8::Event & a0) -> bool { return o.limitPTmax(a0); }, "", pybind11::arg("event"));
 		cl.def("limitPTmax", [](Pythia8::SimpleSpaceShower &o, class Pythia8::Event & a0, double const & a1) -> bool { return o.limitPTmax(a0, a1); }, "", pybind11::arg("event"), pybind11::arg("Q2Fac"));
 		cl.def("limitPTmax", (bool (Pythia8::SimpleSpaceShower::*)(class Pythia8::Event &, double, double)) &Pythia8::SimpleSpaceShower::limitPTmax, "C++: Pythia8::SimpleSpaceShower::limitPTmax(class Pythia8::Event &, double, double) --> bool", pybind11::arg("event"), pybind11::arg("Q2Fac"), pybind11::arg("Q2Ren"));

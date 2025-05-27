@@ -193,17 +193,19 @@ void HVStringPT::init() {
 // Feed in enhancement factors separately, so as not to break base class.
 
 void HVStringZ::preinit( int setabsigmaIn, double rescalebsigmaIn,
-  double vecMassRatioIn) {
+  double mVecRatioIn) {
+
   setabsigma    = setabsigmaIn;
   rescalebsigma = rescalebsigmaIn;
-  vecMassRatio  = vecMassRatioIn;
+  mVecRatio     = mVecRatioIn;
+
 }
 
 //--------------------------------------------------------------------------
 
 // Initialize data members of the string z selection.
 
-void HVStringZ::init() {
+bool HVStringZ::init() {
 
   // Paramaters of Lund/Bowler symmetric fragmentation function.
   aLund        = (setabsigma == 2) ? parm("HiddenValley:aLund")
@@ -213,10 +215,12 @@ void HVStringZ::init() {
   rFactBowler  = settingsPtr->pvec("HiddenValley:rFact");
 
   // Vector meson ratio used to rescale stop scale for fragmentation iteration.
-  stopM  = parm("StringFragmentation:stopMass") * vecMassRatio;
+  stopM  = parm("StringFragmentation:stopMass") * mVecRatio;
   stopNF = parm("StringFragmentation:stopNewFlav");
   stopS  = parm("StringFragmentation:stopSmear");
 
+  // Initialization succeeded.
+  return true;
 }
 
 //--------------------------------------------------------------------------
@@ -271,13 +275,13 @@ bool HiddenValleyFragmentation::init(
   if (separateFlav) for (int i = 2; i <= nFlav; ++i)
   for (int j = 1; j <= i; ++j) mHVvecMin = min(mHVvecMin,
     particleDataPtr->m0(4900003 + 100 * i + 10 * j) );
-  double vecMassRatio = mHVvecMin / particleDataPtr->m0(113);
+  double mVecRatio = mHVvecMin / particleDataPtr->m0(113);
 
   // Prepare for rescaling of b and sigma fragmentation parameters.
   int setabsigma = mode("HiddenValley:setabsigma");
   double rescalebsigma = 1.;
   // Ratio of lightest vector meson mass in HV to QCD.
-  if (setabsigma == 0) rescalebsigma = vecMassRatio;
+  if (setabsigma == 0) rescalebsigma = mVecRatio;
   // Ratio of nonperturbative Lambda scales in HV to QCD.
   else if (setabsigma == 1) rescalebsigma = parm("HiddenValley:LambdaNPHV")
     / parm("HiddenValley:LambdaNPQCD");
@@ -293,13 +297,15 @@ bool HiddenValleyFragmentation::init(
   hvPTSel.init();
 
   // Initialize HVStringZ instance for z selection in HV fragmentation.
-  hvZSel.preinit( setabsigma, rescalebsigma, vecMassRatio);
+  hvZSel.preinit( setabsigma, rescalebsigma, mVecRatio);
   hvZSel.init();
 
-  // Initialize auxiliary administrative class.
-  hvColConfig.init(infoPtr, &hvFlavSel);
+  // Initialize auxiliary administrative class. Rescale QCD mass parameters.
+  hvColConfig.init(infoPtr, &hvFlavSel, mVecRatio);
 
   // Initialize HV-string and HV-ministring fragmentation.
+  hvStringFrag.setMVecRatio(mVecRatio);
+  hvMinistringFrag.setMVecRatio(mVecRatio);
   hvStringFrag.init(&hvFlavSel, &hvPTSel, &hvZSel);
   hvMinistringFrag.init(&hvFlavSel, &hvPTSel, &hvZSel);
 
