@@ -76,7 +76,8 @@ bool ProcessLevel::init( bool doLHA, SLHAinterface* slhaInterfacePtrIn,
     int idBin = beamB2gamma ? 22 : idB;
     sigmaTotPtr->calc( idAin, idBin, eCM);
     sigmaND   = sigmaTotPtr->sigmaND();
-  } else {
+  } else if ( ( particleDataPtr->isHadron(idA) || (idA == 22) )
+          &&  ( particleDataPtr->isHadron(idB) || (idB == 22) ) ) {
     // Usage of both sigmaTotPtr and sigmaCmbPtr to be fixed in the future.
     sigmaTotPtr->calc( idA, idB, eCM);
     double mA = particleDataPtr->m0(idA);

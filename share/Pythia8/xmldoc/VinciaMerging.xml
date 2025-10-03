@@ -4,7 +4,7 @@
  
 <p/> 
 The VINCIA sector shower employs its own CKKW-L merging scheme, which 
-differs from the one implemented for the simple showers or Dire. 
+differs from the one implemented for the simple showers. 
 The biggest difference is that (for gluon emissions) the VINCIA sector 
 shower only possesses a single history (or branching tree), i.e., any 
 given configuration produced by it can be uniquely traced back to every 

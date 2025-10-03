@@ -642,6 +642,12 @@ double SimpleSpaceShower::pTnext( Event& event, double pTbegAll,
       m2Rec        = (dipEndNow->normalRecoil) ? 0. : event[iRec].m2();
       m2Dip        = x1Now * x2Now * sCM + m2Rec;
 
+      // Stop if m2Dip is negative.
+      if (m2Dip < 0.) {
+        loggerPtr->WARNING_MSG("dipole m2 is negative");
+        return 0.;
+      }
+
       // Prepare kinematics for final-state dipole recoil.
       m2ColPair    = (dipEndNow->iColPartner == 0) ? 0.
                    : m2( event[iNow].p(), event[dipEndNow->iColPartner].p() );
@@ -827,7 +833,6 @@ double SimpleSpaceShower::noEmissionProbability( double pTbegAll,
 
   // Calculate the value of the no-emssion probabilty.
   wt /= nTrials;
-  if (wt < settingsPtr->parm("Dire:Sudakov:Min")) wt = 0.;
 
   // Clean up, done.
   beamAPtr->clear();
@@ -1071,7 +1076,8 @@ void SimpleSpaceShower::pT2nextQCD( double pT2begDip, double pT2endDip) {
       Lambda2    /= renormMultFac;
 
       // Upper limit on z range: global or local recoil.
-      if (iColPartner == 0) zMaxAbs = 1. - 0.5 * (pT2minNow / m2Dip)
+      if (iColPartner == 0)
+        zMaxAbs = 1. - 0.5 * (pT2minNow / m2Dip)
           * ( sqrt( 1. + 4. * m2Dip / pT2minNow ) - 1. );
       else {
         double m2Red  = m2ColPair - m2ColPartner;
@@ -2069,7 +2075,7 @@ void SimpleSpaceShower::pT2nextQED( double pT2begDip, double pT2endDip) {
           pT2minNow = pT2endDip;
         }
 
-        // Compute upper z limit
+        // Compute upper z limit.
         zMaxAbs = 1. - 0.5 * (pT2minNow / m2Dip) *
           ( sqrt( 1. + 4. * m2Dip / pT2minNow ) - 1. );
 

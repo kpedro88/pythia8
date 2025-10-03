@@ -138,16 +138,15 @@ protected:
   // The names associated with the secondary pythia objects.
   vector<string> pythiaNames;
 
-  // The Info objects associated to the secondary the secondary
-  // pythia objects.
+  // The Info objects associated to the secondary Pythia objects.
   vector<Info*> info;
 
-  // Helper class to gain access to the Info object in a pythia
+  // Helper class to gain access to the Info object in a Pythia
   // instance.
   struct InfoGrabber : public UserHooks {
 
     // Only one function: return the info object.
-    Info * getInfo() {
+    Info* getInfo() {
       return infoPtr;
     }
 

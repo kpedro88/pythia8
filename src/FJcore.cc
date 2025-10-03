@@ -1,4 +1,4 @@
-// fjcore -- extracted from FastJet v3.4.3 (http://fastjet.fr)
+// fjcore -- extracted from FastJet v3.5.1 (https://fastjet.fr)
 //
 // fjcore constitutes a digest of the main FastJet functionality.
 // The files fjcore.hh and fjcore.cc are meant to provide easy access to these 
@@ -40,12 +40,12 @@
 // header files and of the fjcore namespace with the fastjet one.
 //
 // fjcore.hh and fjcore.cc are not meant to be human-readable.
-// For documentation, see the full FastJet manual and doxygen at http://fastjet.fr
+// For documentation, see the full FastJet manual and doxygen at https://fastjet.fr
 //
 // Like FastJet, fjcore is released under the terms of the GNU General Public
-// License version 2 (GPLv2). If you use this code as part of work towards a
+// License version 2 (GPLv2) or later. If you use this code as part of work towards a
 // scientific publication, whether directly or contained within another program
-// (e.g. Delphes, MadGraph, SpartyJet, Rivet, LHC collaboration software frameworks, 
+// (e.g. Pythia, MadGraph, Sherpa, POWHEGBox, Rivet, LHC collaboration software frameworks, 
 // etc.), you should include a citation to
 // 
 //   EPJC72(2012)1896 [arXiv:1111.6097] (FastJet User Manual)
@@ -54,7 +54,7 @@
 //FJSTARTHEADER
 // $Id$
 //
-// Copyright (c) 2005-2024, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
+// Copyright (c) 2005-2025, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
 //
 //----------------------------------------------------------------------
 // This file is part of FastJet (fjcore).
@@ -130,29 +130,116 @@ template<class BJ> void ClusterSequence::_simple_N2_cluster() {
     tail--; n--;
     *jetA = *tail;
     diJ[jetA - head] = diJ[tail-head];
+#define FJ_N2_UPDATE_STRATEGY 2
+#if   FJ_N2_UPDATE_STRATEGY==0
     for (BJ * jetI = head; jetI != tail; jetI++) {
       if (jetI->NN == jetA || jetI->NN == jetB) {
-	_bj_set_NN_nocross(jetI, head, tail);
-	diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
       } 
       if (jetB != NULL) {
-	double dist = _bj_dist(jetI,jetB);
-	if (dist < jetI->NN_dist) {
-	  if (jetI != jetB) {
-	    jetI->NN_dist = dist;
-	    jetI->NN = jetB;
-	    diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
-	  }
-	}
-	if (dist < jetB->NN_dist) {
-	  if (jetI != jetB) {
-	    jetB->NN_dist = dist;
-	    jetB->NN      = jetI;}
-	}
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+      }
+      if (jetI->NN == tail) {jetI->NN = jetA;}
+    }    
+    if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#elif FJ_N2_UPDATE_STRATEGY==1
+    for (BJ * jetI = head; jetI != tail; jetI++) {
+      if (jetI->NN == jetA || (jetB && jetI->NN == jetB)) {
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+      } 
+      if (jetB != NULL) {
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+      }
+      if (jetI->NN == tail) {jetI->NN = jetA;}
+    }    
+    if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#elif FJ_N2_UPDATE_STRATEGY==2
+    if (jetB != NULL){
+      for (BJ * jetI = head; jetI != tail; jetI++) {
+        if (jetI->NN == jetA || jetI->NN == jetB) {
+          _bj_set_NN_nocross(jetI, head, tail);
+          diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        } 
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+        if (jetI->NN == tail) {jetI->NN = jetA;}
+      }
+      diJ[jetB-head] = _bj_diJ(jetB);
+    } else {
+      for (BJ * jetI = head; jetI != tail; jetI++) {
+        if (jetI->NN == jetA) {
+          _bj_set_NN_nocross(jetI, head, tail);
+          diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        } 
+        if (jetI->NN == tail) {jetI->NN = jetA;}
+      }
+    }
+#elif FJ_N2_UPDATE_STRATEGY==3
+    auto jetB_or_A = jetB ? jetB : jetA;
+    for (BJ * jetI = head; jetI != tail; jetI++) {
+      if (jetI->NN == jetA || jetI->NN == jetB_or_A) {
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+      } 
+      if (jetB != NULL) {
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
       }
       if (jetI->NN == tail) {jetI->NN = jetA;}
     }
     if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#else
+#error "unknown N2 update strategy"
+#endif
+#undef FJ_N2_UPDATE_STRATEGY
   }
   delete[] diJ;
   delete[] briefjets;
@@ -757,7 +844,7 @@ private:
   void _initialize(const std::vector<Coord2D> & positions, 
 	      const Coord2D & left_corner, const Coord2D & right_corner,
 	      const unsigned int max_size);
-  static const unsigned int _nshift = 3;
+  FJCORE_WINDLL static const unsigned int _nshift = 3;
   template<class T> class triplet {
   public:
     inline const T & operator[](unsigned int i) const {return _contents[i];};
@@ -792,9 +879,9 @@ private:
   std::vector<Point>     _points;
   std::stack<Point *>    _available_points;
   std::vector<Point *>   _points_under_review;
-  static const unsigned int _remove_heap_entry = 1;
-  static const unsigned int _review_heap_entry = 2;
-  static const unsigned int _review_neighbour  = 4;
+  FJCORE_WINDLL static const unsigned int _remove_heap_entry = 1;
+  FJCORE_WINDLL static const unsigned int _review_heap_entry = 2;
+  FJCORE_WINDLL static const unsigned int _review_neighbour  = 4;
   void _add_label(Point * point, unsigned int review_flag);
   void _set_label(Point * point, unsigned int review_flag);
   void _deal_with_points_to_review();
@@ -981,10 +1068,10 @@ protected:
   ClusterSequence & _cs;
   const std::vector<PseudoJet> & _jets;
   std::vector<Tile2> _tiles;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   int _ncall; // GPS tmp
   int _ncall_dtt; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double _Rparam, _R2, _invR2;
   double _tiles_eta_min, _tiles_eta_max;
   double _tile_size_eta, _tile_size_phi;
@@ -1007,7 +1094,7 @@ protected:
   void _add_untagged_neighbours_to_tile_union_using_max_info(const TiledJet * const jet, 
 		 std::vector<int> & tile_union, int & n_near_tiles);
   double _distance_to_tile(const TiledJet * bj, const Tile2 *) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     ;
 #else
     const;
@@ -1030,7 +1117,7 @@ protected:
   }
   template <class J> inline double _bj_dist(
                 const J * const jetA, const J * const jetB) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1043,7 +1130,7 @@ protected:
   }
   template <class J> inline double _bj_dist_not_periodic(
                 const J * const jetA, const J * const jetB)
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1068,10 +1155,10 @@ protected:
   ClusterSequence & _cs;
   const std::vector<PseudoJet> & _jets;
   std::vector<Tile25> _tiles;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   int _ncall; // GPS tmp
   int _ncall_dtt; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double _Rparam, _R2, _invR2;
   double _tiles_eta_min, _tiles_eta_max;
   double _tile_size_eta, _tile_size_phi;
@@ -1094,7 +1181,7 @@ protected:
   void _add_untagged_neighbours_to_tile_union_using_max_info(const TiledJet * const jet, 
 		 std::vector<int> & tile_union, int & n_near_tiles);
   double _distance_to_tile(const TiledJet * bj, const Tile25 *) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     ;
 #else
     const;
@@ -1117,7 +1204,7 @@ protected:
   }
   template <class J> inline double _bj_dist(
                 const J * const jetA, const J * const jetB) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1130,7 +1217,7 @@ protected:
   }
   template <class J> inline double _bj_dist_not_periodic(
                 const J * const jetA, const J * const jetB)
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1407,9 +1494,9 @@ FJCORE_END_NAMESPACE
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<ostream *> ClusterSequence::_fastjet_banner_ostr{&cout};
+FJCORE_WINDLL atomic<ostream *> ClusterSequence::_fastjet_banner_ostr{&cout};
 #else
-ostream * ClusterSequence::_fastjet_banner_ostr = &cout;
+FJCORE_WINDLL ostream * ClusterSequence::_fastjet_banner_ostr = &cout;
 #endif  // FJCORE_HAVE_LIMITED_THREAD_SAFETY
 ClusterSequence::~ClusterSequence () {
   if (_structure_shared_ptr){
@@ -1563,7 +1650,7 @@ void ClusterSequence::print_banner() {
   (*ostr) << "#                     FastJet release " << fastjet_version << " [fjcore]" << endl;
   (*ostr) << "#                 M. Cacciari, G.P. Salam and G. Soyez                  \n"; 
   (*ostr) << "#     A software package for jet finding and analysis at colliders      \n";
-  (*ostr) << "#                           http://fastjet.fr                           \n"; 
+  (*ostr) << "#                           https://fastjet.fr                           \n"; 
   (*ostr) << "#	                                                                      \n";
   (*ostr) << "# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package\n";
   (*ostr) << "# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   \n";
@@ -3342,17 +3429,17 @@ FJCORE_END_NAMESPACE      // defined in fastjet/internal/base.hh
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<bool> Error::_print_errors{true};
-atomic<bool> Error::_print_backtrace{false};
-atomic<ostream *> Error::_default_ostr{& cerr};
-atomic<mutex *>   Error::_stream_mutex{nullptr};
+FJCORE_WINDLL atomic<bool> Error::_print_errors{true};
+FJCORE_WINDLL atomic<bool> Error::_print_backtrace{false};
+FJCORE_WINDLL atomic<ostream *> Error::_default_ostr{& cerr};
+FJCORE_WINDLL atomic<mutex *>   Error::_stream_mutex{nullptr};
 #else
-bool Error::_print_errors = true;
-bool Error::_print_backtrace = false;
-ostream * Error::_default_ostr = & cerr;
+FJCORE_WINDLL bool Error::_print_errors = true;
+FJCORE_WINDLL bool Error::_print_backtrace = false;
+FJCORE_WINDLL ostream * Error::_default_ostr = & cerr;
 #endif  // FJCORE_HAVE_LIMITED_THREAD_SAFETY
-#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE__)
-  LimitedWarning Error::_execinfo_undefined;
+#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE_ONLY_CORE__)
+FJCORE_WINDLL LimitedWarning Error::_execinfo_undefined;
 #endif
 Error::Error(const std::string & message_in) {
   _message = message_in; 
@@ -3374,7 +3461,7 @@ Error::Error(const std::string & message_in) {
   }
 }
 void Error::set_print_backtrace(bool enabled) {
-#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE__)
+#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE_ONLY_CORE__)
   if (enabled) {
     _execinfo_undefined.warn("Error::set_print_backtrace(true) will not work with this build of FastJet");
   }
@@ -3390,7 +3477,7 @@ FJCORE_END_NAMESPACE
 #include<sstream>
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
-const double JetDefinition::max_allowable_R = 1000.0;
+FJCORE_WINDLL const double JetDefinition::max_allowable_R = 1000.0;
 JetDefinition::JetDefinition(JetAlgorithm jet_algorithm_in, 
 			     double R_in, 
 			     RecombinationScheme recomb_scheme_in,
@@ -3688,15 +3775,15 @@ FJCORE_END_NAMESPACE
 using namespace std;
 FJCORE_BEGIN_NAMESPACE
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<ostream *> LimitedWarning::_default_ostr{&cerr};
-atomic<mutex *> LimitedWarning::_stream_mutex{nullptr};
-atomic<int> LimitedWarning::_max_warn_default{5};
-std::mutex LimitedWarning::_global_warnings_summary_mutex;
+FJCORE_WINDLL atomic<ostream *> LimitedWarning::_default_ostr{&cerr};
+FJCORE_WINDLL atomic<mutex *> LimitedWarning::_stream_mutex{nullptr};
+FJCORE_WINDLL atomic<int> LimitedWarning::_max_warn_default{5};
+FJCORE_WINDLL std::mutex LimitedWarning::_global_warnings_summary_mutex;
 #else
-ostream * LimitedWarning::_default_ostr = &cerr;
-int LimitedWarning::_max_warn_default = 5;
+FJCORE_WINDLL ostream * LimitedWarning::_default_ostr = &cerr;
+FJCORE_WINDLL int LimitedWarning::_max_warn_default = 5;
 #endif // FJCORE_HAVE_LIMITED_THREAD_SAFETY
-std::list< LimitedWarning::Summary > LimitedWarning::_global_warnings_summary;
+FJCORE_WINDLL std::list< LimitedWarning::Summary > LimitedWarning::_global_warnings_summary;
 int LimitedWarning::n_warn_so_far() const{
   if (((LimitedWarning::Summary *)_this_warning_summary) == 0) return 0;
   return (*_this_warning_summary).second;
@@ -5049,15 +5136,16 @@ Selector & Selector::operator |=(const Selector & b){
 }
 FJCORE_END_NAMESPACE      // defined in fastjet/internal/base.hh
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling25::LazyTiling25(ClusterSequence & cs) :
   _cs(cs), _jets(cs.jets())
 {
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   _ncall = 0; // gps tmp
   _ncall_dtt = 0; // gps tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   _Rparam = cs.jet_def().R();
   _R2 = _Rparam * _Rparam;
   _invR2 = 1.0 / _R2;
@@ -5085,7 +5173,7 @@ void LazyTiling25::_initialise_tiles() {
     }
   }
 #endif // _FASTJET_TILING25_USE_TILING_ANALYSIS_
-# define FJCORE_LAZY25_MIN3TILESY
+#define FJCORE_LAZY25_MIN3TILESY
 #ifdef FJCORE_LAZY25_MIN3TILESY
    if (_tiles_eta_max - _tiles_eta_min < 3*_tile_size_eta) {
      _tile_size_eta = (_tiles_eta_max - _tiles_eta_min)/3;
@@ -5251,12 +5339,12 @@ inline void LazyTiling25::_add_untagged_neighbours_to_tile_union_using_max_info(
   }
 }
 inline double LazyTiling25::_distance_to_tile(const TiledJet * bj, const Tile25 * tile) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
    {
   _ncall_dtt++; // GPS tmp
 #else
   const {
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double deta;
   if (_tiles[bj->tile_index].eta_centre == tile->eta_centre) deta = 0;
   else   deta = std::abs(bj->eta - tile->eta_centre) - _tile_half_size_eta;
@@ -5368,9 +5456,9 @@ void LazyTiling25::run() {
       if (jetA->NN_dist > tile->max_NN_dist) tile->max_NN_dist = jetA->NN_dist;
     }
   }
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "intermediate ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   vector<double> diJs(n);
   for (int i = 0; i < n; i++) {
     diJs[i] = _bj_diJ(&briefjets[i]);
@@ -5447,24 +5535,25 @@ void LazyTiling25::run() {
     n--;
   }
   delete[] briefjets;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
 }
 FJCORE_END_NAMESPACE
 #include <iomanip>
 #include <limits>
 #include <cmath>
+#include <algorithm>
 using namespace std;
 #define _FJCORE_TILING2_USE_TILING_ANALYSIS_
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling9::LazyTiling9(ClusterSequence & cs) :
   _cs(cs), _jets(cs.jets())
 {
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   _ncall = 0; // gps tmp
   _ncall_dtt = 0; // gps tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   _Rparam = cs.jet_def().R();
   _R2 = _Rparam * _Rparam;
   _invR2 = 1.0 / _R2;
@@ -5491,7 +5580,7 @@ void LazyTiling9::_initialise_tiles() {
     }
   }
 #endif
-# define FJCORE_LAZY9_MIN2TILESY
+#define FJCORE_LAZY9_MIN2TILESY
 #ifdef FJCORE_LAZY9_MIN2TILESY
    if (_tiles_eta_max - _tiles_eta_min < 2*_tile_size_eta) {
      _tile_size_eta = (_tiles_eta_max - _tiles_eta_min)/2;
@@ -5634,12 +5723,12 @@ inline void LazyTiling9::_add_untagged_neighbours_to_tile_union_using_max_info(
   }
 }
 inline double LazyTiling9::_distance_to_tile(const TiledJet * bj, const Tile2 * tile) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
    {
   _ncall_dtt++; // GPS tmp
 #else
   const {
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double deta;
   if (_tiles[bj->tile_index].eta_centre == tile->eta_centre) deta = 0;
   else   deta = std::abs(bj->eta - tile->eta_centre) - _tile_half_size_eta;
@@ -5751,9 +5840,9 @@ void LazyTiling9::run() {
       if (jetA->NN_dist > tile->max_NN_dist) tile->max_NN_dist = jetA->NN_dist;
     }
   }
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "intermediate ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   vector<double> diJs(n);
   for (int i = 0; i < n; i++) {
     diJs[i] = _bj_diJ(&briefjets[i]);
@@ -5830,12 +5919,13 @@ void LazyTiling9::run() {
     n--;
   }
   delete[] briefjets;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
 }
 FJCORE_END_NAMESPACE
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling9Alt::LazyTiling9Alt(ClusterSequence & cs) :

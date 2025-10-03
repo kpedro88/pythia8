@@ -33,9 +33,9 @@ int main() {
   double Rparam = 0.4;
   fastjet::Strategy               strategy = fastjet::Best;
   fastjet::RecombinationScheme    recombScheme = fastjet::E_scheme;
-  fastjet::JetDefinition         *jetDef = NULL;
-  jetDef = new fastjet::JetDefinition( fastjet::kt_algorithm, Rparam,
-           recombScheme, strategy);
+  fastjet::JetDefinition          jetDef =
+    fastjet::JetDefinition( fastjet::kt_algorithm, Rparam,
+      recombScheme, strategy);
 
   // Fastjet input.
   std::vector <fastjet::PseudoJet> fjInputs;
@@ -92,7 +92,7 @@ int main() {
 
     // Run Fastjet algorithm.
     vector <fastjet::PseudoJet> inclusiveJets, sortedJets;
-    fastjet::ClusterSequence clustSeq(fjInputs, *jetDef);
+    fastjet::ClusterSequence clustSeq(fjInputs, jetDef);
 
     // Extract inclusive jets sorted by pT (note minimum pT of 20.0 GeV).
     inclusiveJets = clustSeq.inclusive_jets(20.0);

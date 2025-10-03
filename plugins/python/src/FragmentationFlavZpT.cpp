@@ -1,8 +1,47 @@
+#include <Pythia8/Basics.h>
+#include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
+#include <Pythia8/HIInfo.h>
+#include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
+#include <Pythia8/Info.h>
+#include <Pythia8/LHEF3.h>
+#include <Pythia8/LesHouches.h>
+#include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
+#include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
+#include <Pythia8/PartonDistributions.h>
+#include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
+#include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
+#include <Pythia8/ResonanceWidths.h>
+#include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
+#include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
+#include <Pythia8/SigmaTotal.h>
+#include <Pythia8/StandardModel.h>
+#include <Pythia8/SusyCouplings.h>
+#include <Pythia8/UserHooks.h>
+#include <Pythia8/Weights.h>
+#include <cwchar>
+#include <functional>
+#include <ios>
+#include <istream>
 #include <iterator>
+#include <map>
 #include <memory>
+#include <ostream>
+#include <sstream>
 #include <sstream> // __str__
+#include <streambuf>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -67,32 +106,6 @@ struct PyCallBack_Pythia8_StringFlav : public Pythia8::StringFlav {
 			else return pybind11::detail::cast_safe<class Pythia8::FlavContainer>(std::move(o));
 		}
 		return StringFlav::pick(a0, a1, a2, a3);
-	}
-	class Pythia8::FlavContainer pickGauss(class Pythia8::FlavContainer & a0, bool a1) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringFlav *>(this), "pickGauss");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<class Pythia8::FlavContainer>::value) {
-				static pybind11::detail::override_caster_t<class Pythia8::FlavContainer> caster;
-				return pybind11::detail::cast_ref<class Pythia8::FlavContainer>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class Pythia8::FlavContainer>(std::move(o));
-		}
-		return StringFlav::pickGauss(a0, a1);
-	}
-	class Pythia8::FlavContainer pickThermal(class Pythia8::FlavContainer & a0, double a1, double a2) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringFlav *>(this), "pickThermal");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<class Pythia8::FlavContainer>::value) {
-				static pybind11::detail::override_caster_t<class Pythia8::FlavContainer> caster;
-				return pybind11::detail::cast_ref<class Pythia8::FlavContainer>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class Pythia8::FlavContainer>(std::move(o));
-		}
-		return StringFlav::pickThermal(a0, a1, a2);
 	}
 	int combine(class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1) override { 
 		pybind11::gil_scoped_acquire gil;
@@ -159,32 +172,6 @@ struct PyCallBack_Pythia8_StringFlav : public Pythia8::StringFlav {
 			else return pybind11::detail::cast_safe<int>(std::move(o));
 		}
 		return StringFlav::idLightestNeutralMeson();
-	}
-	int getHadronIDwin() override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringFlav *>(this), "getHadronIDwin");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return StringFlav::getHadronIDwin();
-	}
-	int combineLastThermal(class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double a2, double a3) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringFlav *>(this), "combineLastThermal");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return StringFlav::combineLastThermal(a0, a1, a2, a3);
 	}
 	int getHadronID(class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double a2, double a3, bool a4) override { 
 		pybind11::gil_scoped_acquire gil;
@@ -277,9 +264,22 @@ struct PyCallBack_Pythia8_StringFlav : public Pythia8::StringFlav {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringFlav *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:268
+// Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:219
 struct PyCallBack_Pythia8_StringZ : public Pythia8::StringZ {
 	using Pythia8::StringZ::StringZ;
 
@@ -465,6 +465,19 @@ struct PyCallBack_Pythia8_StringZ : public Pythia8::StringZ {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringZ *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -477,8 +490,6 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def( pybind11::init( [](PyCallBack_Pythia8_StringFlav const &o){ return new PyCallBack_Pythia8_StringFlav(o); } ) );
 		cl.def( pybind11::init( [](Pythia8::StringFlav const &o){ return new Pythia8::StringFlav(o); } ) );
 		cl.def_readwrite("suppressLeadingB", &Pythia8::StringFlav::suppressLeadingB);
-		cl.def_readwrite("mT2suppression", &Pythia8::StringFlav::mT2suppression);
-		cl.def_readwrite("useWidthPre", &Pythia8::StringFlav::useWidthPre);
 		cl.def_readwrite("probQQtoQ", &Pythia8::StringFlav::probQQtoQ);
 		cl.def_readwrite("probStoUD", &Pythia8::StringFlav::probStoUD);
 		cl.def_readwrite("probSQtoQQ", &Pythia8::StringFlav::probSQtoQQ);
@@ -504,14 +515,6 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def_readwrite("probSQtoQQSav", &Pythia8::StringFlav::probSQtoQQSav);
 		cl.def_readwrite("probQQ1toQQ0Sav", &Pythia8::StringFlav::probQQ1toQQ0Sav);
 		cl.def_readwrite("alphaQQSav", &Pythia8::StringFlav::alphaQQSav);
-		cl.def_readwrite("sigmaHad", &Pythia8::StringFlav::sigmaHad);
-		cl.def_readwrite("widthPreStrange", &Pythia8::StringFlav::widthPreStrange);
-		cl.def_readwrite("widthPreDiquark", &Pythia8::StringFlav::widthPreDiquark);
-		cl.def_readwrite("thermalModel", &Pythia8::StringFlav::thermalModel);
-		cl.def_readwrite("mesonNonetL1", &Pythia8::StringFlav::mesonNonetL1);
-		cl.def_readwrite("temperature", &Pythia8::StringFlav::temperature);
-		cl.def_readwrite("tempPreFactor", &Pythia8::StringFlav::tempPreFactor);
-		cl.def_readwrite("nNewQuark", &Pythia8::StringFlav::nNewQuark);
 		cl.def_readwrite("closePacking", &Pythia8::StringFlav::closePacking);
 		cl.def_readwrite("doEnhanceDiquark", &Pythia8::StringFlav::doEnhanceDiquark);
 		cl.def_readwrite("enhanceStrange", &Pythia8::StringFlav::enhanceStrange);
@@ -519,36 +522,23 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def_readwrite("enhanceDiquark", &Pythia8::StringFlav::enhanceDiquark);
 		cl.def_readwrite("exponentMPI", &Pythia8::StringFlav::exponentMPI);
 		cl.def_readwrite("exponentNSP", &Pythia8::StringFlav::exponentNSP);
-		cl.def_readwrite("hadronConstIDs", &Pythia8::StringFlav::hadronConstIDs);
-		cl.def_readwrite("possibleHadrons", &Pythia8::StringFlav::possibleHadrons);
-		cl.def_readwrite("possibleRatePrefacs", &Pythia8::StringFlav::possibleRatePrefacs);
-		cl.def_readwrite("possibleHadronsLast", &Pythia8::StringFlav::possibleHadronsLast);
-		cl.def_readwrite("possibleRatePrefacsLast", &Pythia8::StringFlav::possibleRatePrefacsLast);
-		cl.def_readwrite("hadronIDwin", &Pythia8::StringFlav::hadronIDwin);
-		cl.def_readwrite("idNewWin", &Pythia8::StringFlav::idNewWin);
-		cl.def_readwrite("hadronMassWin", &Pythia8::StringFlav::hadronMassWin);
 		cl.def("init", (void (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::init, "C++: Pythia8::StringFlav::init() --> void");
 		cl.def("init", (void (Pythia8::StringFlav::*)(double, double, double)) &Pythia8::StringFlav::init, "C++: Pythia8::StringFlav::init(double, double, double) --> void", pybind11::arg("kappaModifier"), pybind11::arg("strangeJunc"), pybind11::arg("probQQmod"));
 		cl.def("pickLightQ", (int (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::pickLightQ, "C++: Pythia8::StringFlav::pickLightQ() --> int");
 		cl.def("pick", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0) -> Pythia8::FlavContainer { return o.pick(a0); }, "", pybind11::arg("flavOld"));
-		cl.def("pick", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, double const & a1) -> Pythia8::FlavContainer { return o.pick(a0, a1); }, "", pybind11::arg("flavOld"), pybind11::arg("pT"));
-		cl.def("pick", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, double const & a1, double const & a2) -> Pythia8::FlavContainer { return o.pick(a0, a1, a2); }, "", pybind11::arg("flavOld"), pybind11::arg("pT"), pybind11::arg("kappaModifier"));
-		cl.def("pick", (class Pythia8::FlavContainer (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, double, double, bool)) &Pythia8::StringFlav::pick, "C++: Pythia8::StringFlav::pick(class Pythia8::FlavContainer &, double, double, bool) --> class Pythia8::FlavContainer", pybind11::arg("flavOld"), pybind11::arg("pT"), pybind11::arg("kappaModifier"), pybind11::arg("allowPop"));
-		cl.def("pickGauss", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0) -> Pythia8::FlavContainer { return o.pickGauss(a0); }, "", pybind11::arg("flavOld"));
-		cl.def("pickGauss", (class Pythia8::FlavContainer (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, bool)) &Pythia8::StringFlav::pickGauss, "C++: Pythia8::StringFlav::pickGauss(class Pythia8::FlavContainer &, bool) --> class Pythia8::FlavContainer", pybind11::arg("flavOld"), pybind11::arg("allowPop"));
-		cl.def("pickThermal", (class Pythia8::FlavContainer (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, double, double)) &Pythia8::StringFlav::pickThermal, "C++: Pythia8::StringFlav::pickThermal(class Pythia8::FlavContainer &, double, double) --> class Pythia8::FlavContainer", pybind11::arg("flavOld"), pybind11::arg("pT"), pybind11::arg("kappaModifier"));
+		cl.def("pick", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, double const & a1) -> Pythia8::FlavContainer { return o.pick(a0, a1); }, "", pybind11::arg("flavOld"), pybind11::arg(""));
+		cl.def("pick", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, double const & a1, double const & a2) -> Pythia8::FlavContainer { return o.pick(a0, a1, a2); }, "", pybind11::arg("flavOld"), pybind11::arg(""), pybind11::arg(""));
+		cl.def("pick", (class Pythia8::FlavContainer (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, double, double, bool)) &Pythia8::StringFlav::pick, "C++: Pythia8::StringFlav::pick(class Pythia8::FlavContainer &, double, double, bool) --> class Pythia8::FlavContainer", pybind11::arg("flavOld"), pybind11::arg(""), pybind11::arg(""), pybind11::arg("allowPop"));
 		cl.def("combine", (int (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &)) &Pythia8::StringFlav::combine, "C++: Pythia8::StringFlav::combine(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &) --> int", pybind11::arg("flav1"), pybind11::arg("flav2"));
 		cl.def("combineId", [](Pythia8::StringFlav &o, int const & a0, int const & a1) -> int { return o.combineId(a0, a1); }, "", pybind11::arg("id1"), pybind11::arg("id2"));
 		cl.def("combineId", (int (Pythia8::StringFlav::*)(int, int, bool)) &Pythia8::StringFlav::combineId, "C++: Pythia8::StringFlav::combineId(int, int, bool) --> int", pybind11::arg("id1"), pybind11::arg("id2"), pybind11::arg("keepTrying"));
 		cl.def("combineDiquarkJunction", (struct std::pair<int, int> (Pythia8::StringFlav::*)(int, int, int)) &Pythia8::StringFlav::combineDiquarkJunction, "C++: Pythia8::StringFlav::combineDiquarkJunction(int, int, int) --> struct std::pair<int, int>", pybind11::arg("id1"), pybind11::arg("id2"), pybind11::arg("id3"));
 		cl.def("combineToLightest", (int (Pythia8::StringFlav::*)(int, int)) &Pythia8::StringFlav::combineToLightest, "C++: Pythia8::StringFlav::combineToLightest(int, int) --> int", pybind11::arg("id1"), pybind11::arg("id2"));
 		cl.def("idLightestNeutralMeson", (int (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::idLightestNeutralMeson, "C++: Pythia8::StringFlav::idLightestNeutralMeson() --> int");
-		cl.def("getHadronIDwin", (int (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::getHadronIDwin, "C++: Pythia8::StringFlav::getHadronIDwin() --> int");
-		cl.def("combineLastThermal", (int (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double)) &Pythia8::StringFlav::combineLastThermal, "C++: Pythia8::StringFlav::combineLastThermal(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double) --> int", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg("pT"), pybind11::arg("kappaModifier"));
 		cl.def("getHadronID", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1) -> int { return o.getHadronID(a0, a1); }, "", pybind11::arg("flav1"), pybind11::arg("flav2"));
-		cl.def("getHadronID", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double const & a2) -> int { return o.getHadronID(a0, a1, a2); }, "", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg("pT"));
-		cl.def("getHadronID", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double const & a2, double const & a3) -> int { return o.getHadronID(a0, a1, a2, a3); }, "", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg("pT"), pybind11::arg("kappaModifier"));
-		cl.def("getHadronID", (int (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double, bool)) &Pythia8::StringFlav::getHadronID, "C++: Pythia8::StringFlav::getHadronID(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double, bool) --> int", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg("pT"), pybind11::arg("kappaModifier"), pybind11::arg("finalTwo"));
+		cl.def("getHadronID", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double const & a2) -> int { return o.getHadronID(a0, a1, a2); }, "", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg(""));
+		cl.def("getHadronID", [](Pythia8::StringFlav &o, class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double const & a2, double const & a3) -> int { return o.getHadronID(a0, a1, a2, a3); }, "", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg(""), pybind11::arg(""));
+		cl.def("getHadronID", (int (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double, bool)) &Pythia8::StringFlav::getHadronID, "C++: Pythia8::StringFlav::getHadronID(class Pythia8::FlavContainer &, class Pythia8::FlavContainer &, double, double, bool) --> int", pybind11::arg("flav1"), pybind11::arg("flav2"), pybind11::arg(""), pybind11::arg(""), pybind11::arg(""));
 		cl.def("getHadronMassWin", (double (Pythia8::StringFlav::*)(int)) &Pythia8::StringFlav::getHadronMassWin, "C++: Pythia8::StringFlav::getHadronMassWin(int) --> double", pybind11::arg("idHad"));
 		cl.def("assignPopQ", (void (Pythia8::StringFlav::*)(class Pythia8::FlavContainer &)) &Pythia8::StringFlav::assignPopQ, "C++: Pythia8::StringFlav::assignPopQ(class Pythia8::FlavContainer &) --> void", pybind11::arg("flav"));
 		cl.def("makeDiquark", [](Pythia8::StringFlav &o, int const & a0, int const & a1) -> int { return o.makeDiquark(a0, a1); }, "", pybind11::arg("id1"), pybind11::arg("id2"));
@@ -559,16 +549,16 @@ void bind_Pythia8_FragmentationFlavZpT(std::function< pybind11::module &(std::st
 		cl.def("initDerived", (void (Pythia8::StringFlav::*)()) &Pythia8::StringFlav::initDerived, "C++: Pythia8::StringFlav::initDerived() --> void");
 		cl.def("assign", (class Pythia8::StringFlav & (Pythia8::StringFlav::*)(const class Pythia8::StringFlav &)) &Pythia8::StringFlav::operator=, "C++: Pythia8::StringFlav::operator=(const class Pythia8::StringFlav &) --> class Pythia8::StringFlav &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	// Pythia8::LundFFRaw(double, double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:258
+	// Pythia8::LundFFRaw(double, double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:209
 	M("Pythia8").def("LundFFRaw", (double (*)(double, double, double, double, double)) &Pythia8::LundFFRaw, "C++: Pythia8::LundFFRaw(double, double, double, double, double) --> double", pybind11::arg("z"), pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("c"), pybind11::arg("mT2"));
 
-	// Pythia8::LundFFAvg(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:260
+	// Pythia8::LundFFAvg(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:211
 	M("Pythia8").def("LundFFAvg", (double (*)(double, double, double, double)) &Pythia8::LundFFAvg, "C++: Pythia8::LundFFAvg(double, double, double, double) --> double", pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("mT2"), pybind11::arg("tol"));
 
-	// Pythia8::LundFFRms(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:262
+	// Pythia8::LundFFRms(double, double, double, double) file:Pythia8/FragmentationFlavZpT.h line:213
 	M("Pythia8").def("LundFFRms", (double (*)(double, double, double, double)) &Pythia8::LundFFRms, "C++: Pythia8::LundFFRms(double, double, double, double) --> double", pybind11::arg("a"), pybind11::arg("b"), pybind11::arg("mT2"), pybind11::arg("tol"));
 
-	{ // Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:268
+	{ // Pythia8::StringZ file:Pythia8/FragmentationFlavZpT.h line:219
 		pybind11::class_<Pythia8::StringZ, std::shared_ptr<Pythia8::StringZ>, PyCallBack_Pythia8_StringZ, Pythia8::PhysicsBase> cl(M("Pythia8"), "StringZ", "");
 		pybind11::handle cl_type = cl;
 

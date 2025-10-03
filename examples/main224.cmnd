@@ -1,5 +1,5 @@
 ! main224.cmnd
-! This file contains commands to be read in for a PYTHIA8/DIRE run.
+! This file contains commands to be read in for a PYTHIA8 run.
 ! Lines not beginning with a letter or digit are comments.
 ! Names are case-insensitive  -  but spellings-sensitive!
 
@@ -25,8 +25,7 @@ WeakSingleBoson:ffbar2gmZ = on     ! process
 PDF:lepton = off
 
 ! 4) Choose parton shower model.
-! Warning: Dire comes with weighted events.
-PartonShowers:model = 3    ! 1:old showers, 2:vincia, 3:dire
+PartonShowers:model = 1    ! 1:old showers, 2:vincia
 
 # Use internal Pythia definitions of running coupling and quark masses.
 ShowerPDF:usePDFalphas     = off

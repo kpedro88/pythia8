@@ -2987,7 +2987,7 @@ void VinciaFSR::list() const {
 // Initialise pointers to Vincia objects.
 
 void VinciaFSR::initVinciaPtrs(VinciaColour* colourPtrIn,
-  shared_ptr<VinciaISR> isrPtrIn, MECs* mecsPtrIn,
+  VinciaISR* isrPtrIn, MECs* mecsPtrIn,
   Resolution* resolutionPtrIn, VinciaCommon* vinComPtrIn,
   VinciaWeights* vinWeightsPtrIn) {
   colourPtr     = colourPtrIn;

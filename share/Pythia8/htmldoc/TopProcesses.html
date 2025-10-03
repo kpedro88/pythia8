@@ -77,6 +77,142 @@ value stored in <code>HiggsHchg:tanBeta</code>, so that it can be used
 without having to read in a SUSY parameter file. For the <i>H+</i> to 
 decay also <code>Higgs:useBSM = on</code> is necessary. 
  
+<a name="section0"></a> 
+<h3>Threshold enhancements</h3> 
+ 
+In the article "On the threshold behaviour of heavy top production", 
+[<a href="Bibliography.html#refFad90" target="page">Fad90</a>], cross section enhancements in the threshold region 
+were discussed. Recently both CMS and ATLAS have found signals for such 
+enhancements. The old equations, partly but not fully available in PYTHIA 6, 
+have therefore now been reimplemented in full. The above-threshold 
+enhancements are straightforward to implement, but the below-threshold 
+"toponium" are less transparent, and different scenarios are explored. 
+ 
+<p/> 
+Relevant code is implemented as a new class <code>TopThreshold</code> 
+in <code>SigmaQCD.h/.cc</code>, which  is accessed by the internal 
+<i>gg &rarr; ttbar</i> and <i>qqbar &rarr; ttbar</i> classes 
+in the same files. The implemented scenarios and free parameters 
+within them are as follows. 
+ 
+<a name="anchor9"></a>
+<p/><code>mode&nbsp; </code><strong> TopThreshold:model &nbsp;</strong> 
+ (<code>default = <strong>0</strong></code>; <code>minimum = 0</code>; <code>maximum = 4</code>)<br/>
+The choice of threshold behaviour for the <i>g g &rarr; t tbar</i> 
+and <i>q qbar &rarr; t tbar</i> processes. 
+<br/><code>option </code><strong> 0</strong> : no modifications to threshold, i.e. pure Born 
+(leading order) matrix elements. 
+   
+<br/><code>option </code><strong> 1</strong> : the simple Coulomb enhancement, which only works 
+above the threshold, <i>E = mHat(t + tbar) - m(t) - m(tbar) &gt; 0</i>. 
+   
+<br/><code>option </code><strong> 2</strong> : the Green's function correction in the threshold 
+region, for the positive part only, <i>E &gt; 0</i>. At larger 
+<i>E</i> it transitions to the simple Coulomb enhancement, see 
+<code>width</code> below. The reason is that the Green's function 
+is only valid in the threshold region, and diverges above it. 
+   
+<br/><code>option </code><strong> 3</strong> : the below-threshold part of the Green's function, 
+<i>E &lt; 0</i> is mirrored into the positive region, 
+<i>E' = -E  &gt; 0</i>. This negative part is damped-out for 
+small <i>E</i>, see <code>width</code> below. Note that subset of 
+events generated with options 2 and 3 can be combined to a complete 
+scenario. 
+   
+<br/><code>option </code><strong> 4</strong> : the Green's function in the whole threshold region, 
+both <i>E &gt; 0</i> and <i>E &lt; 0</i>, with transition to 
+Coulomb above and damped-out below (see <code>width</code> below). 
+The procedure is to first pick <i>m(t)</i> and <i>m(tbar)</i> 
+by Breit-Wigners, and then pick an <i>mHat</i> distributed all 
+the way down to <i>m(t) + m(tbar) - 2 * width</i>. If then 
+<i>E = mHat - m(t) - m(tbar) &gt; 0</i> everything works as in 
+option 2. If not, then a new <i>m'(t) &lt; m(t)</i> and a new 
+<i>m'(tbar) &lt; m(tbar)</i> are picked according to Breit-Wigners 
+under the requirement that <i>E' = mHat - m'(t) - m'(tbar) &gt; 0</i>. 
+Finally the event is accepted or rejected according to the naive 
+cross section reweighted to the Green's function value. 
+This handling of the <i>E &lt; 0</i> part is more realistic than the 
+previous options, and the best bet, is but not perfect. 
+   
+   
+ 
+<a name="anchor10"></a>
+<p/><code>parm&nbsp; </code><strong> TopThreshold:width &nbsp;</strong> 
+ (<code>default = <strong>10.</strong></code>; <code>minimum = 5.</code>; <code>maximum = 20.</code>)<br/>
+the Green's function, when used, is assumed valid in the threshold 
+region <i>[-width, +width]</i>. Above threshold, in the region 
+<i>[width, 2 * width]</i>, it linearly transitions to the Coulomb 
+expression. Below threshold, in the region <i>[-2 * width, -width]</i>, 
+it is linearly damped to zero. 
+   
+ 
+<a name="anchor11"></a>
+<p/><code>mode&nbsp; </code><strong> TopThreshold:alphasOrder &nbsp;</strong> 
+ (<code>default = <strong>2</strong></code>; <code>minimum = 0</code>; <code>maximum = 2</code>)<br/>
+the order of the running of the <i>alpha_strong</i>, used for the 
+top threshold factors (and nowhere else). 
+<br/><code>option </code><strong> 0</strong> : no running. 
+   
+<br/><code>option </code><strong> 1</strong> : first-order running. 
+   
+<br/><code>option </code><strong> 2</strong> : second-order running. 
+   
+   
+ 
+<a name="anchor12"></a>
+<p/><code>parm&nbsp; </code><strong> TopThreshold:alphasValue &nbsp;</strong> 
+ (<code>default = <strong>0.118</strong></code>; <code>minimum = 0.10</code>; <code>maximum = 0.25</code>)<br/>
+the <i>alpha_strong</i> value at scale <i>M_Z^2</i>, that then runs 
+according to the order defined above. 
+   
+ 
+<a name="anchor13"></a>
+<p/><code>parm&nbsp; </code><strong> TopThreshold:ggSingletFrac &nbsp;</strong> 
+ (<code>default = <strong>0.28571</strong></code>; <code>minimum = 0.</code>; <code>maximum = 1.</code>)<br/>
+in the <i>g g &rarr; t tbar</i> process, colour factors gives 2/7 
+singlet and the rest octet, but dynamics might modify this. 
+   
+ 
+<a name="anchor14"></a>
+<p/><code>parm&nbsp; </code><strong> TopThreshold:qqSingletFrac &nbsp;</strong> 
+ (<code>default = <strong>0.</strong></code>; <code>minimum = 0.</code>; <code>maximum = 1.</code>)<br/>
+in the <i>q qbar &rarr; t tbar</i> process colour arguments gives 
+all octet and no singlet, but again modifications are possible. 
+   
+ 
+<br/> 
+<br/><b>Note 1:</b> Model 4, for <i>E &lt; 0</i>  redefines the 
+<i>t</i> and <i>tbar</i> mass values in order to achieve a new 
+<i>E' &gt; 0</i>. In order still to have access to the original 
+quantities, before the new masses were selected, the following 
+quantities are saved and retrievable: 
+<br/><code>pythia.info.toponiumE</code> the original threshold energy 
+<i>E</i>, which may have either sign; 
+<br/><code>pythia.info.toponiumm3, pythia.info.toponiumm4</code> the two 
+original <i>t</i> and <i>tbar</i> masses, which are larger than the 
+<i>m'</i> ones found in the event record. 
+ 
+<br/> 
+<br/><b>Note 2:</b> When generating only the below-threshold region, which 
+is nonzero only in a limited energy/mass range, the initialization may 
+miss to sample this range and conclude that the cross section vanishes 
+everywhere. Therefore we want to set a nonvanishing smallest value during 
+initialization, but not during event generation. To this end a new method 
+<code>pythia.info.getInInit()</code> returns <code>true</code> in 
+<code>pythia.init()</code> and <code>false</code> in 
+<code>pythia.next()</code>. 
+ 
+<br/> 
+<br/><b>Note 3:</b> Four main program explore the usage of this code: 
+<br/><code>main368.cc</code> plots the shape of the pure singlet and octet 
+enhancements; 
+<br/><code>main369.cc</code> and <code>main370.cc</code> histogram 
+a few quantities for many different scenarios, to allow direct comparisons, 
+with code for parallelization using either OpenMP or 
+<code>PythiaParallel</code>, respectively; 
+<br/><code>main371.cc</code> histograms a wider set of quantities, but only 
+for one model at a time, which can be chosen among a smaller selection. 
+ 
 </body>
 </html>
  

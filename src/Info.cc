@@ -480,6 +480,23 @@ void Info::reassignDiffSystem( int iDSold, int iDSnew) {
   nFinalSubSave[iDSnew] = nFinalSubSave[iDSold]; nFinalSubSave[iDSold] = 0;
 }
 
+//--------------------------------------------------------------------------
+
+// Handle the saved random number for the current event. These
+// functions are short could have been inlined, but they are
+// implemented here to be easily callable from within a debugger.
+
+void Info::dumpRandomState(string fileName) const {
+  auto backupState = rndmPtr->getState();
+  rndmPtr->setState(currentEventRndmState);
+  rndmPtr->dumpState(fileName);
+  rndmPtr->setState(backupState);
+}
+
+void Info::readRandomState(string fileName) const {
+  rndmPtr->readState(fileName);
+}
+
 //==========================================================================
 
 } // end namespace Pythia8

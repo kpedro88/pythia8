@@ -63,7 +63,6 @@ public:
   bool   MEorder, MEsplit, MEgluinoRec, isFlexible;
   bool   hasJunction;
 
-
   // Properties specific to current trial emission.
   int    flavour, iAunt;
   double mRad, m2Rad, mRec, m2Rec, mDip, m2Dip, m2DipCorr,
@@ -87,13 +86,12 @@ public:
   SimpleTimeShower() : hasWeaklyRadiated(), iSysSel(), pTmaxFudge(),
     pTLastBranch(), doQCDshower(), doQEDshowerByQ(), doQEDshowerByL(),
     doQEDshowerByOther(), doQEDshowerByGamma(), doWeakShower(),
-    doMEcorrections(), doMEextended(), doMEafterFirst(),
-    doPhiPolAsym(), doPhiPolAsymHard(), doInterleave(),
-    doInterleaveResDec(), allowBeamRecoil(), dampenBeamRecoil(),
-    useFixedFacScale(), allowRescatter(), canVetoEmission(),
-    doHVshower(), brokenHVsym(), setLambdaHV(), globalRecoil(),
-    useLocalRecoilNow(), doSecondHard(), hasUserHooks(),
-    singleWeakEmission(), alphaSuseCMW(), vetoWeakJets(),
+    doMEcorrections(), doMEextended(), doMEafterFirst(), doPhiPolAsym(),
+    doPhiPolAsymHard(), doInterleave(), doInterleaveResDec(),
+    allowBeamRecoil(), dampenBeamRecoil(), useFixedFacScale(),
+    allowRescatter(), canVetoEmission(), doHVshower(), brokenHVsym(),
+    setLambdaHV(), globalRecoil(), useLocalRecoilNow(), doSecondHard(),
+    hasUserHooks(), singleWeakEmission(), alphaSuseCMW(), vetoWeakJets(),
     allowMPIdipole(), weakExternal(), recoilDeadCone(),
     doDipoleRecoil(), doPartonVertex(), recoilRFUseParents(false),
     pTmaxMatch(), pTdampMatch(), alphaSorder(), alphaSnfmax(),
@@ -101,7 +99,7 @@ public:
     alphaEMorder(), nGammaToQuark(), nGammaToLepton(), nCHV(),
     nFlavHV(), idHV(), alphaHVorder(), nMaxGlobalRecoil(), weakMode(),
     pTdampFudge(), mc(), mb(), m2c(), m2b(), renormMultFac(),
-    factorMultFac(), fixedFacScale2(), alphaSvalue(), alphaS2pi(),
+    factorMultFac(), fixedFacScale2(), alphaSvalue(), alphaSmax(), alphaS2pi(),
     Lambda3flav(), Lambda4flav(), Lambda5flav(), Lambda3flav2(),
     Lambda4flav2(), Lambda5flav2(), scaleGluonToQuark(),
     extraGluonToQuark(), weightRF(1), pTcolCutMin(), pTcolCut(),
@@ -109,9 +107,9 @@ public:
     pTweakCut(), pT2weakCut(), mMaxGamma(), m2MaxGamma(), mZ(),
     gammaZ(), thetaWRat(), mW(), gammaW(), CFHV(), alphaHVfix(),
     alphaHVref(), LambdaHV(), pThvCut(), pT2hvCut(), mHV(),
-    pTmaxFudgeMPI(), weakEnhancement(), vetoWeakDeltaR2(), twoHard(),
-    dopTlimit1(), dopTlimit2(), dopTdamp(), pT2damp(), kRad(), kEmt(),
-    pdfScale2(), doTrialNow(), canEnhanceEmission(),
+    pTmaxFudgeMPI(), weakEnhancement(), vetoWeakDeltaR2(),
+    twoHard(), dopTlimit1(), dopTlimit2(), dopTdamp(), pT2damp(),
+    kRad(), kEmt(), pdfScale2(), doTrialNow(), canEnhanceEmission(),
     canEnhanceTrial(), canEnhanceET(), doUncertaintiesNow(), dipSel(),
     iDipSel(), nHard(), nFinalBorn(), nMaxGlobalBranch(), nGlobal(),
     globalRecoilMode(), limitMUQ(), weakHardSize() { beamOffset = 0;
@@ -237,15 +235,29 @@ private:
          weightGluonToQuark, recoilStrategyRF, alphaEMorder, nGammaToQuark,
          nGammaToLepton, nCHV, nFlavHV, idHV, alphaHVorder, nMaxGlobalRecoil,
          weakMode;
-  double pTdampFudge, mc, mb, m2c, m2b, renormMultFac, factorMultFac,
-         fixedFacScale2, alphaSvalue, alphaS2pi, Lambda3flav, Lambda4flav,
-         Lambda5flav, Lambda3flav2, Lambda4flav2, Lambda5flav2,
-         scaleGluonToQuark, extraGluonToQuark, weightRF,
+  double pTdampFudge, mc, mb, m2c, m2b, renormMultFac,
+         factorMultFac, fixedFacScale2, alphaSvalue, alphaSmax, alphaS2pi,
+         Lambda3flav, Lambda4flav, Lambda5flav, Lambda3flav2, Lambda4flav2,
+         Lambda5flav2, scaleGluonToQuark, extraGluonToQuark, weightRF,
          pTcolCutMin, pTcolCut, pT2colCut, pTchgQCut, pT2chgQCut,
          pTchgLCut, pT2chgLCut, pTweakCut, pT2weakCut, mMaxGamma, m2MaxGamma,
          mZ, gammaZ, thetaWRat, mW, gammaW, CFHV,
          alphaHVfix, alphaHVref, LambdaHV, pThvCut, pT2hvCut, mHV,
          pTmaxFudgeMPI, weakEnhancement, vetoWeakDeltaR2;
+
+  // Optional nonsingular and 2nd-order terms.
+  bool   doLOT{false}, doHOT{false};
+  double cEmitG{0.}, cEmitQ{0.}, cEmitC{0.}, cEmitB{0.},
+    cSplit{0.}, cSplitC{0.}, cSplitB{0.}, hEmitHard{0.}, hEmitColl{0.},
+    hEmitSoft{0.}, hSplitHard{0.}, hSplitColl{0.};
+
+  // Oversample when using finite corrections to the QCD shower.
+  void   finiteOversample(int colTypeAbs, double& overFacLog,
+    double& overFacLin, double& overFacSplit);
+
+  // Return weight for different finite corrections to QCD shower.
+  double finiteCorrection(TimeDipoleEnd& dip, Event& event, bool doLOTNow,
+    int colTypeAbs);
 
   // alphaStrong, alphaEM and alpha_HV calculations.
   AlphaStrong alphaS;

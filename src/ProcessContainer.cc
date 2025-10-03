@@ -1156,26 +1156,24 @@ bool ProcessContainer::constructProcess( Event& process, bool isHardest) {
         }
       }
 
-      // Return error if no final-state leptons (neutrinos) found.
-      if (eMax < 0.) {
-        loggerPtr->ERROR_MSG("scattered lepton (neutrino) not found");
-        return false;
-      }
+      // Not a DIS event if no outgoing leptons (but e.g. LeptoQuark).
+      if (eMax >= 0.) {
 
-      // Calculate kinematic variables.
-      int iLepIn   = beamAPtr->isLepton() ? 1 : 2;
-      int iHadIn   = beamAPtr->isHadron() ? 1 : 2;
-      Vec4 pProton = process[iHadIn].p();
-      Vec4 peIn    = process[iLepIn].p();
-      Vec4 peOut   = process[iLepScat].p();
-      Vec4 pPhoton = peIn - peOut;
-      // Q2, W2, Bjorken x, y.
-      double Q2DIS = -pPhoton.m2Calc();
-      double WDIS  = (pProton + pPhoton).mCalc();
-      double xDIS  = Q2DIS / (2. * pProton * pPhoton);
-      double yDIS  = (pProton * pPhoton) / (pProton * peIn);
-      // Save variables in info.
-      infoPtr->setDISKinematics(Q2DIS, WDIS, xDIS, yDIS);
+        // Calculate kinematic variables.
+        int iLepIn   = beamAPtr->isLepton() ? 1 : 2;
+        int iHadIn   = beamAPtr->isHadron() ? 1 : 2;
+        Vec4 pProton = process[iHadIn].p();
+        Vec4 peIn    = process[iLepIn].p();
+        Vec4 peOut   = process[iLepScat].p();
+        Vec4 pPhoton = peIn - peOut;
+        // Q2, W2, Bjorken x, y.
+        double Q2DIS = -pPhoton.m2Calc();
+        double WDIS  = (pProton + pPhoton).mCalc();
+        double xDIS  = Q2DIS / (2. * pProton * pPhoton);
+        double yDIS  = (pProton * pPhoton) / (pProton * peIn);
+        // Save variables in info.
+        infoPtr->setDISKinematics(Q2DIS, WDIS, xDIS, yDIS);
+      }
     }
   }
   infoPtr->setTypeMPI( code(), pTHatL);

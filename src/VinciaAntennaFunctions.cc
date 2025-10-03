@@ -3792,7 +3792,7 @@ void MECs::init() {
   }
 
   // Initialise MG5 interface
-  if (mg5mesPtr != nullptr && mg5mesPtr->initVincia(infoPtr)) {
+  if (mg5mesPtr != nullptr && mg5mesPtr->init(infoPtr)) {
     //TODO fix colour depth in MG5 interface.
     mg5mesPtr->setColourMode(1);
   } else {

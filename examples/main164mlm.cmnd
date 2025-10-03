@@ -21,19 +21,19 @@ JetMatching:etaJetMax       = 10.0
 JetMatching:nJetMax         = 2
 
 ! Optionally use same PDFs and alphaS as in ME calculation.
-! PDF:pSet                   = LHAPDF6:CT10nlo
-! SpaceShower:alphaSvalue    = 0.118
-! TimeShower:alphaSvalue     = 0.118
+! PDF:pSet                  = LHAPDF6:CT10nlo
+! SpaceShower:alphaSvalue   = 0.118
+! TimeShower:alphaSvalue    = 0.118
 
 ! Optionally write HepMC events.
-! (Pythia has to be configured with --with-hepmc3 or --with-rivet).
+! (Pythia has to be configured with --with-hepmc3).
 Main:HepMC                  = on
 HepMC:output                = main164mlm.hepmc
 
 ! Optionally include Rivet analyses.
 ! (Pythia has to be configured with --with-rivet).
-Main:Rivet                  = on
-Rivet:output                = main164mlm.yoda
+Init:plugins                = {libpythia8rivet.so::RivetHooks}
+Rivet:fileName              = main164mlm.yoda
 Rivet:analyses              = {MC_XS,MC_WEIGHTS}
 
 ! Subruns for MLM jet matching

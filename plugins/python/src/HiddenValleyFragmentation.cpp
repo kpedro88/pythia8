@@ -1,26 +1,41 @@
 #include <Pythia8/Basics.h>
 #include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
 #include <Pythia8/Event.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
 #include <Pythia8/FragmentationSystems.h>
+#include <Pythia8/HIInfo.h>
 #include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
 #include <Pythia8/HiddenValleyFragmentation.h>
 #include <Pythia8/Info.h>
 #include <Pythia8/JunctionSplitting.h>
 #include <Pythia8/LHEF3.h>
+#include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
 #include <Pythia8/NucleonExcitations.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
+#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
+#include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
 #include <Pythia8/ResonanceWidths.h>
 #include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
 #include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
 #include <Pythia8/SigmaTotal.h>
 #include <Pythia8/StandardModel.h>
 #include <Pythia8/StringInteractions.h>
 #include <Pythia8/StringLength.h>
 #include <Pythia8/SusyCouplings.h>
+#include <Pythia8/UserHooks.h>
 #include <Pythia8/Weights.h>
 #include <cwchar>
 #include <functional>
@@ -125,32 +140,6 @@ struct PyCallBack_Pythia8_HVStringFlav : public Pythia8::HVStringFlav {
 		}
 		return StringFlav::init(a0, a1, a2);
 	}
-	class Pythia8::FlavContainer pickGauss(class Pythia8::FlavContainer & a0, bool a1) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "pickGauss");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<class Pythia8::FlavContainer>::value) {
-				static pybind11::detail::override_caster_t<class Pythia8::FlavContainer> caster;
-				return pybind11::detail::cast_ref<class Pythia8::FlavContainer>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class Pythia8::FlavContainer>(std::move(o));
-		}
-		return StringFlav::pickGauss(a0, a1);
-	}
-	class Pythia8::FlavContainer pickThermal(class Pythia8::FlavContainer & a0, double a1, double a2) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "pickThermal");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
-			if (pybind11::detail::cast_is_temporary_value_reference<class Pythia8::FlavContainer>::value) {
-				static pybind11::detail::override_caster_t<class Pythia8::FlavContainer> caster;
-				return pybind11::detail::cast_ref<class Pythia8::FlavContainer>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class Pythia8::FlavContainer>(std::move(o));
-		}
-		return StringFlav::pickThermal(a0, a1, a2);
-	}
 	int combineId(int a0, int a1, bool a2) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "combineId");
@@ -190,32 +179,6 @@ struct PyCallBack_Pythia8_HVStringFlav : public Pythia8::HVStringFlav {
 			else return pybind11::detail::cast_safe<int>(std::move(o));
 		}
 		return StringFlav::combineToLightest(a0, a1);
-	}
-	int getHadronIDwin() override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "getHadronIDwin");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return StringFlav::getHadronIDwin();
-	}
-	int combineLastThermal(class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double a2, double a3) override { 
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "combineLastThermal");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return StringFlav::combineLastThermal(a0, a1, a2, a3);
 	}
 	int getHadronID(class Pythia8::FlavContainer & a0, class Pythia8::FlavContainer & a1, double a2, double a3, bool a4) override { 
 		pybind11::gil_scoped_acquire gil;
@@ -308,6 +271,19 @@ struct PyCallBack_Pythia8_HVStringFlav : public Pythia8::HVStringFlav {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringFlav *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::HVStringPT file:Pythia8/HiddenValleyFragmentation.h line:60
@@ -326,6 +302,33 @@ struct PyCallBack_Pythia8_HVStringPT : public Pythia8::HVStringPT {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return HVStringPT::init();
+	}
+	using _binder_ret_0 = struct std::pair<double, double>;
+	_binder_ret_0 pxy(int a0, double a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringPT *>(this), "pxy");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<_binder_ret_0>::value) {
+				static pybind11::detail::override_caster_t<_binder_ret_0> caster;
+				return pybind11::detail::cast_ref<_binder_ret_0>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<_binder_ret_0>(std::move(o));
+		}
+		return StringPT::pxy(a0, a1);
+	}
+	double suppressPT2(double a0) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringPT *>(this), "suppressPT2");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<double>::value) {
+				static pybind11::detail::override_caster_t<double> caster;
+				return pybind11::detail::cast_ref<double>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<double>(std::move(o));
+		}
+		return StringPT::suppressPT2(a0);
 	}
 	void onInitInfoPtr() override { 
 		pybind11::gil_scoped_acquire gil;
@@ -378,6 +381,19 @@ struct PyCallBack_Pythia8_HVStringPT : public Pythia8::HVStringPT {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringPT *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -567,6 +583,19 @@ struct PyCallBack_Pythia8_HVStringZ : public Pythia8::HVStringZ {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HVStringZ *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::HiddenValleyFragmentation file:Pythia8/HiddenValleyFragmentation.h line:127
@@ -651,6 +680,19 @@ struct PyCallBack_Pythia8_HiddenValleyFragmentation : public Pythia8::HiddenVall
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HiddenValleyFragmentation *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::JunctionSplitting file:Pythia8/JunctionSplitting.h line:30
@@ -709,6 +751,19 @@ struct PyCallBack_Pythia8_JunctionSplitting : public Pythia8::JunctionSplitting 
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::JunctionSplitting *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::NucleonExcitations file:Pythia8/NucleonExcitations.h line:23
@@ -766,6 +821,19 @@ struct PyCallBack_Pythia8_NucleonExcitations : public Pythia8::NucleonExcitation
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::NucleonExcitations *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 

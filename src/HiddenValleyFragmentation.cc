@@ -35,10 +35,7 @@ void HVStringFlav::init() {
   probVecEta1     = probVector / probKeepLast;
 
   // Some settings not allowed for this scenario. (Plus several more?)
-  thermalModel    = false;
-  useWidthPre     = false;
   closePacking    = false;
-  mT2suppression  = false;
 
   // Overwrite some HV-hadron names when simplified displayed flavours.
   if (!separateFlav) {
@@ -178,8 +175,6 @@ void HVStringPT::init() {
 
   // Parameter for pT suppression in MiniStringFragmentation.
   sigma2Had        = 2. * pow2( max( particleDataPtr->m0( 4900111), sigma) );
-  thermalModel     = false;
-  useWidthPre      = false;
   closePacking     = false;
 
 }

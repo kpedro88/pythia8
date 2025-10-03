@@ -420,22 +420,25 @@ bool Angantyr::setBeamIDs(int idAIn, int idBIn) {
 
 EventInfo Angantyr::mkEventInfo(Pythia & pyt, Info & infoIn,
                                 const SubCollision * coll) {
-    EventInfo ei;
-    ei.coll = coll;
-    ei.event = pyt.event;
-    ei.info = infoIn;
-    ei.code =  pyt.info.code();
-    ei.ordering = ( ( HIHooksPtr && HIHooksPtr->hasEventOrdering() )?
-                    HIHooksPtr->eventOrdering(ei.event, infoIn):
-                    pyt.info.bMPI() );
-    if ( coll ) {
-      ei.projs[coll->proj] = make_pair(1, ei.event.size());
-      ei.targs[coll->targ] = make_pair(2, ei.event.size());
-    }
-
-    ei.ok = true;
-    return ei;
+  // Create the event info, subcollision, and event.
+  EventInfo ei;
+  ei.coll = coll;
+  ei.event = pyt.event;
+  ei.info = infoIn;
+  ei.code =  pyt.info.code();
+  ei.ordering = ( ( HIHooksPtr && HIHooksPtr->hasEventOrdering() )?
+    HIHooksPtr->eventOrdering(ei.event, infoIn):
+    pyt.info.bMPI() );
+  if ( coll ) {
+    ei.projs[coll->proj] = make_pair(1, ei.event.size());
+    ei.targs[coll->targ] = make_pair(2, ei.event.size());
   }
+
+  // Set as constructed and return.
+  ei.ok = true;
+  return ei;
+
+}
 
 //--------------------------------------------------------------------------
 
@@ -526,6 +529,7 @@ bool Angantyr::init() {
   settingsPtr->flag("SoftQCD:singleDiffractive", false);
   settingsPtr->flag("SoftQCD:doubleDiffractive", false);
   settingsPtr->flag("SoftQCD:centralDiffractive", false);
+  settingsPtr->wvec("Init:plugins", {});
 
   // Create Pythia subobjects.
   for ( int i = MBIAS; i < ALL; ++i ) {
@@ -692,7 +696,7 @@ bool Angantyr::init() {
   }
 
   pythia[SASD]->addUserHooksPtr(selectSASD);
-  init(SASD, "secondary absorptive processes as single diffraction.");
+  init(SASD, "secondary absorptive processes as single diffraction");
 
   settingsPtr->wvec("Init:reuseSasdMPIiDiffSys0",
                     sdabsopts.wvec("Init:reuseMPIiDiffSys0"));

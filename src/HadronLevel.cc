@@ -262,12 +262,6 @@ bool HadronLevel::next( Event& event) {
       }
     }
 
-    // Calculate the in-situ flavor weights.
-    if (wgtsPtr != nullptr)
-      for (auto &parms : wgtsPtr->weightParms[WeightsFragmentation::Flav])
-        wgtsPtr->reweightValueByIndex(
-          parms.second, wgtsPtr->flavWeight(parms.first));
-
     // The event can be vetoed here by the user.
     if (userHooksPtr && userHooksPtr->canVetoAfterHadronization() &&
       userHooksPtr->doVetoAfterHadronization(event) ) {
@@ -325,6 +319,13 @@ bool HadronLevel::next( Event& event) {
     loggerPtr->ERROR_MSG("user event onEndHadronLevel failed");
     return false;
   }
+
+  // Calculate the hadronization in-situ flavor weights. This must be done
+  // after the decays, as these can use the flavor selector.
+  if (wgtsPtr != nullptr)
+    for (auto &parms : wgtsPtr->weightParms[WeightsFragmentation::Flav])
+      wgtsPtr->reweightValueByIndex(
+        parms.second, wgtsPtr->flavWeight(parms.first));
 
   // Done.
   return true;

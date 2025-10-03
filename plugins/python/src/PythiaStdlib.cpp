@@ -9,6 +9,7 @@
 #include <sstream> // __str__
 #include <streambuf>
 #include <string>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 #include <functional>
@@ -84,7 +85,10 @@ void bind_Pythia8_PythiaStdlib(std::function< pybind11::module &(std::string con
 	// Pythia8::toString(double) file:Pythia8/PythiaStdlib.h line:214
 	M("Pythia8").def("toString", (std::string (*)(double)) &Pythia8::toString, "C++: Pythia8::toString(double) --> std::string", pybind11::arg("val"));
 
-	// Pythia8::methodName(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:281
+	// Pythia8::splitString(std::string, std::string) file:Pythia8/PythiaStdlib.h line:217
+	M("Pythia8").def("splitString", (class std::vector<std::string, class std::allocator<std::string > > (*)(std::string, std::string)) &Pythia8::splitString, "C++: Pythia8::splitString(std::string, std::string) --> class std::vector<std::string, class std::allocator<std::string > >", pybind11::arg("val"), pybind11::arg("delim"));
+
+	// Pythia8::methodName(const std::string &, bool) file:Pythia8/PythiaStdlib.h line:284
 	M("Pythia8").def("methodName", [](const class std::basic_string<char> & a0) -> std::string { return Pythia8::methodName(a0); }, "", pybind11::arg("prettyFunction"));
 	M("Pythia8").def("methodName", (std::string (*)(const std::string &, bool)) &Pythia8::methodName, "C++: Pythia8::methodName(const std::string &, bool) --> std::string", pybind11::arg("prettyFunction"), pybind11::arg("withNamespace"));
 
@@ -167,8 +171,5 @@ void bind_Pythia8_PythiaStdlib(std::function< pybind11::module &(std::string con
 
 	// Pythia8::m2(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &) file:Pythia8/Basics.h line:152
 	M("Pythia8").def("m2", (double (*)(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &)) &Pythia8::m2, "C++: Pythia8::m2(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &) --> double", pybind11::arg("v1"), pybind11::arg("v2"));
-
-	// Pythia8::m2(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const class Pythia8::Vec4 &) file:Pythia8/Basics.h line:153
-	M("Pythia8").def("m2", (double (*)(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const class Pythia8::Vec4 &)) &Pythia8::m2, "C++: Pythia8::m2(const class Pythia8::Vec4 &, const class Pythia8::Vec4 &, const class Pythia8::Vec4 &) --> double", pybind11::arg("v1"), pybind11::arg("v2"), pybind11::arg("v3"));
 
 }

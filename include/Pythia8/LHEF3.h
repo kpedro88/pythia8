@@ -180,7 +180,7 @@ struct XMLTag {
         string name = str.substr(curr, tend - curr);
         curr = str.find("=", curr) + 1;
 
-        // OK now find the beginning and end of the atribute.
+        // OK now find the beginning and end of the attribute.
         curr = str.find("\"", curr);
         if ( curr == end || curr >= close ) break;
         pos_t bega = ++curr;

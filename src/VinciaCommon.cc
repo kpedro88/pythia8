@@ -2679,7 +2679,7 @@ bool VinciaCommon::map3to2RF(vector<Vec4>& pClu, const vector<Vec4>& pIn,
   double EX  = sqrt(pXz*pXz + mX*mX);
   double EK  = sqrt(pXz*pXz + mK*mK);
 
-  // 3) Boost to Top Centre of Mass frame.
+  // 3) Boost to top center-of-mass frame.
   Vec4 pXBeforeInCoM = pXBeforeClus;
   pXBeforeInCoM.bstback(pA);
   // pX along z.

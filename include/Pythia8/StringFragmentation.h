@@ -26,23 +26,23 @@ public:
 
   // Constructor.
   StringEnd() : particleDataPtr(), flavSelPtr(), pTSelPtr(), zSelPtr(),
-    fromPos(), thermalModel(), mT2suppression(), iEnd(), iMax(), idHad(),
-    iPosOld(), iNegOld(), iPosNew(), iNegNew(), hadSoFar(), colOld(), colNew(),
-    pxOld(), pyOld(), pxNew(), pyNew(), pxHad(), pyHad(), mHad(), mT2Had(),
-    zHad(), GammaOld(), GammaNew(), xPosOld(), xPosNew(), xPosHad(), xNegOld(),
-    xNegNew(), xNegHad(), aLund(), bLund(), iPosOldPrev(), iNegOldPrev(),
-    colOldPrev(), pxOldPrev(), pyOldPrev(), GammaOldPrev(), xPosOldPrev(),
-    xNegOldPrev(), mVecRatio(1.), tinyEq(), pT2tiny() {}
+    doFlavBeforePT(), fromPos(), iEnd(), iMax(), idHad(), iPosOld(),
+    iNegOld(), iPosNew(), iNegNew(), iPosNewTmp(), iNegNewTmp(),
+    hadSoFar(), colOld(), colNew(),
+    pxOld(), pyOld(), pxNew(), pyNew(), pxHad(), pyHad(), mHad(),
+    mT2Had(), zHad(), GammaOld(), GammaNew(), xPosOld(), xPosNew(),
+    xPosHad(), xNegOld(), xNegNew(), xNegHad(), aLund(), bLund(),
+    iPosOldPrev(), iNegOldPrev(), colOldPrev(), pxOldPrev(),
+    pyOldPrev(), GammaOldPrev(), xPosOldPrev(), xNegOldPrev(),
+    mVecRatio(1.), tinyEq(), pT2tiny() {}
 
   // Save pointers.
   void init( ParticleData* particleDataPtrIn, StringFlav* flavSelPtrIn,
-    StringPT* pTSelPtrIn, StringZ* zSelPtrIn, Settings& settings) {
-    particleDataPtr = particleDataPtrIn; flavSelPtr = flavSelPtrIn;
-    flavSelNow = *flavSelPtr;
-    pTSelPtr = pTSelPtrIn; zSelPtr = zSelPtrIn;
+    StringPT* pTSelPtrIn, StringZ* zSelPtrIn, Settings& settings,
+    bool doFlavBeforePTin = true) { particleDataPtr = particleDataPtrIn;
+    flavSelPtr = flavSelPtrIn; flavSelNow = *flavSelPtr; pTSelPtr = pTSelPtrIn;
+    zSelPtr = zSelPtrIn; doFlavBeforePT = doFlavBeforePTin;
     bLund = zSelPtr->bAreaLund(); aLund = zSelPtr->aAreaLund();
-    thermalModel   = settings.flag("StringPT:thermalModel");
-    mT2suppression = settings.flag("StringPT:mT2suppression");
     closePacking = settings.flag("ClosePacking:doClosePacking"); }
 
   // Set up initial endpoint values from input.
@@ -84,9 +84,9 @@ public:
   StringFlav    flavSelNow;
 
   // Data members.
-  bool   fromPos, thermalModel, mT2suppression, closePacking;
-  int    iEnd, iMax, idHad, iPosOld, iNegOld, iPosNew, iNegNew, hadSoFar,
-         colOld, colNew;
+  bool   doFlavBeforePT, fromPos, closePacking;
+  int    iEnd, iMax, idHad, iPosOld, iNegOld, iPosNew, iNegNew, iPosNewTmp,
+         iNegNewTmp, hadSoFar, colOld, colNew;
   double pxOld, pyOld, pxNew, pyNew, pxHad, pyHad, mHad, mT2Had, zHad,
          GammaOld, GammaNew, xPosOld, xPosNew, xPosHad, xNegOld, xNegNew,
          xNegHad, aLund, bLund;
@@ -109,16 +109,21 @@ public:
 
   // Constructor.
   StringFragmentation() :
-    FragmentationModel(), flavRopePtr(), closePacking(),
-    setVertices(), constantTau(), smearOn(), traceColours(false),
-    hadronVertex(), stopMass(), stopNewFlav(), stopSmear(),
-    pNormJunction(), pMaxJunction(), eBothLeftJunction(),
+    FragmentationModel(), flavRopePtr(), doFlavBeforePT(true),
+    closePacking(), setVertices(), constantTau(), smearOn(),
+    traceColours(false), hadronVertex(), stopMass(), stopNewFlav(),
+    stopSmear(), pNormJunction(), pMaxJunction(), eJunctionCutoff(),
+    mJunctionCutoff(), eBothLeftJunction(),
     eMaxLeftJunction(), eMinLeftJunction(), mJoin(), bLund(),
     closePackingFluxRatio(1.), closePackingPT20(1.), pT20(),
     xySmear(), maxSmear(), maxTau(), kappaVtx(), mc(), mb(),
     hasJunction(), isClosed(), iPos(), iNeg(), nExtraJoin(),
-    w2Rem(), stopMassNow(), mVecRatio(1.), closedM2max(),
+    w2Rem(), stopMassNow(), mVecRatio(1.),
     idDiquark(), legMin(), legMid() {}
+
+  // Set order of flavour and pT selection in StringEnd.
+  void setFlavBeforePT( bool doFlavBeforePTin) {
+    doFlavBeforePT = doFlavBeforePTin; }
 
   // Initialize and save pointers.
   bool init(StringFlav* flavSelPtrIn = nullptr, StringPT* pTSelPtrIn = nullptr,
@@ -151,10 +156,11 @@ private:
   FragModPtr  flavRopePtr;
 
   // Initialization data, read from Settings.
-  bool   closePacking, setVertices, constantTau, smearOn,
+  bool   doFlavBeforePT, closePacking, setVertices, constantTau, smearOn,
          traceColours, hardRemn, doStrangeJunc;
   int    hadronVertex;
   double stopMass, stopNewFlav, stopSmear, pNormJunction, pMaxJunction,
+         eJunctionCutoff, mJunctionCutoff,
          eBothLeftJunction, eMaxLeftJunction, eMinLeftJunction,
          mJoin, bLund, closePackingFluxRatio, closePackingPT20,
          qqSupPar, qqSupAnti, pT20, xySmear, maxSmear, maxTau,
@@ -163,7 +169,7 @@ private:
   // Data members.
   bool   hasJunction, isClosed;
   int    iPos, iNeg, nExtraJoin;
-  double w2Rem, stopMassNow, kappaModifier, probQQmod, mVecRatio, closedM2max;
+  double w2Rem, stopMassNow, kappaModifier, probQQmod, mVecRatio;
   Vec4   pSum, pRem, pJunctionHadrons;
 
   // UserHooks flags.
@@ -249,12 +255,18 @@ private:
 
   // Get the number of nearby strings given the energies.
   void kappaEffModifier(StringSystem& systemNow,
-    StringEnd end, bool fromPos, vector<int> partonList,
+    StringEnd end, vector<int> partonList,
     vector< vector< pair<double,double> > >& rapPairs,
-    double mRem, Event& event);
+    Vec4 pRemNow, Event& event);
 
   double yMax(Particle pIn, double mTiny) {
     double temp = log( ( pIn.e() + abs(pIn.pz()) ) / max( mTiny, pIn.mT()) );
+    return (pIn.pz() > 0) ? temp : -temp; }
+
+  double yMax(Vec4 pIn, double mTiny) {
+    double mTemp = pIn.m2Calc() + pIn.pT2();
+    mTemp = (mTemp >= 0.) ? sqrt(mTemp) : -sqrt(-mTemp);
+    double temp = log( ( pIn.e() + abs(pIn.pz()) ) / max( mTiny, mTemp) );
     return (pIn.pz() > 0) ? temp : -temp; }
 
 };

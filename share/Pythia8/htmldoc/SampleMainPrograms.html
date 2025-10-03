@@ -517,6 +517,11 @@ and allows for OpenMP parallelization. More documentation can be
 obtained by executing <code>./main224 --help</code>. The input file 
 <code>main224.cmnd</code> further illustrates the use of DIRE.</li> 
  
+<li><code>main225.cc</code> : 
+demonstrates how to use the <code>RivetHooks</code> plugin and run 
+RIVET analyses, both with a single Pythia instance and 
+<code>PythiaParallel</code>.</li> 
+ 
 </ul> 
  
 <a name="section9"></a> 
@@ -738,6 +743,11 @@ colour reconnection rate in
 <i>e^+e^- &rarr; W^+W^-  &rarr; q_1 qbar_2 q_3 qbar_4</i> 
 as a function of the collision energy.</li> 
  
+<li><code>main303.cc</code> (new) : 
+variations of effective shower kernels in LEP1 hadronic events, 
+with option for parallel runs using OpenMP. 
+</li> 
+ 
 </ul> 
  
 <a name="section15"></a> 
@@ -879,6 +889,24 @@ energies.A few options are available, e.g. the QCDCR model.</li>
 presents a fictitious scenario where the top is long-lived enough to 
 hadronize. This is studied using the <i>R</i>-hadron machinery, in 
 <i>e^+e^-</i> or <i>pp</i> collisions.</li> 
+ 
+<li><code>main368.cc</code> (new) : plot the weight factors of 
+[<a href="Bibliography.html#refFad90" target="page">Fad90</a>] in the production of <i>t-tbar</i> pairs. This allows 
+also for below-threshold contributions, corresponding to the influence 
+of short-lived toponium-like states.</li> 
+ 
+<li><code>main369.cc</code> (new) : study a few event properties 
+in <i>t-tbar</i> production, comparing several alternatives constructed 
+from the equations in [<a href="Bibliography.html#refFad90" target="page">Fad90</a>]. Demonstrates parallel running with 
+OpenMP.</li> 
+ 
+<li><code>main370.cc</code> (new) : same as <code>main369</code> but 
+uses <code>PythiaParallel</code> for parallel running of the 
+analysis.</li> 
+ 
+<li><code>main371.cc</code> (new) : study several event properties 
+in <i>t-tbar</i> production, from (by default) the most likely of the 
+alternatives constructed from the equations in [<a href="Bibliography.html#refFad90" target="page">Fad90</a>].</li> 
  
 </ul> 
  

@@ -36,7 +36,7 @@ public:
 
   // Initialization for given value at M_Z and given order.
   virtual void init(double valueIn = 0.12, int orderIn = 1, int nfmaxIn = 6,
-    bool useCMWIn = false);
+    bool useCMWIn = false, double valueMaxIn = -1., double renormShiftIn = 0.);
 
   // Set flavour threshold values: m_c, m_b, m_t.
   virtual void setThresholds(double mcIn, double mbIn, double mtIn) {
@@ -57,6 +57,12 @@ public:
 
   // Return the CMW factor (for nF between 3 and 6).
   double facCMW( int nFin);
+
+  // Return the alphaSmax value.
+  double alphaSmax() { return valueMax; }
+
+  // Return the poleShift value.
+  double renormShift() { return renormShiftSave; }
 
 // Protected data members: accessible to derived classes.
 protected:
@@ -95,6 +101,7 @@ private:
   // Private data members.
   bool   lastCallToFull;
   double valueRef, valueNow, scale2Now;
+  double valueMax{-1.}, renormShiftSave{0.};
 
 };
 

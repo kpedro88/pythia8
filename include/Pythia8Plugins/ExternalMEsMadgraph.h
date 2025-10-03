@@ -38,9 +38,7 @@ public:
     if (modelPtr != nullptr) delete modelPtr;}
 
   // Initialisers.
-  bool init() override;
-  bool initVincia(Info* infoPtrIn) override;
-  bool initDire(Info*, string card) override;
+  bool init(Info* infoPtrIn) override;
 
   // Methods to check availability of matrix elements.
   bool isAvailable(vector<int> idIn, vector<int> idOut) override;
@@ -71,11 +69,9 @@ private:
 
 //--------------------------------------------------------------------------
 
-// Initialise the Madgraph model, parameters, and couplings for use in Vincia.
+// Initialise the Madgraph model, parameters, and couplings.
 
-bool ExternalMEsMadgraph::init() {return true;}
-
-bool ExternalMEsMadgraph::initVincia(Info* infoPtrIn) {
+bool ExternalMEsMadgraph::init(Info* infoPtrIn) {
 
   // Check if pointers initialized.
   initPtrs(infoPtrIn);
@@ -134,38 +130,6 @@ bool ExternalMEsMadgraph::initVincia(Info* infoPtrIn) {
   colMode = 1;
   // Implicitly sum over helicities (can be reset later).
   helMode = 1;
-
-  return true;
-
-}
-
-//--------------------------------------------------------------------------
-
-// Initialise the Madgraph model, parameters, and couplings for use in Dire.
-
-bool ExternalMEsMadgraph::initDire(Info*, string card) {
-
-  // Redirect output so that Dire can print MG5 initialization.
-  std::streambuf *old = cout.rdbuf();
-  stringstream ss;
-  cout.rdbuf (ss.rdbuf());
-  if (libPtr != nullptr) delete libPtr;
-  libPtr = new PY8MEs_namespace::PY8MEs(card);
-  // Do not include averaging or symmetry factors in MG5.
-  libPtr->seProcessesIncludeSymmetryFactors(false);
-  libPtr->seProcessesIncludeHelicityAveragingFactors(false);
-  libPtr->seProcessesIncludeColorAveragingFactors(false);
-  libPtr->setProcessesExternalMassesMode(1);
-  // Set whether symmetry and averaging factors are applied in calcME2().
-  inclSymFac    = false;
-  inclHelAvgFac = true;
-  inclColAvgFac = true;
-  // Leading-colour colour-ordered amplitude only (can be reset later).
-  colMode = 1;
-  // Implicitly sum over helicities (can be reset later).
-  helMode = 1;
-  // Restore print-out.
-  cout.rdbuf (old);
 
   return true;
 
@@ -377,6 +341,7 @@ void ExternalMEsMadgraph::fillLists(const vector<Particle>& state,
 // Declare the plugin.
 
 PYTHIA8_PLUGIN_CLASS(ExternalMEs, ExternalMEsMadgraph, false, false, false)
+PYTHIA8_PLUGIN_PARALLEL(true);
 PYTHIA8_PLUGIN_VERSIONS(PYTHIA_VERSION_INTEGER)
 
 //==========================================================================

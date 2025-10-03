@@ -485,9 +485,22 @@ struct PyCallBack_Pythia8_HeavyIons : public Pythia8::HeavyIons {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HeavyIons *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::HeavyIons::InfoGrabber file:Pythia8/HeavyIons.h line:147
+// Pythia8::HeavyIons::InfoGrabber file:Pythia8/HeavyIons.h line:146
 struct PyCallBack_Pythia8_HeavyIons_InfoGrabber : public Pythia8::HeavyIons::InfoGrabber {
 	using Pythia8::HeavyIons::InfoGrabber::InfoGrabber;
 
@@ -1167,9 +1180,22 @@ struct PyCallBack_Pythia8_HeavyIons_InfoGrabber : public Pythia8::HeavyIons::Inf
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HeavyIons::InfoGrabber *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::Angantyr file:Pythia8/HeavyIons.h line:162
+// Pythia8::Angantyr file:Pythia8/HeavyIons.h line:161
 struct PyCallBack_Pythia8_Angantyr : public Pythia8::Angantyr {
 	using Pythia8::Angantyr::Angantyr;
 
@@ -1329,6 +1355,19 @@ struct PyCallBack_Pythia8_Angantyr : public Pythia8::Angantyr {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::Angantyr *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 void bind_Pythia8_HIInfo(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -1367,7 +1406,7 @@ void bind_Pythia8_HIInfo(std::function< pybind11::module &(std::string const &na
 		pybind11::class_<Pythia8::HeavyIons, std::shared_ptr<Pythia8::HeavyIons>, PyCallBack_Pythia8_HeavyIons, Pythia8::PhysicsBase> cl(M("Pythia8"), "HeavyIons", "");
 		pybind11::handle cl_type = cl;
 
-		{ // Pythia8::HeavyIons::InfoGrabber file:Pythia8/HeavyIons.h line:147
+		{ // Pythia8::HeavyIons::InfoGrabber file:Pythia8/HeavyIons.h line:146
 			auto & enclosing_class = cl;
 			pybind11::class_<Pythia8::HeavyIons::InfoGrabber, std::shared_ptr<Pythia8::HeavyIons::InfoGrabber>, PyCallBack_Pythia8_HeavyIons_InfoGrabber, Pythia8::UserHooks> cl(enclosing_class, "InfoGrabber", "");
 			pybind11::handle cl_type = cl;
@@ -1405,7 +1444,7 @@ void bind_Pythia8_HIInfo(std::function< pybind11::module &(std::string const &na
 		cl.def_static("setupSpecials", (void (*)(class Pythia8::Pythia &, std::string)) &Pythia8::HeavyIons::setupSpecials, "C++: Pythia8::HeavyIons::setupSpecials(class Pythia8::Pythia &, std::string) --> void", pybind11::arg("p"), pybind11::arg("match"));
 		cl.def("assign", (class Pythia8::HeavyIons & (Pythia8::HeavyIons::*)(const class Pythia8::HeavyIons &)) &Pythia8::HeavyIons::operator=, "C++: Pythia8::HeavyIons::operator=(const class Pythia8::HeavyIons &) --> class Pythia8::HeavyIons &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::Angantyr file:Pythia8/HeavyIons.h line:162
+	{ // Pythia8::Angantyr file:Pythia8/HeavyIons.h line:161
 		pybind11::class_<Pythia8::Angantyr, std::shared_ptr<Pythia8::Angantyr>, PyCallBack_Pythia8_Angantyr, Pythia8::HeavyIons> cl(M("Pythia8"), "Angantyr", "");
 		pybind11::handle cl_type = cl;
 

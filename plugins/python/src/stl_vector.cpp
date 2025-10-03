@@ -143,6 +143,8 @@ void bind_std_stl_vector(std::function< pybind11::module &(std::string const &na
 
 	// std::vector file:bits/stl_vector.h line:214
 
+	// std::vector file:bits/stl_vector.h line:214
+
 	// std::map file:bits/stl_map.h line:96
 
 	// std::map file:bits/stl_map.h line:96

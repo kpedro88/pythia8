@@ -3,22 +3,34 @@
 #include <Pythia8/BeamShape.h>
 #include <Pythia8/Event.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
+#include <Pythia8/HIInfo.h>
 #include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
 #include <Pythia8/Info.h>
 #include <Pythia8/LHEF3.h>
 #include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
 #include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
+#include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
 #include <Pythia8/ResonanceWidths.h>
 #include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
 #include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
 #include <Pythia8/SigmaTotal.h>
 #include <Pythia8/StandardModel.h>
 #include <Pythia8/SusyCouplings.h>
 #include <Pythia8/SusyLesHouches.h>
+#include <Pythia8/UserHooks.h>
 #include <Pythia8/Weights.h>
 #include <complex>
 #include <cwchar>
@@ -299,6 +311,19 @@ struct PyCallBack_Pythia8_SigmaTotal : public Pythia8::SigmaTotal {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::SigmaTotal *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 

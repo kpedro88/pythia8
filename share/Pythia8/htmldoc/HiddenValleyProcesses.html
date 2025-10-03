@@ -41,8 +41,7 @@ recent extensions are described, not (yet) documented elsewhere.
 will not work in conjunction with Hidden Valley processes, which has 
 been developed exclusively on top of the default scenario. Known 
 examples of such incompatible alternatives include 
-<code>StringPT:thermalModel = on</code>, 
-<code>StringPT:mT2suppression = on</code> and 
+<code>Fragmentation:model = 1</code> (thermal fragmentation) and 
 <code>Ropewalk:RopeHadronization = on</code>, but there may be more. 
  
 <a name="section0"></a> 
@@ -992,7 +991,7 @@ although it would make sense for the two to be closely related.
  (<code>default = <strong>0.68</strong></code>; <code>minimum = 0.0</code>; <code>maximum = 2.0</code>)<br/>
 the dimensionless <i>a</i> parameter of the Lund symmetric 
 fragmentation function. See the normal 
-<a href="Fragmentation.html" target="page">string fragmentation</a> description 
+<a href="StringFragmentation.html" target="page">string fragmentation</a> description 
 for the shape of this function. For 
 <code>HiddenValley:setabsigma =</code> 0 or 1, the PYTHIA code will 
 read in and use the value of <code>StringZ:aLund</code>. 
@@ -1008,7 +1007,7 @@ can be set by the user.
  (<code>default = <strong>0.98</strong></code>; <code>minimum = 0.</code>)<br/>
 The <i>b</i> parameter of the Lund symmetric fragmentation function, 
 with dimensions <i>GeV^{-2}</i>. See the normal 
-<a href="Fragmentation.html" target="page">string fragmentation</a> 
+<a href="StringFragmentation.html" target="page">string fragmentation</a> 
 description for the shape of this function. For 
 <code>HiddenValley:setabsigma =</code> 0 or 1, the PYTHIA code will 
 read in and use the value <code>StringZ:bLund</code>, 
@@ -1033,7 +1032,7 @@ to reproduce the old behaviour within the
  (<code>default = <strong>0.335</strong></code>; <code>minimum = 0.0</code>)<br/>
 the width <i>sigma</i> of transverse momenta in the HV fragmentation 
 process, with dimensions <i>GeV</i>. See the 
-<a href="Fragmentation.html" target="page">string fragmentation</a> page for 
+<a href="StringFragmentation.html" target="page">string fragmentation</a> page for 
 further details. For <code>HiddenValley:setabsigma =</code> 0 or 1, 
 the PYTHIA code will read in and use the value 
 <code>StringPT:sigma</code>, which is rescaled by the factor <i>k</i> 
@@ -1054,7 +1053,7 @@ reproduce the old behaviour within the
  (<code>default = <strong>{0.,0.,0.,0.,0.,0.,0.,0.}</strong></code>; <code>minimum = 0.</code>; <code>maximum = 2.</code>)<br/>
 the Bowler correction factor to the Lund symmetric fragmentation 
 function, see the <code>StringZ:rFact</code> parameters on the 
-<a href="Fragmentation.html" target="page">string fragmentation</a> page. 
+<a href="StringFragmentation.html" target="page">string fragmentation</a> page. 
 Should be 0 for light quarks, like the <i>u/d/s</i> ones in the SM, 
 but around 1 for for heavy quarks, like the <i>c/b</i> ones. 
 Typically the lighter ones are those assumed to be produced in string 

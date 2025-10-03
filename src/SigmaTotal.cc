@@ -169,28 +169,13 @@ bool SigmaTotal::calc(int idA, int idB, double eCM) {
 
   // Check if nothing changed since before.
   if (idA == idAOld && idB == idBOld && eCM == eCMOld
-    && sigTotElPtr != nullptr && sigDiffPtr != nullptr) return true;
+    && sigTotElPtr != nullptr && sigDiffPtr != nullptr) return isCalc;
 
   // Initial values.
   isCalc = ispp = false;
-  s = eCM * eCM;
-
-  // Find hadron masses and check that energy is enough.
-  // For mesons use the corresponding vector meson masses.
+  s      = eCM * eCM;
   idAbsA = abs(idA);
   idAbsB = abs(idB);
-  int idModA = (idAbsA < 100 || idAbsA > 1000) ? idAbsA : 10 * (idAbsA/10) + 3;
-  int idModB = (idAbsB < 100 || idAbsB > 1000) ? idAbsB : 10 * (idAbsB/10) + 3;
-  if (idAbsA == 22) idModA = 113;
-  if (idAbsB == 22) idModB = 113;
-  if (idAbsA == 990) idModA = idAbsA;
-  if (idAbsB == 990) idModB = idAbsB;
-  double mA  = particleDataPtr->m0(idModA);
-  double mB  = particleDataPtr->m0(idModB);
-  if (eCM < mA + mB + MMIN) {
-    loggerPtr->ERROR_MSG("too low energy");
-    return false;
-  }
 
   // Most options only work for pp/ppbar, so may need to modify choice.
   // Treat a neutron like a proton (except no Coulomb term).
@@ -216,9 +201,6 @@ bool SigmaTotal::calc(int idA, int idB, double eCM) {
     modeTotElOld = modeTotElNow;
   }
 
-  // Initialize and calculate for selected total/elastic class.
-  if ( !sigTotElPtr->calcTotEl( idA, idB, s, mA, mB) ) return false;
-
   // Set up pointer to class that handles diffractive cross sections.
   if (modeDiffOld != modeDiffNow || sigDiffPtr == nullptr) {
     if (sigDiffPtr != nullptr) delete sigDiffPtr;
@@ -229,6 +211,24 @@ bool SigmaTotal::calc(int idA, int idB, double eCM) {
     sigDiffPtr->init(infoPtr);
     modeDiffOld = modeDiffNow;
   }
+
+  // Find hadron masses and check that energy is enough.
+  // For mesons use the corresponding vector meson masses.
+  int idModA = (idAbsA < 100 || idAbsA > 1000) ? idAbsA : 10 * (idAbsA/10) + 3;
+  int idModB = (idAbsB < 100 || idAbsB > 1000) ? idAbsB : 10 * (idAbsB/10) + 3;
+  if (idAbsA == 22) idModA = 113;
+  if (idAbsB == 22) idModB = 113;
+  if (idAbsA == 990) idModA = idAbsA;
+  if (idAbsB == 990) idModB = idAbsB;
+  double mA  = particleDataPtr->m0(idModA);
+  double mB  = particleDataPtr->m0(idModB);
+  if (eCM < mA + mB + MMIN) {
+    loggerPtr->ERROR_MSG("too low energy");
+    return false;
+  }
+
+  // Initialize and calculate for selected total/elastic class.
+  if ( !sigTotElPtr->calcTotEl( idA, idB, s, mA, mB) ) return false;
 
   // Initialize and calculate for selected diffractive class.
   if ( !sigDiffPtr->calcDiff( idA, idB, s, mA, mB) ) return false;

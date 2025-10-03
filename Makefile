@@ -36,7 +36,7 @@ LOCAL_TMP=tmp
 LOCAL_MKDIRS:=$(shell mkdir -p $(LOCAL_TMP) $(LOCAL_LIB))
 CXX_COMMON:=-I$(LOCAL_INCLUDE) $(CXX_COMMON)
 OBJ_COMMON:=-MD $(CXX_COMMON) $(OBJ_COMMON)
-LIB_COMMON=-Wl,-rpath,../lib:$(PREFIX_LIB) -ldl $(GZIP_LIB)
+LIB_COMMON=-pthread -Wl,-rpath,../lib:$(PREFIX_LIB) -ldl $(GZIP_LIB)
 
 # PYTHIA.
 OBJECTS=$(patsubst $(LOCAL_SRC)/%.cc,$(LOCAL_TMP)/%.o,\
@@ -51,6 +51,11 @@ ifeq ($(LHAPDF6_USE),true)
   TARGETS+=$(LOCAL_LIB)/libpythia8lhapdf6.so
 endif
 
+# MG5 matrix element plugins.
+ifeq ($(MG5MES_USE),true)
+  TARGETS+=mg5mes
+endif
+
 # POWHEG (needs directory that contains just POWHEG libraries).
 ifeq ($(POWHEG_USE),true)
   TARGETS+=$(LOCAL_LIB)/libpythia8powhegHooks.so
@@ -61,9 +66,30 @@ ifeq ($(POWHEG_USE),true)
   endif
 endif
 
-# MG5 matrix element plugins.
-ifeq ($(MG5MES_USE),true)
-  TARGETS+=mg5mes
+# Define RIVET options and fix C++ version, rpath, missing HDF5.
+ifeq ($(RIVET_USE),true)
+  COMMA=,
+  RIVET_VERSION=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --version)
+  RIVET_LPATH=$(filter -L%,$(shell $(RIVET_BIN)$(RIVET_CONFIG) --ldflags))
+  RIVET_FLAGS=$(subst -L,-Wl$(COMMA)-rpath$(COMMA),$(RIVET_LPATH))
+  RIVET_FLAGS+= $(shell $(RIVET_BIN)$(RIVET_CONFIG) --cppflags --libs)
+  RIVET_CSTD=c++14
+  ifeq ("4.0.0","$(word 1, $(sort 4.0.0 $(RIVET_VERSION)))")
+    RIVET_CSTD=c++17
+    RIVET_LDIR=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --libdir)
+    RIVET_HDF5=$(shell nm $(RIVET_LDIR)/libRivet$(LIB_SUFFIX) | grep H5open)
+    ifneq ($(strip $(RIVET_HDF5)),)
+      RIVET_FLAGS+= -lhdf5
+    endif
+    TARGETS+=$(LOCAL_LIB)/libpythia8rivet.so
+  endif
+  RIVET_OPTS=$(CXX_COMMON:c++11=$(RIVET_CSTD)) $(RIVET_FLAGS) $(CXX_DTAGS)
+endif
+
+# Define HepMC3 options.
+ifeq ($(HEPMC3_USE),true)
+  HEPMC3_OPTS=$(CXX_COMMON) $(HEPMC3_INCLUDE) $(HEPMC3_LIB) -DHEPMC3
+  TARGETS+=$(LOCAL_LIB)/libpythia8hepmc3.so
 endif
 
 # Python.
@@ -130,6 +156,16 @@ $(LOCAL_LIB)/libpythia8powhegHooks.so: $(LOCAL_TMP)/PowhegHooks.o\
 	$(LOCAL_LIB)/libpythia8$(LIB_SUFFIX)
 	$(CXX) $< -o $@ $(CXX_COMMON) $(CXX_SHARED) $(CXX_SONAME)$(notdir $@)\
 	 -Llib -lpythia8
+
+# RIVET.
+$(LOCAL_LIB)/libpythia8rivet.so: $(LOCAL_INCLUDE)/Pythia8Plugins/RivetHooks.h
+	$(CXX) -x c++ $< -o $@ -w $(RIVET_OPTS) $(CXX_SHARED)\
+	 $(CXX_SONAME)$(notdir $@) -Wl,-undefined,dynamic_lookup
+
+# HepMC3.
+$(LOCAL_LIB)/libpythia8hepmc3.so: $(LOCAL_INCLUDE)/Pythia8Plugins/HepMC3Hooks.h
+	$(CXX) -x c++ $< -o $@ -w $(HEPMC3_OPTS) $(CXX_SHARED)\
+	 $(CXX_SONAME)$(notdir $@) -Wl,-undefined,dynamic_lookup
 
 # MG5 matrix element plugins.
 mg5mes:

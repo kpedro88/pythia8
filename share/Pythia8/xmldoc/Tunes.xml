@@ -279,7 +279,7 @@ interpolation rather than the LHAPDF6 library.
 </option> 
 </modepick> 
  
-<modepick name="Tune:pp" default="14" min="-1" max="34"> 
+<modepick name="Tune:pp" default="14" min="-1" max="33"> 
 Choice of tune to <ei>pp/ppbar</ei> data, mainly for the 
 initial-state-radiation, multiparton-interactions and beam-remnants 
 aspects of PYTHIA. Note that all early tunes, including those done by 
@@ -437,6 +437,10 @@ variation 3c+" of tune 21.
 </option> 
 <option value="32">(<code>tunes/ATLAS-A14-v-3c.cmnd</code>) "ATLAS A14 
 variation 3c-" of tune 21. 
+</option> 
+<option value="33">(<code>tunes/Detroit.cmnd</code>) 
+the Detroit tune (2021), a UE+MB tune to RHIC and Tevatron data. Uses the 
+NNPDF 3.1 LO PDF set. See <ref>Agu22</ref>. 
 </option> 
 </modepick> 
  

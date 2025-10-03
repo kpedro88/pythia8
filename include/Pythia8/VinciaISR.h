@@ -1123,7 +1123,7 @@ public:
 
   // Initialise pointers to Vincia objects.
   void initVinciaPtrs(VinciaColour* colourPtrIn,
-    shared_ptr<VinciaFSR> fsrPtrIn, MECs* mecsPtrIn,
+    VinciaFSR* fsrPtrIn, MECs* mecsPtrIn,
     Resolution* resolutionPtrIn, VinciaCommon* vinComPtrIn,
     VinciaWeights* vinWeightsPtrIn);
 
@@ -1334,7 +1334,7 @@ private:
   MECs*                 mecsPtr{};
   VinciaColour*         colourPtr{};
   Resolution*           resolutionPtr{};
-  shared_ptr<VinciaFSR> fsrPtr{};
+  VinciaFSR*            fsrPtr{};
   VinciaCommon*         vinComPtr{};
   VinciaWeights*        weightsPtr{};
 

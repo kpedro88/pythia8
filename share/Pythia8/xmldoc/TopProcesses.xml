@@ -55,6 +55,129 @@ value stored in <code>HiggsHchg:tanBeta</code>, so that it can be used
 without having to read in a SUSY parameter file. For the <ei>H+</ei> to 
 decay also <code>Higgs:useBSM = on</code> is necessary. 
  
+<h3>Threshold enhancements</h3> 
+ 
+In the article "On the threshold behaviour of heavy top production", 
+<ref>Fad90</ref>, cross section enhancements in the threshold region 
+were discussed. Recently both CMS and ATLAS have found signals for such 
+enhancements. The old equations, partly but not fully available in PYTHIA 6, 
+have therefore now been reimplemented in full. The above-threshold 
+enhancements are straightforward to implement, but the below-threshold 
+"toponium" are less transparent, and different scenarios are explored. 
+ 
+<p/> 
+Relevant code is implemented as a new class <code>TopThreshold</code> 
+in <code>SigmaQCD.h/.cc</code>, which  is accessed by the internal 
+<ei>gg &rarr; ttbar</ei> and <ei>qqbar &rarr; ttbar</ei> classes 
+in the same files. The implemented scenarios and free parameters 
+within them are as follows. 
+ 
+<modepick name="TopThreshold:model" default="0" min="0" max="4"> 
+The choice of threshold behaviour for the <ei>g g &rarr; t tbar</ei> 
+and <ei>q qbar &rarr; t tbar</ei> processes. 
+<option value="0">no modifications to threshold, i.e. pure Born 
+(leading order) matrix elements. 
+</option> 
+<option value="1">the simple Coulomb enhancement, which only works 
+above the threshold, <ei>E = mHat(t + tbar) - m(t) - m(tbar) &gt; 0</ei>. 
+</option> 
+<option value="2">the Green's function correction in the threshold 
+region, for the positive part only, <ei>E &gt; 0</ei>. At larger 
+<ei>E</ei> it transitions to the simple Coulomb enhancement, see 
+<code>width</code> below. The reason is that the Green's function 
+is only valid in the threshold region, and diverges above it. 
+</option> 
+<option value="3">the below-threshold part of the Green's function, 
+<ei>E &lt; 0</ei> is mirrored into the positive region, 
+<ei>E' = -E  &gt; 0</ei>. This negative part is damped-out for 
+small <ei>E</ei>, see <code>width</code> below. Note that subset of 
+events generated with options 2 and 3 can be combined to a complete 
+scenario. 
+</option> 
+<option value="4">the Green's function in the whole threshold region, 
+both <ei>E &gt; 0</ei> and <ei>E &lt; 0</ei>, with transition to 
+Coulomb above and damped-out below (see <code>width</code> below). 
+The procedure is to first pick <ei>m(t)</ei> and <ei>m(tbar)</ei> 
+by Breit-Wigners, and then pick an <ei>mHat</ei> distributed all 
+the way down to <ei>m(t) + m(tbar) - 2 * width</ei>. If then 
+<ei>E = mHat - m(t) - m(tbar) &gt; 0</ei> everything works as in 
+option 2. If not, then a new <ei>m'(t) &lt; m(t)</ei> and a new 
+<ei>m'(tbar) &lt; m(tbar)</ei> are picked according to Breit-Wigners 
+under the requirement that <ei>E' = mHat - m'(t) - m'(tbar) &gt; 0</ei>. 
+Finally the event is accepted or rejected according to the naive 
+cross section reweighted to the Green's function value. 
+This handling of the <ei>E &lt; 0</ei> part is more realistic than the 
+previous options, and the best bet, is but not perfect. 
+</option> 
+</modepick> 
+ 
+<parm name="TopThreshold:width" default="10." min="5." max="20."> 
+the Green's function, when used, is assumed valid in the threshold 
+region <ei>[-width, +width]</ei>. Above threshold, in the region 
+<ei>[width, 2 * width]</ei>, it linearly transitions to the Coulomb 
+expression. Below threshold, in the region <ei>[-2 * width, -width]</ei>, 
+it is linearly damped to zero. 
+</parm> 
+ 
+<modepick name="TopThreshold:alphasOrder" default="2" min="0" max="2"> 
+the order of the running of the <ei>alpha_strong</ei>, used for the 
+top threshold factors (and nowhere else). 
+<option value="0">no running. 
+</option> 
+<option value="1">first-order running. 
+</option> 
+<option value="2">second-order running. 
+</option> 
+</modepick> 
+ 
+<parm name="TopThreshold:alphasValue" default="0.118" min="0.10" max="0.25"> 
+the <ei>alpha_strong</ei> value at scale <ei>M_Z^2</ei>, that then runs 
+according to the order defined above. 
+</parm> 
+ 
+<parm name="TopThreshold:ggSingletFrac" default="0.28571" min="0." max="1."> 
+in the <ei>g g &rarr; t tbar</ei> process, colour factors gives 2/7 
+singlet and the rest octet, but dynamics might modify this. 
+</parm> 
+ 
+<parm name="TopThreshold:qqSingletFrac" default="0." min="0." max="1."> 
+in the <ei>q qbar &rarr; t tbar</ei> process colour arguments gives 
+all octet and no singlet, but again modifications are possible. 
+</parm> 
+ 
+<br/> 
+<note>Note 1:</note> Model 4, for <ei>E &lt; 0</ei>  redefines the 
+<ei>t</ei> and <ei>tbar</ei> mass values in order to achieve a new 
+<ei>E' &gt; 0</ei>. In order still to have access to the original 
+quantities, before the new masses were selected, the following 
+quantities are saved and retrievable: 
+<br/><code>pythia.info.toponiumE</code> the original threshold energy 
+<ei>E</ei>, which may have either sign; 
+<br/><code>pythia.info.toponiumm3, pythia.info.toponiumm4</code> the two 
+original <ei>t</ei> and <ei>tbar</ei> masses, which are larger than the 
+<ei>m'</ei> ones found in the event record. 
+ 
+<br/> 
+<note>Note 2:</note> When generating only the below-threshold region, which 
+is nonzero only in a limited energy/mass range, the initialization may 
+miss to sample this range and conclude that the cross section vanishes 
+everywhere. Therefore we want to set a nonvanishing smallest value during 
+initialization, but not during event generation. To this end a new method 
+<code>pythia.info.getInInit()</code> returns <code>true</code> in 
+<code>pythia.init()</code> and <code>false</code> in 
+<code>pythia.next()</code>. 
+ 
+<br/> 
+<note>Note 3:</note> Four main program explore the usage of this code: 
+<br/><code>main368.cc</code> plots the shape of the pure singlet and octet 
+enhancements; 
+<br/><code>main369.cc</code> and <code>main370.cc</code> histogram 
+a few quantities for many different scenarios, to allow direct comparisons, 
+with code for parallelization using either OpenMP or 
+<code>PythiaParallel</code>, respectively; 
+<br/><code>main371.cc</code> histograms a wider set of quantities, but only 
+for one model at a time, which can be chosen among a smaller selection. 
+ 
 </chapter> 
  
 <!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

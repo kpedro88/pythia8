@@ -108,6 +108,16 @@ are experimentally distinguishable. No cut will be applied for
 <code>Q2Min &lt; pTHatMinDiverge^2</code>. 
 </parm> 
  
+<parm name="PhaseSpace:Q2Max" default="-1.0"> 
+The maximum value for the DIS variable <ei>Q^2 = - tHat</ei>. 
+Can only meaningfully be used for scattering processes between two 
+non-identical particles, i.e. where <ei>tHat</ei> and <ei>uHat</ei> 
+are experimentally distinguishable. Cut is applied only when 
+<ei>Q2Max &gt; Q2Min</ei>. This can be applied only when the hard process 
+is selected and full kinematics are known leading to a minor loss in 
+efficiency. 
+</parm> 
+ 
 <h3>Cuts in <ei>2 &rarr; 3</ei> processes</h3> 
  
 There are two main classes of <ei>2 &rarr; 3</ei> processes. One is the 

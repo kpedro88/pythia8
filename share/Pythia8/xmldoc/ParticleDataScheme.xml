@@ -970,6 +970,13 @@ with parameters as described here. Is equal to <code>m0(id)</code> for
 particles without width. 
 </method> 
  
+<method name="double Particle::mSelInRange(int id, double mMinNow, 
+double mMaxNow)"> 
+same as <code>mSel(int id)</code> above, but restricted to the range 
+between <code>mMinNow</code> and <code>mMaxNow</code>, which is assumed 
+to be a subrange of the <code>mMin()</code> to <code>mMax()</code> range. 
+</method> 
+ 
 <method name="double ParticleData::mRun(int id, double mH)"> 
 calculate the running mass of species <code>id</code> when probed at a 
 hard mass scale of <code>mH</code>. Only applied to obtain the 
@@ -1369,6 +1376,12 @@ masses, and for everything else the same as the ordinary mass.
 <method name="double ParticleDataEntry::mSel()"> 
 give the mass of a particle, either at the nominal value 
 or picked according to a (linear or quadratic) Breit-Wigner. 
+</method> 
+ 
+<method name="double Particle::mSelInRange(idouble mMinNow, double mMaxNow)"> 
+same as <code>mSel()</code> above, but restricted to the range 
+between <code>mMinNow</code> and <code>mMaxNow</code>, which is assumed 
+to be a subrange of the <code>mMin()</code> to <code>mMax()</code> range. 
 </method> 
  
 <method name="double ParticleDataEntry::mRun(double mH)"> 

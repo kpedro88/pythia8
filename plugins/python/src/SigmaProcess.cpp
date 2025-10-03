@@ -1,32 +1,49 @@
 #include <Pythia8/Basics.h>
 #include <Pythia8/BeamParticle.h>
+#include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
 #include <Pythia8/Event.h>
 #include <Pythia8/FragmentationFlavZpT.h>
 #include <Pythia8/FragmentationModel.h>
 #include <Pythia8/FragmentationSystems.h>
 #include <Pythia8/GammaKinematics.h>
+#include <Pythia8/HIInfo.h>
 #include <Pythia8/HadronLevel.h>
+#include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
 #include <Pythia8/Info.h>
+#include <Pythia8/LHEF3.h>
 #include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
 #include <Pythia8/NucleonExcitations.h>
 #include <Pythia8/ParticleData.h>
 #include <Pythia8/ParticleDecays.h>
 #include <Pythia8/PartonDistributions.h>
+#include <Pythia8/PartonSystems.h>
 #include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
 #include <Pythia8/RHadrons.h>
 #include <Pythia8/ResonanceWidths.h>
 #include <Pythia8/SLHAinterface.h>
 #include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
 #include <Pythia8/SigmaLowEnergy.h>
 #include <Pythia8/SigmaProcess.h>
+#include <Pythia8/SigmaTotal.h>
+#include <Pythia8/StandardModel.h>
 #include <Pythia8/StringFragmentation.h>
 #include <Pythia8/StringInteractions.h>
+#include <Pythia8/SusyCouplings.h>
 #include <Pythia8/TimeShower.h>
 #include <Pythia8/UserHooks.h>
+#include <Pythia8/Weights.h>
+#include <cwchar>
 #include <functional>
+#include <ios>
 #include <istream>
 #include <iterator>
 #include <map>
@@ -34,6 +51,7 @@
 #include <ostream>
 #include <sstream>
 #include <sstream> // __str__
+#include <streambuf>
 #include <string>
 #include <utility>
 #include <vector>
@@ -698,6 +716,19 @@ struct PyCallBack_Pythia8_Sigma0Process : public Pythia8::Sigma0Process {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::Sigma0Process *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::Sigma1Process file:Pythia8/SigmaProcess.h line:439
@@ -1353,6 +1384,19 @@ struct PyCallBack_Pythia8_Sigma1Process : public Pythia8::Sigma1Process {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::Sigma1Process *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -2023,6 +2067,19 @@ struct PyCallBack_Pythia8_Sigma2Process : public Pythia8::Sigma2Process {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::Sigma2Process *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::Sigma3Process file:Pythia8/SigmaProcess.h line:545
@@ -2679,6 +2736,19 @@ struct PyCallBack_Pythia8_Sigma3Process : public Pythia8::Sigma3Process {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::Sigma3Process *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::SigmaLHAProcess file:Pythia8/SigmaProcess.h line:590
@@ -3321,6 +3391,19 @@ struct PyCallBack_Pythia8_SigmaLHAProcess : public Pythia8::SigmaLHAProcess {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::SigmaLHAProcess *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -4003,6 +4086,19 @@ struct PyCallBack_Pythia8_UserHooks : public Pythia8::UserHooks {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::UserHooks *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 

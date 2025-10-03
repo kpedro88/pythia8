@@ -148,7 +148,7 @@ changes to the header file.
  
 In more ROOT-centric applications, PYTHIA can be run as a ROOT plug-in. 
 This requires a version of ROOT that has been 
-<a href="http://root.cern.ch/drupal/content/installing-root-source"> 
+<a href="https://root.cern.ch/install/#build-from-source"> 
 installed from source</a>. The reason is that the interfaces depend on 
 PYTHIA header files that are not distributed with ROOT. Installing ROOT 
 is not more difficult than the PYTHIA installation, and some 
@@ -162,7 +162,7 @@ PYTHIA installation directory
     export PYTHIA8=path_to_PYTHIA8_installation 
 </pre> 
 Before compiling ROOT, 
-<a href="http://root.cern.ch/drupal/content/installing-root-source"> 
+<a href="https://root.cern.ch/install/#build-from-source"> 
 configure ROOT</a> by running the <code>configure</code> command 
 including the following options 
 <pre> 
@@ -240,8 +240,8 @@ The two interfaces are
   TVirtualMCDecayer</a></code> interface.<br/> 
   It allows you to use PYTHIA as a plug-in decayer for simulation 
   frameworks based on the Virtual Monte Carlo 
-  (<a href="http://root.cern.ch/drupal/content/vmc">VMC</a>) interface 
-  classes. The main methods of the interface are 
+  (<a href="https://root.cern/doc/master/group__montecarlo.html">VMC</a>) 
+  interface classes. The main methods of the interface are 
   <ul> 
     <li><code>TPythia8Decayer::Init()</code> for initialisation,</li> 
     <li><code>TPythia8Decayer::Decay(Int_t pdg, TLorentzVector* p)</code> 

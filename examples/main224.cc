@@ -5,7 +5,7 @@
 
 // Authors: Nadine Fischer
 
-// Keywords: Dire; Vincia; hepmc; OpenMP; command file; command line option
+// Keywords: Vincia; hepmc; OpenMP; command file; command line option
 
 // The following functions analyze a scattering event and save the event in
 // an output format that can be converted into a postscript figure using the
@@ -36,7 +36,7 @@ int main( int argc, char* argv[] ) {
   InputParser ip("Visualize an event with graphivz.",
     {"./main224 --nevents 50 --setting \"WeakSingleBoson:ffbar2gmZ=on\"",
         "./main224 --input main224.cmnd --hepmc_output myfile.hepmc"});
-  ip.add("v", "false", "Saves an event for visialization.",
+  ip.add("v", "false", "Saves an event for visualization.",
     {"-visualize_event"});
   ip.add("n", "-1", "Number of events to generate.",
     {"-nevents"});
@@ -173,8 +173,7 @@ int main( int argc, char* argv[] ) {
     string setting = settings[i];
     replace(setting.begin(), setting.end(), '"', ' ');
 
-    // Skip Dire settings at this stage.
-    if (setting.find("Dire") != string::npos) continue;
+    // Skip enhance settings at this stage.
     if (setting.find("Enhance") != string::npos) continue;
 
     for (int j = 0; j < int(pythiaPtr.size()); ++j) {
@@ -206,7 +205,6 @@ int main( int argc, char* argv[] ) {
   PDFPtr pdfAPtr = nullptr;
   PDFPtr pdfBPtr = nullptr;
 
-  // Allow Pythia to use Dire merging classes.
   for (int i = 0; i < int(pythiaPtr.size()); ++i) {
     if (pdfAPtr != nullptr) pythiaPtr[i]->setPDFAPtr(pdfAPtr);
     if (pdfBPtr != nullptr) pythiaPtr[i]->setPDFBPtr(pdfBPtr);
@@ -474,9 +472,6 @@ int main( int argc, char* argv[] ) {
         if ( pythiaPtr[j]->info.atEndOfFile() ) break;
         else continue;
       }
-
-      // Do MEM.
-      if (pythiaPtr[j]->settings.flag("Dire:doMEM")) { ; }
 
       // Get event weight(s).
       double evtweight = pythiaPtr[j]->info.weight();

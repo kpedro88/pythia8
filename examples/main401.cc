@@ -5,9 +5,9 @@
 
 // Authors: Peter Skands <peter.skands@monash.edu>
 
-// Keywords: Vincia; Dire; electron-positron; histograms
+// Keywords: Vincia; electron-positron; histograms
 
-// Simple example of the VINCIA (or DIRE) shower model(s), on Z decays at
+// Simple example of the VINCIA shower model, on Z decays at
 // LEP I, with some basic event shapes, spectra, and multiplicity counts.
 // Also useful as a basic test of the respective final-state showers.
 // Also: how to book and get statistical uncertainties for Pythia histograms.

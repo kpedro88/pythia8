@@ -5,6 +5,7 @@
 #include <string>
 
 #include <pybind11/pybind11.h>
+#include <extra/PythiaPython.h>
 
 typedef std::function< pybind11::module & (std::string const &) > ModuleGetter;
 
@@ -69,6 +70,7 @@ void bind_Pythia8_Merging(std::function< pybind11::module &(std::string const &n
 void bind_Pythia8_Ropewalk(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_Pythia8_SimpleSpaceShower(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_Pythia8_SimpleTimeShower(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_Pythia8_ThermalFragmentation(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_Pythia8_VinciaCommon(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_Pythia8_Pythia(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_Pythia8_PythiaParallel(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -92,6 +94,7 @@ PYBIND11_MODULE(pythia8, root_module) {
 	};
 
 	modules[""] = root_module;
+        Pythia8::loadExtraPython(root_module);
 
 	std::vector< std::pair<std::string, std::string> > sub_modules {
 		{"", "std"},
@@ -161,6 +164,7 @@ PYBIND11_MODULE(pythia8, root_module) {
 	bind_Pythia8_Ropewalk(M);
 	bind_Pythia8_SimpleSpaceShower(M);
 	bind_Pythia8_SimpleTimeShower(M);
+	bind_Pythia8_ThermalFragmentation(M);
 	bind_Pythia8_VinciaCommon(M);
 	bind_Pythia8_Pythia(M);
 	bind_Pythia8_PythiaParallel(M);

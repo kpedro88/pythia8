@@ -48,7 +48,7 @@
 
 void bind_Pythia8_ParticleData_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // Pythia8::ParticleData file:Pythia8/ParticleData.h line:422
+	{ // Pythia8::ParticleData file:Pythia8/ParticleData.h line:423
 		pybind11::class_<Pythia8::ParticleData, std::shared_ptr<Pythia8::ParticleData>> cl(M("Pythia8"), "ParticleData", "");
 		pybind11::handle cl_type = cl;
 
@@ -179,6 +179,7 @@ void bind_Pythia8_ParticleData_1(std::function< pybind11::module &(std::string c
 		cl.def("varWidth", (bool (Pythia8::ParticleData::*)(int) const) &Pythia8::ParticleData::varWidth, "C++: Pythia8::ParticleData::varWidth(int) const --> bool", pybind11::arg("idIn"));
 		cl.def("constituentMass", (double (Pythia8::ParticleData::*)(int) const) &Pythia8::ParticleData::constituentMass, "C++: Pythia8::ParticleData::constituentMass(int) const --> double", pybind11::arg("idIn"));
 		cl.def("mSel", (double (Pythia8::ParticleData::*)(int) const) &Pythia8::ParticleData::mSel, "C++: Pythia8::ParticleData::mSel(int) const --> double", pybind11::arg("idIn"));
+		cl.def("mSelInRange", (double (Pythia8::ParticleData::*)(int, double, double) const) &Pythia8::ParticleData::mSelInRange, "C++: Pythia8::ParticleData::mSelInRange(int, double, double) const --> double", pybind11::arg("idIn"), pybind11::arg("mMinNow"), pybind11::arg("mMaxNow"));
 		cl.def("mRun", (double (Pythia8::ParticleData::*)(int, double) const) &Pythia8::ParticleData::mRun, "C++: Pythia8::ParticleData::mRun(int, double) const --> double", pybind11::arg("idIn"), pybind11::arg("mH"));
 		cl.def("canDecay", (bool (Pythia8::ParticleData::*)(int) const) &Pythia8::ParticleData::canDecay, "C++: Pythia8::ParticleData::canDecay(int) const --> bool", pybind11::arg("idIn"));
 		cl.def("isLepton", (bool (Pythia8::ParticleData::*)(int) const) &Pythia8::ParticleData::isLepton, "C++: Pythia8::ParticleData::isLepton(int) const --> bool", pybind11::arg("idIn"));

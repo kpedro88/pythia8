@@ -213,6 +213,9 @@ inline string toString(int val) {return to_string(val);}
 // Convert a double to a string.
 string toString(double val);
 
+// Split a string by a delimiter.
+vector<string> splitString(string val, string delim);
+
 //==========================================================================
 
 // Print a method name using the appropriate pre-processor macro.

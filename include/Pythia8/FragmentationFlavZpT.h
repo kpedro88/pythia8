@@ -78,22 +78,16 @@ class StringFlav : public PhysicsBase {
 public:
 
   // Constructor.
-  StringFlav() :
-    suppressLeadingB(),
-    mT2suppression(), useWidthPre(), probQQtoQ(), probStoUD(), probSQtoQQ(),
+  StringFlav() : suppressLeadingB(), probQQtoQ(), probStoUD(), probSQtoQQ(),
     probQQ1toQQ0(), probQandQQ(), probQandS(), probQandSinQQ(), probQQ1corr(),
     probQQ1corrInv(), probQQ1norm(), probQQ1join(), mesonRate(),
     mesonRateSum(), mesonMix1(), mesonMix2(), etaSup(), etaPrimeSup(),
     decupletSup(), baryonCGSum(), baryonCGMax(), popcornRate(), popcornSpair(),
     popcornSmeson(), barCGMax(), scbBM(), popFrac(), popS(), dWT(),
     lightLeadingBSup(), heavyLeadingBSup(), probStoUDSav(), probQQtoQSav(),
-    probSQtoQQSav(), probQQ1toQQ0Sav(), alphaQQSav(), sigmaHad(),
-    widthPreStrange(), widthPreDiquark(), thermalModel(), mesonNonetL1(),
-    temperature(), tempPreFactor(), nNewQuark(), mesMixRate1(), mesMixRate2(),
-    mesMixRate3(), baryonOctWeight(), baryonDecWeight(), closePacking(),
+    probSQtoQQSav(), probQQ1toQQ0Sav(), alphaQQSav(), closePacking(),
     doEnhanceDiquark(), enhanceStrange(), enhancePT(), enhanceDiquark(),
-    exponentMPI(), exponentNSP(), hadronIDwin(0), idNewWin(0),
-    hadronMassWin(-1.0) {}
+    exponentMPI(), exponentNSP() {}
 
   // Destructor.
   virtual ~StringFlav() {}
@@ -111,18 +105,10 @@ public:
     if (rndmFlav < 2.) return 2;
     return 3; }
 
-  // Pick a new flavour (including diquarks) given an incoming one,
-  // either by old standard Gaussian or new alternative exponential.
-  virtual FlavContainer pick(FlavContainer& flavOld, double pT = -1.0,
-    double kappaModifier = -1.0, bool allowPop = true) {
-    hadronIDwin = 0; idNewWin = 0; hadronMassWin = -1.0;
-    if ( (thermalModel || mT2suppression) && (pT >= 0.0) )
-      return pickThermal(flavOld, pT, kappaModifier);
-    return pickGauss(flavOld, allowPop); }
-  virtual FlavContainer pickGauss(FlavContainer& flavOld,
-    bool allowPop = true);
-  virtual FlavContainer pickThermal(FlavContainer& flavOld,
-    double pT, double kappaModifier);
+  // Pick a new flavour (including diquarks) given an incoming one.
+  // Optional arguments: pT, kappaModifier, allowPop.
+  virtual FlavContainer pick(FlavContainer& flavOld,
+    double = -1., double = -1., bool allowPop = true);
 
   // Combine two flavours (including diquarks) to produce a hadron.
   virtual int combine(FlavContainer& flav1, FlavContainer& flav2);
@@ -142,28 +128,15 @@ public:
   // Lightest flavour-neutral meson.
   virtual int idLightestNeutralMeson() { return 111; }
 
-  // Return chosen hadron in case of thermal model.
-  virtual int getHadronIDwin() { return hadronIDwin; }
-
-  // Combine two flavours into hadron for last two remaining flavours
-  // for thermal model.
-  virtual int combineLastThermal(FlavContainer& flav1, FlavContainer& flav2,
-    double pT, double kappaModifier);
-
   // General function, decides whether to just return the hadron id
   // if thermal model was use or whether to combine the two flavours.
   virtual int getHadronID(FlavContainer& flav1, FlavContainer& flav2,
-    double pT = -1.0, double kappaModifier = -1.0, bool finalTwo = false) {
-    if (finalTwo) return ((thermalModel || mT2suppression) ?
-      combineLastThermal(flav1, flav2, pT, kappaModifier)
-      : combine(flav1, flav2));
-    if ((thermalModel || mT2suppression)&& (hadronIDwin != 0)
-      && (idNewWin != 0)) return getHadronIDwin();
+    double = -1.0, double = -1.0, bool = false) {
     return combine(flav1, flav2); }
 
-  // Return hadron mass. Used one if present, pick otherwise.
-  virtual double getHadronMassWin(int idHad) { return
-    ((hadronMassWin < 0.0) ? particleDataPtr->mSel(idHad) : hadronMassWin); }
+  // Return hadron mass.
+  virtual double getHadronMassWin(int idHad) {
+    return particleDataPtr->mSel(idHad); }
 
   // Assign popcorn quark inside an original (= rank 0) diquark.
   void assignPopQ(FlavContainer& flav);
@@ -206,8 +179,8 @@ protected:
   static const int    mesonMultipletCode[6];
   static const double baryonCGOct[6], baryonCGDec[6];
 
-  // Settings for Gaussian model.
-  bool   suppressLeadingB, mT2suppression, useWidthPre;
+  // Settings for default Gaussian model.
+  bool   suppressLeadingB;
   double probQQtoQ, probStoUD, probSQtoQQ, probQQ1toQQ0, probQandQQ,
          probQandS, probQandSinQQ, probQQ1corr, probQQ1corrInv, probQQ1norm,
          probQQ1join[4], mesonRate[4][6], mesonRateSum[4], mesonMix1[2][6],
@@ -217,33 +190,11 @@ protected:
          heavyLeadingBSup;
   bool   qqKappa;
   double probStoUDSav, probQQtoQSav, probSQtoQQSav, probQQ1toQQ0Sav,
-         alphaQQSav, sigmaHad, widthPreStrange, widthPreDiquark;
+         alphaQQSav;
 
-  // Settings for thermal model.
-  bool   thermalModel, mesonNonetL1;
-  double temperature, tempPreFactor;
-  int    nNewQuark;
-  double mesMixRate1[2][6], mesMixRate2[2][6], mesMixRate3[2][6];
-  double baryonOctWeight[6][6][6][2], baryonDecWeight[6][6][6][2];
-
-  // Settings used by both models.
+  // Settings for closepacking.
   bool   closePacking, doEnhanceDiquark;
   double enhanceStrange, enhancePT, enhanceDiquark, exponentMPI, exponentNSP;
-
-  // Key = hadron id, value = list of constituent ids.
-  map< int, vector< pair<int,int> > > hadronConstIDs;
-  // Key = initial (di)quark id, value = list of possible hadron ids
-  //                                     + nr in hadronConstIDs.
-  map< int, vector< pair<int,int> > > possibleHadrons;
-  // Key = initial (di)quark id, value = prefactor to multiply rate.
-  map< int, vector<double> > possibleRatePrefacs;
-  // Similar, but for combining the last two (di)quarks. Key = (di)quark pair.
-  map< pair<int,int>, vector< pair<int,int> > > possibleHadronsLast;
-  map< pair<int,int>, vector<double> > possibleRatePrefacsLast;
-
-  // Selection in thermal model.
-  int    hadronIDwin, idNewWin;
-  double hadronMassWin;
 
   // Fragmentation weights container.
   WeightsFragmentation* wgtsPtr{};
@@ -335,9 +286,7 @@ class StringPT : public PhysicsBase {
 public:
 
   // Constructor.
-  StringPT() : useWidthPre(), sigmaQ(), enhancedFraction(), enhancedWidth(),
-    sigma2Had(), widthPreStrange(), widthPreDiquark(),
-    thermalModel(), temperature(), tempPreFactor(), fracSmallX(),
+  StringPT() : sigmaQ(), enhancedFraction(), enhancedWidth(), sigma2Had(),
     closePacking(), enhancePT(), exponentMPI(), exponentNSP() {}
 
   // Destructor.
@@ -346,17 +295,11 @@ public:
   // Initialize data members.
   virtual void init();
 
-  // General function, return px and py as a pair in the same call
-  // in either model.
-  pair<double, double>  pxy(int idIn, double kappaModifier = -1.0) {
-    return (thermalModel ? pxyThermal(idIn, kappaModifier) :
-    pxyGauss(idIn, kappaModifier)); }
-  pair<double, double>  pxyGauss(int idIn = 0, double kappaModifier = -1.0);
-  pair<double, double>  pxyThermal(int idIn, double kappaModifier = -1.0);
+  // Return px and py as a pair.
+  virtual pair<double, double>  pxy(int idIn = 0, double kappaModifier = -1.0);
 
   // Gaussian suppression of given pT2; used in MiniStringFragmentation.
-  double suppressPT2(double pT2) { return (thermalModel ?
-    exp(-sqrt(pT2)/temperature) : exp(-pT2/sigma2Had)); }
+  virtual double suppressPT2(double pT2) { return exp(-pT2/sigma2Had); }
 
 protected:
 
@@ -364,21 +307,15 @@ protected:
   static const double SIGMAMIN;
 
   // Initialization data, to be read from Settings.
-  // Gaussian model.
-  bool   useWidthPre;
-  double sigmaQ, enhancedFraction, enhancedWidth, sigma2Had,
-         widthPreStrange, widthPreDiquark;
-  // Thermal model.
-  bool   thermalModel;
-  double temperature, tempPreFactor, fracSmallX;
-  // Both.
+  double sigmaQ, enhancedFraction, enhancedWidth, sigma2Had;
+  // Optional enhanced pT widths for strange and/or diquarks.
+  bool useWidthPre{false};
+  double widthPreStrange{1.}, widthPreQQ0{1.}, widthPreQQ1{1.};
+  // Special for closepacking.
   bool   closePacking;
   double enhancePT, exponentMPI, exponentNSP;
 
 private:
-
-  // Evaluate Bessel function K_{1/4}(x).
-  double BesselK14(double x);
 
   // Fragmentation weights container.
   WeightsFragmentation* wgtsPtr{};

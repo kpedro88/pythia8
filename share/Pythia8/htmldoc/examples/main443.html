@@ -26,12 +26,13 @@ using namespace Pythia8;
 int main() {
 
   // Number of events. Histograms in line printer mode or as pdf file.
-  int nEvent = 2000;
-  bool histAsPDF = true;
+  const int nEvent = 2000;
+  const int nModel = 4;
+  const bool histAsPDF = true;
 
   // Histogram multiplicities and pT spectra.
-  Hist nCh[3], pTpi[3], pTK[3], pTp[3];
-  for (int iModel = 0; iModel &lt; 3; ++iModel) {
+  Hist nCh[nModel], pTpi[nModel], pTK[nModel], pTp[nModel];
+  for (int iModel = 0; iModel &lt; nModel; ++iModel) {
     nCh[iModel].book(&quot;charged multiplicity&quot;, 100, 1., 401.);
     pTpi[iModel].book(&quot;pT for pi+-&quot;, 100, 0., 5.);
     pTK[iModel].book(&quot;pT for K+-&quot;, 100, 0., 5.);
@@ -43,10 +44,10 @@ int main() {
     &quot;rho0,omega&quot;, &quot;K*+-0&quot;, &quot;phi0&quot;, &quot;p(bar)&quot;, &quot;n(bar)&quot;, &quot;Lambda(bar)&quot;,
     &quot;Sigma(bar)&quot;, &quot;Xi(bar)&quot;, &quot;Delta(bar)&quot;, &quot;Sigma*(bar)&quot;, &quot;Xi*(bar)&quot;,
     &quot;Omega(bar)&quot;};
-  int rates[3][18] = {{0}};
+  int rates[nModel][18] = {{0}};
 
   // Loop over normal and thermal generation.
-  for (int iModel = 0; iModel &lt; 3; ++iModel) {
+  for (int iModel = 0; iModel &lt; nModel; ++iModel) {
 
     // Generator. Common process selection. Reduce printout. pi0 stable.
     Pythia pythia;
@@ -58,8 +59,9 @@ int main() {
     pythia.readString(&quot;111:mayDecay = off&quot;);
 
     // Model-specific setup. Initialization.
-    if (iModel == 1) pythia.readString(&quot;StringPT:thermalModel = on&quot;);
-    if (iModel == 2) pythia.readString(&quot;StringPT:mT2suppression = on&quot;);
+    if (iModel == 1) pythia.readString(&quot;Fragmentation:model = 1&quot;);
+    if (iModel == 2) pythia.readString(&quot;StringPT:widthPreStrange = 1.5&quot;);
+    if (iModel == 3) pythia.readString(&quot;StringPT:widthPreQQ0 = 1.5&quot;);
 
     // If Pythia fails to initialize, exit with error.
     if (!pythia.init()) return 1;
@@ -126,10 +128,10 @@ int main() {
 
   // Print historams.
   if (!histAsPDF) {
-    for (int iModel = 0; iModel &lt; 3; ++iModel) cout &lt;&lt; nCh[iModel];
-    for (int iModel = 0; iModel &lt; 3; ++iModel) cout &lt;&lt; pTpi[iModel];
-    for (int iModel = 0; iModel &lt; 3; ++iModel) cout &lt;&lt; pTK[iModel];
-    for (int iModel = 0; iModel &lt; 3; ++iModel) cout &lt;&lt; pTp[iModel];
+    for (int iModel = 0; iModel &lt; nModel; ++iModel) cout &lt;&lt; nCh[iModel];
+    for (int iModel = 0; iModel &lt; nModel; ++iModel) cout &lt;&lt; pTpi[iModel];
+    for (int iModel = 0; iModel &lt; nModel; ++iModel) cout &lt;&lt; pTK[iModel];
+    for (int iModel = 0; iModel &lt; nModel; ++iModel) cout &lt;&lt; pTp[iModel];
 
   // Alternatively plot histograms.
   } else {
@@ -137,37 +139,44 @@ int main() {
     hpl.frame(&quot;fig443&quot;, &quot;charged multiplicity&quot;,
       &quot;$n_{\\mathrm{charged}}$&quot;, &quot;Probability&quot;, 8.0, 5.4);
     hpl.add( nCh[0], &quot;-,black&quot;,  &quot;default&quot;);
+    hpl.add( nCh[2], &quot;-,blue&quot;,   &quot;enh-pTstrange&quot;);
+    hpl.add( nCh[3], &quot;-,cyan&quot;,   &quot;enh-pTqq0&quot;);
     hpl.add( nCh[1], &quot;-,red&quot;,    &quot;thermal&quot;);
-    hpl.add( nCh[2], &quot;-,blue&quot;,   &quot;$m_{\\perp}^2$-suppressed&quot;);
     hpl.plot();
     hpl.frame(&quot;&quot;, &quot;$\\pi^{\\pm}$ transverse momentum spectrum&quot;,
       &quot;$p_{\\perp}$&quot;, &quot;$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$&quot;, 8.0, 5.4);
-    hpl.add( pTpi[0], &quot;-,black&quot;,  &quot;default&quot;);
-    hpl.add( pTpi[1], &quot;-,red&quot;,    &quot;thermal&quot;);
-    hpl.add( pTpi[2], &quot;-,blue&quot;,   &quot;$m_{\\perp}^2$-suppressed&quot;);
+    hpl.add( pTpi[0], &quot;-,black&quot;, &quot;default&quot;);
+    hpl.add( pTpi[2], &quot;-,blue&quot;,  &quot;enh-pTstrange&quot;);
+    hpl.add( pTpi[3], &quot;-,cyan&quot;,  &quot;enh-pTqq0&quot;);
+    hpl.add( pTpi[1], &quot;-,red&quot;,   &quot;thermal&quot;);
     hpl.plot();
     hpl.frame(&quot;&quot;, &quot;K$^{\\pm}$ transverse momentum spectrum&quot;,
       &quot;$p_{\\perp}$&quot;, &quot;$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$&quot;, 8.0, 5.4);
     hpl.add( pTK[0], &quot;-,black&quot;,  &quot;default&quot;);
+    hpl.add( pTK[2], &quot;-,blue&quot;,   &quot;enh-pTstrange&quot;);
+    hpl.add( pTK[3], &quot;-,cyan&quot;,   &quot;enh-pTqq0&quot;);
     hpl.add( pTK[1], &quot;-,red&quot;,    &quot;thermal&quot;);
-    hpl.add( pTK[2], &quot;-,blue&quot;,   &quot;$m_{\\perp}^2$-suppressed&quot;);
     hpl.plot();
     hpl.frame(&quot;&quot;, &quot;p,$\\overline{\\mathrm{p}}$ transverse momentum spectrum&quot;,
       &quot;$p_{\\perp}$&quot;, &quot;$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$&quot;, 8.0, 5.4);
     hpl.add( pTp[0], &quot;-,black&quot;,  &quot;default&quot;);
+    hpl.add( pTp[2], &quot;-,blue&quot;,   &quot;enh-pTstrange&quot;);
+    hpl.add( pTp[3], &quot;-,cyan&quot;,   &quot;enh-pTqq0&quot;);
     hpl.add( pTp[1], &quot;-,red&quot;,    &quot;thermal&quot;);
-    hpl.add( pTp[2], &quot;-,blue&quot;,   &quot;$m_{\\perp}^2$-suppressed&quot;);
     hpl.plot();
   }
 
   // Print table.
   double norm = 1. / double(nEvent);
   cout &lt;&lt; &quot;\n\n Particle composition per event, including unstable&quot;
-       &lt;&lt; &quot;\n    Particle     default     thermal     mT2-suppressed&quot; &lt;&lt; endl
-       &lt;&lt; fixed &lt;&lt; setprecision(3);
-  for (int i = 0; i &lt; 18; ++i) cout &lt;&lt; setw(12) &lt;&lt; nameHad[i]
-       &lt;&lt; setw(12) &lt;&lt; norm * rates[0][i] &lt;&lt; setw(12) &lt;&lt; norm * rates[1][i]
-       &lt;&lt; setw(12) &lt;&lt; norm * rates[2][i] &lt;&lt; endl;
+       &lt;&lt; &quot;\n    Particle     default     thermal    enh-strange  enh-qq0&quot;
+       &lt;&lt; endl &lt;&lt; fixed &lt;&lt; setprecision(3);
+  for (int i = 0; i &lt; 18; ++i) {
+    cout &lt;&lt; setw(12) &lt;&lt; nameHad[i];
+    for (int iModel = 0; iModel &lt; nModel; ++iModel)
+      cout &lt;&lt; setw(12) &lt;&lt; norm * rates[iModel][i];
+    cout &lt;&lt; endl;
+  }
 
   // Done.
   return 0;

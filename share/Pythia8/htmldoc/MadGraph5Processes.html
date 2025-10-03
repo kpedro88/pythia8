@@ -68,12 +68,11 @@ library folder.
  
 <p/> 
 Currently, the MG5 ME plugins are used for matrix-element corrections in 
-Dire and Vincia, and to determine Born-level helicities for polarised 
-parton showers. The Pythia Settings words 
-<a href="DireExpert.html" target="page"><code>Dire:MEplugin</code></a> and 
+Vincia, and to assign Born-level helicities for its helicity-dependent 
+parton showers. The Pythia Settings word 
 <a href="VinciaMECs.html" target="page"><code>Vincia:MEplugin</code></a> specify 
-which plugin library to load, for Dire and Vincia, respectively. 
-The same libraries are compatible between Dire and Vincia and are named as 
+which plugin library to load. 
+The libraries are named as 
 <code>libpythia8mg5PLUGIN.so</code> where <code>PLUGIN</code> is 
 one of the matrix-element folders specified by the path optionally 
 passed to <code>--with-mg5mes=DIR</code>. 

@@ -470,6 +470,13 @@ bool BeamRemnants::setKinematics( Event& event) {
     int iInB          = partonSystemsPtr->getInB(iSys);
     double sHatNow    = (event[iInA].p() + event[iInB].p()).m2Calc();
 
+    // Safety check, sHat should be positive.
+    if (sHatNow < 0) {
+      loggerPtr->ERROR_MSG("encountered parton system with negative sHat",
+        "iSys = " + to_string(iSys));
+      return false;
+    }
+
     // Set width of primordial kT distribution.
     if (doPrimordialKT) {
       // Les Houches events use primordialKThard.
@@ -485,7 +492,7 @@ bool BeamRemnants::setKinematics( Event& event) {
          kTwidthNow = (halfScaleForKT * primordialKTsoft
            + scale * primordialKThard) / (halfScaleForKT + scale);
       }
-      // Dampen primordial kT width for very low masses / extreme rapidities.
+      // Damp primordial kT width for very low masses / extreme rapidities.
       double mHat  = sqrt(sHatNow);
       double yDamp =
         pow( (event[iInA].e() + event[iInB].e()) / mHat, reducedKTatHighY );

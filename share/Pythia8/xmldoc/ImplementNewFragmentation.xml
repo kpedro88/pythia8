@@ -1,6 +1,6 @@
-<chapter name="Implement New Fragmentation"> 
+<chapter name="Implement New Fragmentation Model"> 
  
-<h2>Implement New Fragmentation</h2> 
+<h2>Implement New Fragmentation Model</h2> 
  
 In case you want to append or replace any of the Pythia fragmentation 
 models with your own, it is possible using some experimental features, 

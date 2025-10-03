@@ -331,7 +331,8 @@ public:
 
   // Change current value, respecting limits.
   void flag(string keyIn, bool nowIn, bool force = false);
-  bool mode(string keyIn, int nowIn, bool force = false);
+  bool mode(string keyIn, int nowIn, bool force = false,
+            int subrun = SUBRUNDEFAULT);
   bool parm(string keyIn, double nowIn, bool force = false);
   void word(string keyIn, string nowIn, bool force = false);
   void fvec(string keyIn, vector<bool> nowIn, bool force = false);
@@ -422,9 +423,9 @@ public:
   void printQuiet(bool quiet);
 
   // Initialize tunes to e+e- and pp/ppbar data.
-  void initTuneEE(int eeTune);
-  void initTunePP(int ppTune);
-  void initTuneVincia(int vinciaTune);
+  void initTuneEE(int eeTune, int subrun = SUBRUNDEFAULT);
+  void initTunePP(int ppTune, int subrun = SUBRUNDEFAULT);
+  void initTuneVincia(int vinciaTune, int subrun = SUBRUNDEFAULT);
 
   // Useful functions for string handling.
   bool   boolString(string tag);

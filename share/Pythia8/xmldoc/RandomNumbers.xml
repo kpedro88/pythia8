@@ -283,10 +283,11 @@ Print the call if the class name and method ends with this string.
 <method name="set&lt;string&gt; Rndm::debugContains"> 
 Print the call if the class name and method contains this string. 
 </method> 
-<method name="set&lt;string&gt; Rndm::debugContains"> 
+<method name="set&lt;string&gt; Rndm::debugMatches"> 
 Print the call if the class name and method exactly matches this string. 
 </method> 
-For example, the following code only keeps calls if they begin with 
+ 
+<p/>For example, the following code only keeps calls if they begin with 
 <code>SimpleTimeShower</code> or <code>SimpleSpaceShower</code>. 
 <pre> 
 Rndm::debugStarts.insert("SimpleTimeShower"); 

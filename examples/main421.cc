@@ -17,12 +17,7 @@
 // it will send the event to Rivet for an ATLAS jet-analysis.
 
 #include "Pythia8/Pythia.h"
-
-#ifdef RIVET
 #include "Pythia8/HeavyIons.h"
-#include "Pythia8Plugins/Pythia8Rivet.h"
-#endif
-
 #include "Pythia8Plugins/ProgressLog.h"
 
 using namespace Pythia8;
@@ -44,18 +39,19 @@ int main() {
   // Only do a couple generations in the fitting to cross sections.
   pythia.readString("HeavyIon:SigFitNGen = 4");
 
+  // Try to load RIVET.
   int nEvents = 1000;
+  pythia.readString("Init:plugins = {libpythia8rivet.so::RivetHooks}");
+  if (pythia.settings.isWord("Rivet:fileName")) {
+    nEvents = 10000;
+    pythia.readString("Rivet:fileName = main421.yoda");
+    pythia.readString("Rivet:analyses = {ATLAS_2010_I871366}");
+  }
+  else
+    pythia.readString("Init:plugins = {}");
 
   // If Pythia fails to initialize, exit with error.
   if (!pythia.init()) return 1;
-
-#ifdef RIVET
-  // Initialize the communication with the Rivet program.
-  Pythia8Rivet rivet(pythia, "main421.yoda");
-  // For the following analysis we need more statistics.
-  rivet.addAnalysis("ATLAS_2010_S8817804");
-  nEvents = 10000;
-#endif
 
   // Book a histogram of the multiplicity distribution
   Hist mult("charged multiplicity", 100, -0.5, 799.5);
@@ -66,11 +62,6 @@ int main() {
   // Begin event loop. Generate event. Skip if error. List first one.
   for (int iEvent = 0; iEvent < nEvents; ++iEvent) {
     if (!pythia.next()) continue;
-
-#ifdef RIVET
-    // Send the event to Rivet.
-    rivet();
-#endif
 
     // Find number of all final charged particles and fill histogram.
     int nCharged = 0;
@@ -86,10 +77,6 @@ int main() {
   // End of event loop. Statistics. Histogram. Done.
   pythia.stat();
   cout << mult;
-
-#ifdef RIVET
-  rivet.done();
-#endif
 
   return 0;
 }

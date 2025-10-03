@@ -188,6 +188,13 @@ template <typename T> shared_ptr<T> make_plugin(
 
 //==========================================================================
 
+// Macro to register a plugin as PythiaParallel compatible.
+
+#define PYTHIA8_PLUGIN_PARALLEL(COMPATIBLE) \
+  extern "C" {bool CHECK_PARALLEL() {return COMPATIBLE;}}
+
+//==========================================================================
+
 // Macro to return compatible Pythia versions and the compiled version.
 
 #define PYTHIA8_PLUGIN_VERSIONS(...)                                       \

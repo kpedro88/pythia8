@@ -162,7 +162,7 @@ on this level may be switched on or off individually:
  
 <flag name="HadronLevel:Hadronize" default="on"> 
 Master switch for hadronization; on/off = true/false. 
-Further options are found <aloc href="Fragmentation">here</aloc>. 
+Further options are found <aloc href="StringFragmentation">here</aloc>. 
 </flag> 
  
 <flag name="HadronLevel:Decay" default="on"> 

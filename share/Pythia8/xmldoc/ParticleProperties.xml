@@ -656,6 +656,12 @@ and is therefore only used once per particle to set its mass
 <code>m()</code>. 
 </method> 
  
+<method name="double Particle::mSelInRange(double mMinNow, double mMaxNow)"> 
+same as <code>mSel()</code> above, but restricted to the range 
+between <code>mMinNow</code> and <code>mMaxNow</code>, which is assumed 
+to be a subrange of the <code>mMin()</code> to <code>mMax()</code> range. 
+</method> 
+ 
 <method name="double Particle::constituentMass()"> 
 will give the constituent masses for quarks and diquarks, 
 else the same masses as with <code>m0()</code>. 

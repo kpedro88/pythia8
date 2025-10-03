@@ -129,33 +129,38 @@ protected:
 
   // Constructor.
   PhaseSpace() : sigmaProcessPtr(), lhaUpPtr(), gammaKinPtr(),
-    useBreitWigners(), doEnergySpread(), showSearch(), showViolation(),
-    increaseMaximum(), hasQ2Min(), gmZmodeGlobal(), mHatGlobalMin(),
-    mHatGlobalMax(), pTHatGlobalMin(), pTHatGlobalMax(), Q2GlobalMin(),
-    pTHatMinDiverge(), minWidthBreitWigners(), minWidthNarrowBW(), idA(),
-    idB(), idAold(), idBold(), idAgm(), idBgm(), mA(), mB(), eCM(), s(),
-    sigmaMxGm(), hasLeptonBeamA(), hasLeptonBeamB(), hasOneLeptonBeam(),
-    hasTwoLeptonBeams(), hasPointGammaA(), hasPointGammaB(),
-    hasOnePointParticle(), hasTwoPointParticles(), hasGamma(), hasVMD(),
-    newSigmaMx(), canModifySigma(), canBiasSelection(), canBias2Sel(),
-    gmZmode(), bias2SelPow(), bias2SelRef(), wtBW(), sigmaNw(),
-    sigmaMx(), sigmaPos(), sigmaNeg(), biasWt(), mHatMin(), mHatMax(),
-    sHatMin(), sHatMax(), pTHatMin(), pTHatMax(), pT2HatMin(), pT2HatMax(),
-    x1H(), x2H(), m3(), m4(), m5(), s3(), s4(), s5(), mHat(), sH(), tH(), uH(),
-    pAbs(), p2Abs(), pTH(), theta(), phi(), betaZ(), mH(), idResA(), idResB(),
-    mResA(), mResB(), GammaResA(), GammaResB(), tauResA(), tauResB(),
-    widResA(), widResB(), sameResMass(), useMirrorWeight(), hasNegZ(),
-    hasPosZ(), tau(), y(), z(), tauMin(), tauMax(), yMax(), zMin(), zMax(),
-    ratio34(), unity34(), zNeg(), zPos(), wtTau(), wtY(), wtZ(), wt3Body(),
-    runBW3H(), runBW4H(), runBW5H(), intTau0(), intTau1(), intTau2(),
-    intTau3(), intTau4(), intTau5(), intTau6(), intY0(), intY12(), intY34(),
-    intY56(), mTchan1(), sTchan1(), mTchan2(), sTchan2(), frac3Flat(),
-    frac3Pow1(), frac3Pow2(), zNegMin(), zNegMax(), zPosMin(), zPosMax(),
-    nTau(), nY(), nZ(), tauCoef(), yCoef(), zCoef(), tauCoefSum(), yCoefSum(),
-    zCoefSum(), useBW(), useNarrowBW(), idMass(), mPeak(), sPeak(), mWidth(),
-    mMin(), mMax(), mw(), wmRat(), mLower(), mUpper(), sLower(), sUpper(),
-    fracFlatS(), fracFlatM(), fracInv(), fracInv2(), atanLower(), atanUpper(),
-    intBW(), intFlatS(), intFlatM(), intInv(), intInv2() {}
+    useBreitWigners(), doEnergySpread(), showSearch(),
+    showViolation(), increaseMaximum(), hasQ2Min(), gmZmodeGlobal(),
+    mHatGlobalMin(), mHatGlobalMax(), pTHatGlobalMin(),
+    pTHatGlobalMax(), Q2GlobalMin(), Q2GlobalMax(), pTHatMinDiverge(),
+    minWidthBreitWigners(), minWidthNarrowBW(), idA(), idB(),
+    idAold(), idBold(), idAgm(), idBgm(), mA(), mB(), eCM(), s(),
+    sigmaMxGm(), hasLeptonBeamA(), hasLeptonBeamB(),
+    hasOneLeptonBeam(), hasTwoLeptonBeams(), hasPointGammaA(),
+    hasPointGammaB(), hasOnePointParticle(), hasTwoPointParticles(),
+    hasGamma(), hasVMD(), newSigmaMx(), canModifySigma(),
+    canBiasSelection(), canBias2Sel(), gmZmode(), bias2SelPow(),
+    bias2SelRef(), wtBW(), sigmaNw(), sigmaMx(), sigmaPos(),
+    sigmaNeg(), biasWt(), mHatMin(), mHatMax(), sHatMin(), sHatMax(),
+    pTHatMin(), pTHatMax(), pT2HatMin(), pT2HatMax(), x1H(), x2H(),
+    m3(), m4(), m5(), s3(), s4(), s5(), mHat(), sH(), tH(), uH(),
+    pAbs(), p2Abs(), pTH(), theta(), phi(), betaZ(), mH(), idResA(),
+    idResB(), mResA(), mResB(), GammaResA(), GammaResB(), tauResA(),
+    tauResB(), widResA(), widResB(), sameResMass(), useMirrorWeight(),
+    hasNegZ(), hasPosZ(), tau(), y(), z(), tauMin(), tauMax(), yMax(),
+    zMin(), zMax(), ratio34(), unity34(), zNeg(), zPos(), wtTau(),
+    wtY(), wtZ(), wt3Body(), runBW3H(), runBW4H(), runBW5H(),
+    intTau0(), intTau1(), intTau2(), intTau3(), intTau4(), intTau5(),
+    intTau6(), intY0(), intY12(), intY34(), intY56(), mTchan1(),
+    sTchan1(), mTchan2(), sTchan2(), frac3Flat(), frac3Pow1(),
+    frac3Pow2(), zNegMin(), zNegMax(), zPosMin(), zPosMax(), nTau(),
+    nY(), nZ(), tauCoef(), yCoef(), zCoef(), tauCoefSum(), yCoefSum(),
+    zCoefSum(), useBW(), useNarrowBW(), idMass(), mPeak(), sPeak(),
+    mWidth(), mMin(), mMax(), mw(), wmRat(), mLower(), mUpper(),
+    sLower(), sUpper(), fracFlatS(), fracFlatM(), fracInv(),
+    fracInv2(), atanLower(), atanUpper(), intBW(), intFlatS(),
+    intFlatM(), intInv(), intInv2(), doTopPair(), topThresholdModel(),
+    topThresholdWidth(), eThreshold(), m3Threshold(), m4Threshold() {}
 
   // Constants: could only be changed in the code itself.
   static const int    NMAXTRY, NTRY3BODY;
@@ -179,7 +184,8 @@ protected:
          increaseMaximum, hasQ2Min;
   int    gmZmodeGlobal;
   double mHatGlobalMin, mHatGlobalMax, pTHatGlobalMin, pTHatGlobalMax,
-         Q2GlobalMin, pTHatMinDiverge, minWidthBreitWigners, minWidthNarrowBW;
+         Q2GlobalMin, Q2GlobalMax, pTHatMinDiverge, minWidthBreitWigners,
+         minWidthNarrowBW;
 
   // Information on incoming beams.
   int    idA, idB, idAold, idBold, idAgm, idBgm;
@@ -258,6 +264,11 @@ protected:
          mLower[6], mUpper[6], sLower[6], sUpper[6], fracFlatS[6],
          fracFlatM[6], fracInv[6], fracInv2[6], atanLower[6], atanUpper[6],
          intBW[6], intFlatS[6], intFlatM[6], intInv[6], intInv2[6];
+
+  // Properties specific to top threshold enhancement.
+  bool   doTopPair;
+  int    topThresholdModel;
+  double topThresholdWidth, eThreshold, m3Threshold, m4Threshold;
 
   // Setup mass selection for one resonance at a time. Split in two parts.
   void   setupMass1(int iM);
@@ -651,12 +662,12 @@ class Rambo {
 
   // Rambo phase space generator. Generates nOut uniformly distributed
   // massless 4-vectors with sqrt(s) = eCM. Output in pOut.
-  double genPoint(double eCM,int nOut,vector<Vec4>& pOut);
+  double genPoint(double eCM, int nOut, vector<Vec4>& pOut);
 
   // Massive generalisation, weights NOT 1 anymore - literal implementation
   // of original RAMBO paper by Ellis, Kleiss and Stirling. Number of particles
   // determined from size of mIn vector.
-  double genPoint(double eCM,vector<double> mIn,vector<Vec4>& pOut);
+  double genPoint(double eCM, vector<double> mIn, vector<Vec4>& pOut);
 
  private:
 

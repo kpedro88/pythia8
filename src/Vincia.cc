@@ -172,13 +172,13 @@ bool Vincia::init(MergingPtr mrgPtrIn, MergingHooksPtr mrgHooksPtrIn,
 
   // Init FSR shower pointers and default settings, beyond those set
   // by the non-virtual TimeShower::initPtr().
-  timesPtr->initVinciaPtrs(&colour, spacePtr, &mecs,
+  timesPtr->initVinciaPtrs(&colour, spacePtr.get(), &mecs,
     &resolution, &vinCom, &vinWeights);
   timesPtr->setDiagnosticsPtr(diagnosticsPtr);
 
   // Init ISR shower pointers and default settings, beyond those set
   // by the non-virtual SpaceShower::initPtr().
-  spacePtr->initVinciaPtrs(&colour, timesPtr, &mecs,
+  spacePtr->initVinciaPtrs(&colour, timesPtr.get(), &mecs,
     &resolution, &vinCom, &vinWeights);
   spacePtr->setDiagnosticsPtr(diagnosticsPtr);
 

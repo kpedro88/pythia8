@@ -395,6 +395,143 @@ void Sigma2qqbar2qqbarNew::setIdColAcol() {
 
 //==========================================================================
 
+// TopThreshold.
+// Auxiliary class to Sigma2gg2QQbar and Sigma2qqbar2QQbar, which allows
+// simulation of top threshold enhancement factors according to
+// V. Fadin,  V. Khoze and T. Sjostrand, Z. Phys. C48 (1990) 613.
+
+//--------------------------------------------------------------------------
+
+// Initialization setup - read in necessary settings.
+
+void TopThreshold::setup( int topModelIn, double mtIn, double gammatIn,
+  double thrWidthIn, double singletFracIn, int alphasOrder,
+  double alphasValue) {
+
+  topModel    = topModelIn;
+  mt          = mtIn;
+  gammat      = gammatIn;
+  thrWidth    = thrWidthIn;
+  singletFrac = singletFracIn;
+  alphas.init( alphasValue, alphasOrder);
+
+}
+
+//--------------------------------------------------------------------------
+
+// Cross section enhancement factor.
+
+double TopThreshold::multiplySigmaBy( bool inInit, double mHat, double m3,
+  double m4, double eThr) {
+
+  // No rescaling where not defined.
+  if (topModel < 0 || topModel > 4) return 1.;
+
+  // Calculate key kinematics variables.
+  double mtAvg  = sqrt(0.5 * (m3*m3+m4*m4) - 0.25 * pow2((m3*m3-m4*m4)/mHat) );
+  double betaThr = sqrtpos( 1. - pow2(2. * mtAvg/mHat));
+
+  // alpha_strong value.
+  double q2Thr = pow2(eThr) + pow2(gammat);
+  double q2alp = mtAvg * sqrt(q2Thr);
+  alps         = alphas.alphaS(q2alp);
+
+  // Initial values.
+  double fAttr = 0., fRepu = 0.;
+
+  // Coulomb threshold factors for attractive (singlet) and repulsive (octet).
+  if (topModel != 3) {
+    double xAttr = (4. / 3.) * M_PI * alps / betaThr;
+    fAttr        =  betaThr * xAttr / (1. - exp(-xAttr));
+    double xRepu = (1. / 6.) * M_PI * alps / betaThr;
+    fRepu        = betaThr * xRepu / (exp(xRepu) - 1);
+  }
+
+  // Green's function factors for attractive (singlet) and repulsive (octet).
+  // Above threshold region transition to Coulomb.
+  if ((topModel == 2 || topModel == 4) && eThr > 0. && eThr < 2. * thrWidth) {
+    double damp = (eThr < thrWidth) ? 1. : 2. - eThr / thrWidth;
+    fAttr = (1. - damp) * fAttr + damp * imGreenSin( eThr, mtAvg);
+    fRepu = (1. - damp) * fRepu + damp * imGreenOct( eThr, mtAvg);
+  }
+
+  // Mirror Green's function contribution E < 0 to E > 0.
+  // Below threshold region transition to 0.
+  if (topModel == 3 && eThr > 0.  && eThr < 2. * thrWidth) {
+    double damp = (eThr < thrWidth) ? 1. : 2. - eThr / thrWidth;
+    fAttr = damp * imGreenSin( -eThr, mtAvg);
+    fRepu = damp * imGreenOct( -eThr, mtAvg);
+  }
+  // During initialization need to ensure that cross section does not vanish.
+  if (topModel == 3 && inInit) {
+    fAttr = max( fAttr, 0.2);
+    fRepu = max( fAttr, 0.2);
+  }
+
+  // Proper below-threshold contribution. Again transition to zero.
+  if (topModel == 4 && eThr < 0. && eThr > -2. * thrWidth) {
+    double damp = (eThr > -thrWidth) ? 1. : 2. + eThr / thrWidth;
+    fAttr = damp * imGreenSin( eThr, mtAvg);
+    fRepu = damp * imGreenOct( eThr, mtAvg);
+  }
+
+  // Mix of attractive and repulsive channels.
+  double facAR = singletFrac * fAttr + (1. - singletFrac) * fRepu;
+
+  // Since the threshold cross section contains a beta factor
+  // this must be removed in the final answer.
+  return facAR / betaThr;
+}
+
+//--------------------------------------------------------------------------
+
+// Imaginary part of Green's function for singlet state.
+
+double TopThreshold::imGreenSin(double eNow, double mtNow) {
+
+  // Basic expressions.
+  double ps   = (2. / 3.) * mtNow * alps;
+  double egrt = sqrt(eNow * eNow + gammat * gammat);
+  double p1   = sqrt( 0.5 * mtNow * (egrt - eNow));
+  double p2   = sqrt( 0.5 * mtNow * (egrt + eNow));
+
+  // Sum over resonance contributions.
+  double ressum = 0.;
+  for (int n = 1; n < 21; ++n)
+    ressum += (gammat * ps * n + p2 * (n*n * egrt + ps * ps / mtNow))
+    / ( pow4(n) * (pow2(eNow + ps * ps / (mtNow * n*n)) + gammat * gammat) );
+
+  // Combine with non-resonant terms and done.
+  return p2 / mtNow + (2. * ps / mtNow) * atan(p2 / p1)
+    + 2. * pow2(ps / mtNow) * ressum;
+
+}
+
+//--------------------------------------------------------------------------
+
+// Imaginary part of Green's function for octet state.
+
+double TopThreshold::imGreenOct(double eNow, double mtNow) {
+
+ // Basic expressions.
+  double p8   = - (1. / 12.) * mtNow * alps;
+  double egrt = sqrt(eNow * eNow + gammat * gammat);
+  double p1   = sqrt( 0.5 * mtNow * (egrt - eNow));
+  double p2   = sqrt( 0.5 * mtNow * (egrt + eNow));
+
+  // Sum over resonance contributions.
+  double ressum = 0.;
+  for (int n = 1; n < 21; ++n)
+    ressum += mtNow * p2 / (pow2(n * p1 - p8) + pow2(n * p2));
+
+  // Combine with non-resonant terms and done.
+  return p2 / mtNow + (2. * p8 / mtNow) * atan(p2 / p1)
+    + 2. * pow2(p8 / mtNow) * ressum;
+
+}
+
+//==========================================================================
+
 // Sigma2gg2QQbar class.
 // Cross section g g -> Q Qbar (Q = c, b or t).
 // Only provided for fixed m3 = m4 so do some gymnastics:
@@ -419,6 +556,19 @@ void Sigma2gg2QQbar::initProc() {
 
   // Secondary open width fraction.
   openFracPair = particleDataPtr->resOpenFrac(idNew, -idNew);
+
+  // Special top threshold enhancement modelling.
+  topModel             = (idNew == 6) ? mode("TopThreshold:model") : 0;
+  if (topModel > 0) {
+    double mt          = particleDataPtr->m0(6);
+    double gammat      = particleDataPtr->mWidth(6);
+    double thrWidth    = parm("TopThreshold:width");
+    ggSingletFrac      = parm("TopThreshold:ggSingletFrac");
+    int    alphasOrder = mode("TopThreshold:alphasOrder");
+    double alphasValue = parm("TopThreshold:alphasValue");
+    topThreshold.setup( topModel, mt, gammat, thrWidth, ggSingletFrac,
+      alphasOrder, alphasValue);
+  }
 
 }
 
@@ -448,6 +598,10 @@ void Sigma2gg2QQbar::sigmaKin() {
   // Answer.
   sigma = (M_PI / sH2) * pow2(alpS) * sigSum * openFracPair;
 
+  // Special top threshold enhancement.
+  if (topModel > 0) sigma *= topThreshold.multiplySigmaBy(
+    infoPtr->getInInit(), sqrt(sH), m3, m4, infoPtr->toponiumE);
+
 }
 
 //--------------------------------------------------------------------------
@@ -463,6 +617,10 @@ void Sigma2gg2QQbar::setIdColAcol() {
   double sigRand = sigSum * rndmPtr->flat();
   if (sigRand < sigTS) setColAcol( 1, 2, 2, 3, 1, 0, 0, 3);
   else                 setColAcol( 1, 2, 3, 1, 3, 0, 0, 2);
+
+  // Special ttbar singlet setup.
+  if (topModel > 0 && rndmPtr->flat() < ggSingletFrac)
+    setColAcol( 1, 2, 2, 1, 3, 0, 0, 3);
 
 }
 
@@ -507,6 +665,19 @@ void Sigma2qqbar2QQbar::initProc() {
   // Secondary open width fraction.
   openFracPair = particleDataPtr->resOpenFrac(idNew, -idNew);
 
+  // Special top threshold enhancement modelling.
+  topModel             = (idNew == 6) ? mode("TopThreshold:model") : 0;
+  if (topModel > 0) {
+    double mt          = particleDataPtr->m0(6);
+    double gammat      = particleDataPtr->mWidth(6);
+    double thrWidth    = parm("TopThreshold:width");
+    qqSingletFrac      = parm("TopThreshold:qqSingletFrac");
+    int    alphasOrder = mode("TopThreshold:alphasOrder");
+    double alphasValue = parm("TopThreshold:alphasValue");
+    topThreshold.setup( topModel, mt, gammat, thrWidth, qqSingletFrac,
+      alphasOrder, alphasValue);
+  }
+
 }
 
 //--------------------------------------------------------------------------
@@ -528,6 +699,10 @@ void Sigma2qqbar2QQbar::sigmaKin() {
   // Answer.
   sigma = (M_PI / sH2) * pow2(alpS) * sigS * openFracPair;
 
+  // Special top threshold enhancement.
+  if (topModel > 0) sigma *= topThreshold.multiplySigmaBy(
+    infoPtr->getInInit(), sqrt(sH), m3, m4, infoPtr->toponiumE);
+
 }
 
 //--------------------------------------------------------------------------
@@ -542,6 +717,9 @@ void Sigma2qqbar2QQbar::setIdColAcol() {
 
   // Colour flow topologies. Swap when antiquarks.
   setColAcol( 1, 0, 0, 2, 1, 0, 0, 2);
+  // Special ttbar singlet setup.
+  if (topModel > 0 && rndmPtr->flat() < qqSingletFrac)
+    setColAcol( 1, 0, 0, 1, 2, 0, 0, 2);
   if (id1 < 0) swapColAcol();
 
 }
@@ -559,7 +737,6 @@ double Sigma2qqbar2QQbar::weightDecay( Event& process, int iResBeg,
   else return 1.;
 
 }
-
 
 //==========================================================================
 

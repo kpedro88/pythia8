@@ -144,6 +144,7 @@ void bind_Pythia8_ParticleData(std::function< pybind11::module &(std::string con
 		cl.def("initBWmass", (void (Pythia8::ParticleDataEntry::*)()) &Pythia8::ParticleDataEntry::initBWmass, "C++: Pythia8::ParticleDataEntry::initBWmass() --> void");
 		cl.def("constituentMass", (double (Pythia8::ParticleDataEntry::*)() const) &Pythia8::ParticleDataEntry::constituentMass, "C++: Pythia8::ParticleDataEntry::constituentMass() const --> double");
 		cl.def("mSel", (double (Pythia8::ParticleDataEntry::*)() const) &Pythia8::ParticleDataEntry::mSel, "C++: Pythia8::ParticleDataEntry::mSel() const --> double");
+		cl.def("mSelInRange", (double (Pythia8::ParticleDataEntry::*)(double, double)) &Pythia8::ParticleDataEntry::mSelInRange, "C++: Pythia8::ParticleDataEntry::mSelInRange(double, double) --> double", pybind11::arg("mMinNow"), pybind11::arg("mMaxNow"));
 		cl.def("mRun", (double (Pythia8::ParticleDataEntry::*)(double) const) &Pythia8::ParticleDataEntry::mRun, "C++: Pythia8::ParticleDataEntry::mRun(double) const --> double", pybind11::arg("mH"));
 		cl.def("useBreitWigner", (bool (Pythia8::ParticleDataEntry::*)() const) &Pythia8::ParticleDataEntry::useBreitWigner, "C++: Pythia8::ParticleDataEntry::useBreitWigner() const --> bool");
 		cl.def("canDecay", (bool (Pythia8::ParticleDataEntry::*)() const) &Pythia8::ParticleDataEntry::canDecay, "C++: Pythia8::ParticleDataEntry::canDecay() const --> bool");

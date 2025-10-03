@@ -7,8 +7,12 @@
 <body>
  
 <h2>Parallelism</h2> 
+<ol id="toc">
+  <li><a href="#section0">Code Overview</a></li>
+  <li><a href="#section1">Parallelism and Plugins</a></li>
+</ol>
+
  
-<p/> 
 A large fraction of studies using <code>Pythia</code> follow the same 
 general steps: first the <code>Pythia</code> object(s) and histograms 
 are initialized. Then there is a loop where events are generated using 
@@ -31,7 +35,6 @@ and analyzes them using a used-defined callback function.  The program
 flow using the parallelism framework is as follows: 
  
 <ol> 
- 
 <li> 
 In addition to the standard header file, the parallel framework header 
 must be included. 
@@ -52,7 +55,6 @@ generator object. This process is identical to that for a standard
     pythia.init(); 
 </pre> 
 </li> 
- 
 <p/> 
 <li> 
 Finally, the <code>PythiaParallel</code> object is run with a user 
@@ -73,10 +75,11 @@ unfamiliar. It defines a <ie>lambda</ie> function that takes a pointer to a
 that all local variables used by the lambda function (in this case only the 
 <code>mult</code> histogram object) are passed by reference. 
 </li> 
- 
 </ol> 
  
-<p/> 
+<a name="section0"></a> 
+<h3>Code Overview</h3> 
+ 
 The scope of this class is to provide a lightweight way of 
 parallelising simple <code>Pythia</code> studies. As such, it may not 
 offer the necessary features to support more complicated use cases. 
@@ -238,6 +241,83 @@ same input settings. The advantage of this is that it can be significantly
 more efficient if the event generation time can vary significantly (e.g. as 
 it does in central vs. peripheral heavy ion collisions). 
    
+ 
+<a name="section1"></a> 
+<h3>Parallelism and Plugins</h3> 
+ 
+There are a number of Pythia base classes that can be passed as 
+external pointers to a <code>Pythia</code> instance, for example 
+<code>UserHooks</code>, which are then used by that instance of 
+Pythia. When working with the parallelism framework, the 
+<code>PythiaParallel::init</code> method can be used to set external 
+pointers per <code>Pythia</code> object. It is important to note that 
+this method is threaded, and so whatever code is provided must be 
+thread safe. This may not always be possible, in which case an 
+external <code>mutex</code> can be passed to 
+<code>PythiaParallel::init</code> by reference, locked when 
+necessary, and then unlocked. 
+ 
+<pre> 
+    mutex initMutex; 
+    pythia.init([&amp;initMutex](Pythia* pythiaPtr) { 
+      initMutex.lock(); 
+      // Thread unsafe code here. 
+      shared_ptr&lt;PowhegHooks&gt; powhegHooks = 
+        make_shared&lt;PowhegHooks&gt;(); 
+      initMutex.unlock() 
+      // Thread safe code here. 
+      pythiaPtr-&gt;setUserHooksPtr((UserHooksPtr)powhegHooks); 
+    }); 
+</pre> 
+In this example, the locking prevents the creation of the 
+<code>PowhegHooks</code> instances from being threaded (which actually 
+is not necessary). 
+ 
+A similar issue can arise when loading plugins via the 
+<code>Init:plugins</code> setting. Here, Pythia will automatically 
+create a new plugin instance per thread, but again, if the plugin 
+itself is not thread safe this can cause issues. To overcome this issue, 
+every <code>PhysicsBase</code> object has a <code>mutexPtr</code>, 
+corresponding to the top-level <code>PythiaParallel</code> object. 
+Whenever this mutex is locked, then the subsequent code is not threaded. 
+<pre> 
+    mutexPtr->lock(); 
+    // Thread unsafe code can be written here. 
+    mutexPtr->unlock(); 
+    // Thread safe code can be written here. 
+</pre> 
+This can be used within any method of a <code>PhysicsBase</code> derived 
+class. All classes that can be passed to a <code>Pythia</code> instance by 
+external pointer are derived from <code>PhysicsBase</code>. By default, 
+plugins are assumed to not be thread safe unless the macro 
+<code>PYTHIA8_PLUGIN_PARALLEL(true)</code> is explicitly set. See 
+<a href="Plugins.html" target="page">Plugins</a> for more details. 
+ 
+Finally, for plugins, it may be useful to combine the output of the 
+threads together again. This can be accomplished via the 
+<code>PythiaParallel::stat(bool combine)</code> method. If 
+<code>combine = true</code>, then the following method is called for 
+the first instance of the plugin. 
+<pre> 
+    void onStat(vector&lt;PhysicsBase*&gt; pluginPtrs, Pythia* pythiaPtrIn) { 
+      // Loop over the plugin from each thread. 
+      for (PhysicsBase* pluginPtr : pluginPtrs) { 
+        // Skip the plugin that this method was called for. 
+        if (pluginPtr == this) continue; 
+        // Access all other plugins. 
+        PluginClass* pluginNow = dynamic_cast&lt;PluginClass*&gt;(pluginPtr); 
+        // Perform whatever merging is necessary here. 
+      } 
+      // Call onStat for this plugin instance. 
+      onStat(); 
+    } 
+</pre> 
+Here, <code>pluginPtrs</code> is a vector of the plugin pointer from 
+each thread. Each of these plugin pointers then needs to be recast 
+back to the plugin class. Finally, the <code>onStat()</code> for this 
+instance of the plugin should be called. This ensures that the 
+<code>onStat</code> behaviour is the same between a single 
+<code>Pythia</code> instance, and <code>PythiaParallel</code>. 
  
 </body>
 </html>

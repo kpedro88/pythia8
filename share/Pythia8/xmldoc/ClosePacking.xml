@@ -1,6 +1,6 @@
-<chapter name="Close-packing"> 
+<chapter name="Close-Packing"> 
  
-<h2>Close-packing</h2> 
+<h2>Close-Packing</h2> 
  
 <p> 
 If strings are closely packed, e.g. as a consequence of MPIs, it is 

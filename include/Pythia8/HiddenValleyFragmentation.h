@@ -171,7 +171,7 @@ private:
   // The generator class for special low-mass HV string fragmentation.
   MiniStringFragmentation hvMinistringFrag;
 
-  // Pointers to classes for flavour, pT and z generation in HV sector.
+  // Classes for flavour, pT and z generation in HV sector.
   HVStringFlav hvFlavSel;
   HVStringPT   hvPTSel;
   HVStringZ    hvZSel;

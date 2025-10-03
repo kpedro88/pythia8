@@ -6,7 +6,7 @@
 // Authors: Marius Utheim
 //          Peter Skands <peter.skands@monash.edu>
 
-// Keywords: Vincia; Dire; parallelism
+// Keywords: Vincia; parallelism
 
 // This is a simple test program to compare Pythia and Vincia on
 // inclusive jet rates at the LHC, for a sample with pThat > 100 GeV.

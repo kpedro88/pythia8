@@ -272,8 +272,7 @@ pair<Vec4, Vec4> Rndm::phaseSpace2(double eCM, double m1, double m2) {
 bool Rndm::dumpState(string fileName) {
 
   // Open file as output stream.
-  const char* fn = fileName.c_str();
-  ofstream ofs(fn, ios::binary);
+  ofstream ofs(fileName.c_str(), ios::binary);
 
   if (!ofs.good()) {
     cout << " Rndm::dumpState: could not open output file" << endl;
@@ -1225,9 +1224,10 @@ void Hist::null() {
 
 //--------------------------------------------------------------------------
 
-// Fill bin with weight.
+// Fill bin with weight w and uncertainty sig.
+// For sig < 0, sig -> (-sig) * w.
 
-void Hist::fill(double x, double w) {
+void Hist::fill(double x, double w, double sig) {
 
   if (!isfinite(x) || !isfinite(w)) {nNonFinite += 1; return;}
 
@@ -1240,7 +1240,9 @@ void Hist::fill(double x, double w) {
   else if (iBin >= nBin) over  += w;
   else {
     res[iBin]  += w;
-    res2[iBin] += w * w;
+    double err2 = sig * sig;
+    if (sig < 0.) err2 *= w * w;
+    res2[iBin] += err2;
     inside     += w;
     sumxNw[0]  += w;
     sumxNw[1]  += x * w;
@@ -1539,6 +1541,60 @@ void Hist::table(ostream& os, bool printOverUnder, bool xMidBin,
 
 //--------------------------------------------------------------------------
 
+// Print histogram contents as a table, in Yoda's *.yoda style.
+
+void Hist::yodaTable(ostream& os, string path, double scaledBy,
+  vector<int> maskedBins) const {
+
+  // Print the header to the table.
+  os << "BEGIN YODA_ESTIMATE1D_V3 /" + path + "\n"
+     << "Path: /" + path + "\n"
+     << "ScaledBy: " << scientific << setprecision(17) << scaledBy << "\n"
+     << "Title: " + titleSave + "\n"
+     << "Type: Estimate1D\n"
+     << "---\n";
+
+  // Print the edges.
+  os << "Edges(A1): [" << scientific << setprecision(6);
+  bool first = true;
+  for (double edge : getBinEdges()) {
+    if (!first) os << ", ";
+    else first = false;
+    os << edge;
+  }
+  os << "]\n";
+
+  // Print the masked bins and error labels.
+  os << "MaskedBins: [" << fixed << setprecision(1);
+  first = true;
+  for (int bin : maskedBins) {
+    if (!first) os << ", ";
+    else first = false;
+    os << bin;
+  }
+  os << "]\n"
+     << "ErrorLabels: [\"stats\"]\n";
+
+  // Print the values.
+  os << "# value         errDn(1)        errUp(1)        \n";
+  int w = 16;
+  double err = sqrtpos(under);
+  os << scientific << setprecision(6) << left
+     << setw(w) << under << setw(w) << -err << setw(w) << err << "\n";
+  for (int ix = 0; ix < nBin; ++ix) {
+    err = sqrtpos(res2[ix]);
+    os << setw(w) << res[ix] << setw(w) << -err << setw(w) << err << "\n";
+  }
+  err = sqrtpos(over);
+  os << setw(w) << over << setw(w) << -err << setw(w) << err << "\n";
+
+  // Print end tag.
+  os << "END YODA_ESTIMATE1D_V3\n";
+
+}
+
+//--------------------------------------------------------------------------
+
 // Print histogram contents as a table, in Rivet's *.dat style.
 
 void Hist::rivetTable(ostream& os, bool printError) const {
@@ -1665,12 +1721,16 @@ double Hist::getXMean(bool unbinned) const {
 
 //--------------------------------------------------------------------------
 
-// Compute median in X (with linear interpolation inside median bin).
+// Compute n'th percentile in X (with linear interpolation inside bin).
+// Input n is interpreted as a percentage,
+// e.g., for 90th percentile, use n = 90.0.
 // Note: absolute values of weights are used.
 
-double Hist::getXMedian(bool includeOverUnder) const {
+double Hist::getXPercentile(double n, bool includeOverUnder) const {
   double wtSumNow = 0.;
   double wtSumTot = 0.;
+  double fraction = n / 100.;
+
   for (int ix = 0; ix < nBin ; ++ix) {
     wtSumTot += abs(res[ix]);
   }
@@ -1679,14 +1739,14 @@ double Hist::getXMedian(bool includeOverUnder) const {
     wtSumTot += abs(over) + abs(under);
     wtSumNow = abs(under);
     // If excess bins contain more than half, return low or high edge.
-    if (abs(under) > 0.5 * wtSumTot) return xMin;
-    else if (abs(over) > 0.5 * wtSumTot) return xMax;
+    if (abs(under) > fraction * wtSumTot) return xMin;
+    else if (abs(over) > fraction * wtSumTot) return xMax;
   }
   for (int ix = 0; ix < nBin ; ++ix) {
     double wtSumOld = wtSumNow;
     wtSumNow += abs(res[ix]);
-    if (wtSumNow > 0.5 * wtSumTot) {
-      double frac = (0.5*wtSumTot - wtSumOld)/(wtSumNow - wtSumOld);
+    if (wtSumNow > fraction * wtSumTot) {
+      double frac = (fraction*wtSumTot - wtSumOld)/(wtSumNow - wtSumOld);
       return (linX) ? xMin + (ix + frac) * dx
                     : xMin * pow( 10., (ix + frac) * dx);
     }
@@ -1877,6 +1937,30 @@ double Hist::getBinContent(int iBin) const {
 
 }
 
+//--------------------------------------------------------------------------
+
+// Get statistical uncertainty of the bin.
+
+double Hist::getBinError(int iBin) const {
+
+  if (iBin > 0 && iBin <= nBin) return sqrtpos(res2[iBin - 1]);
+  else return 0.;
+
+}
+
+//--------------------------------------------------------------------------
+
+// Get squared statistical uncertainty of the bin.
+
+double Hist::getBinError2(int iBin) const {
+
+  if (iBin > 0 && iBin <= nBin) return res2[iBin - 1];
+  else return 0.;
+
+}
+
+//--------------------------------------------------------------------------
+
 // Return the lower edge of the bin.
 
 double Hist::getBinEdge(int iBin) const {
@@ -1886,6 +1970,8 @@ double Hist::getBinEdge(int iBin) const {
   else return numeric_limits<double>::quiet_NaN();
 
 }
+
+//--------------------------------------------------------------------------
 
 // Return the width of the bin.
 
@@ -1899,15 +1985,54 @@ double Hist::getBinWidth(int iBin) const {
 
 //--------------------------------------------------------------------------
 
-// Return bin contents and edges.
+// Return the center of the bin.
+
+double Hist::getBinCenter(int iBin) const {
+
+  if (iBin > 0 && iBin <= nBin + 1)
+    return linX ? xMin + (iBin - 0.5) * dx :
+      xMin * pow(10., (iBin - 0.5) * dx);
+  else return numeric_limits<double>::quiet_NaN();
+
+}
+
+//--------------------------------------------------------------------------
+
+// Return bin contents, sum of squares, and edges.
 
 vector<double> Hist::getBinContents() const {return res;}
+
+vector<double> Hist::getBinErrors() const {
+
+  vector<double> errors(nBin + 1);
+  for (int ix = 0; ix <= nBin; ++ix) errors[ix] = getBinError(ix + 1);
+  return errors;
+
+}
+
+vector<double> Hist::getBinError2s() const {return res2;}
 
 vector<double> Hist::getBinEdges() const {
 
   vector<double> edges(nBin + 1);
   for (int ix = 0; ix <= nBin; ++ix) edges[ix] = getBinEdge(ix + 1);
   return edges;
+
+}
+
+vector<double> Hist::getBinWidths() const {
+
+  vector<double> widths(nBin + 1);
+  for (int ix = 0; ix <= nBin; ++ix) widths[ix] = getBinWidth(ix + 1);
+  return widths;
+
+}
+
+vector<double> Hist::getBinCenters() const {
+
+  vector<double> centers(nBin + 1);
+  for (int ix = 0; ix <= nBin; ++ix) centers[ix] = getBinCenter(ix + 1);
+  return centers;
 
 }
 

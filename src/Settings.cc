@@ -538,7 +538,7 @@ bool Settings::readString(string line, bool warn, int subrun) {
       subrunNow = value;
       if (subrun != subrunNow) return true;
     }
-    if (!mode(name, value, force)) {
+    if (!mode(name, value, force, subrun)) {
       if (warn) cout << "\n PYTHIA Error: variable recognized, but its value"
         << " is out of range:\n   " << line << endl;
       readingFailedSave = true;
@@ -724,7 +724,8 @@ bool Settings::readFile(istream& is, bool warn, int subrun) {
   while (getline(is, line)) {
 
     // Check whether entering, leaving or inside commented-commands section.
-    int    pos = line.find_first_not_of(" \n\t\v\b\r\f\a");
+    size_t pos = line.find_first_not_of(" \n\t\v\b\r\f\a");
+    if (pos == string::npos) continue;
     string sub = line.length() - pos > 2 ? line.substr(pos, 2) : "";
     if      (sub == "/*") isCommented = true;
     else if (sub == "*/") isCommented = false;
@@ -754,6 +755,17 @@ bool Settings::registerPluginLibrary(string libName, string startFile) {
   if (startFile == "") {
     auto xmlIndex = dlsym_plugin<const char*()>(libPtr, "RETURN_XML");
     if (dlerror() == nullptr) startFile = xmlIndex();
+  }
+
+  // Check if plugin is compatible with PythiaParallel.
+  if (mode("Parallelism:index") >= 0) {
+    bool allowed = false;
+    auto parallel = dlsym_plugin<bool()>(libPtr, "CHECK_PARALLEL");
+    if (dlerror() == nullptr) allowed = parallel();
+    if (!allowed) {
+      loggerPtr->ERROR_MSG(libName + " not available for parallel running");
+      return false;
+    }
   }
 
   // Find the path to the XML, first PYTHIA8CONTRIB, then Pythia XML path.
@@ -788,8 +800,7 @@ bool Settings::registerPluginLibrary(string libName, string startFile) {
 bool Settings::writeFile(string toFile, bool writeAll) {
 
   // Open file for writing.
-  const char* cstring = toFile.c_str();
-  ofstream os(cstring);
+  ofstream os(toFile.c_str());
   if (!os) {
     loggerPtr->ERROR_MSG("could not open file", toFile);
     return false;
@@ -1812,7 +1823,7 @@ void Settings::flag(string keyIn, bool nowIn, bool force) {
   if (keyLower == "print:quiet") printQuiet( nowIn);
 }
 
-bool Settings::mode(string keyIn, int nowIn, bool force) {
+bool Settings::mode(string keyIn, int nowIn, bool force, int subrun) {
   if (isMode(keyIn)) {
     string keyLower = toLower(keyIn);
     Mode& modeNow = modes[keyLower];
@@ -1824,9 +1835,9 @@ bool Settings::mode(string keyIn, int nowIn, bool force) {
     }
     else modeNow.valNow = nowIn;
     // Tunes each trigger a whole set of changes.
-    if (keyLower == "tune:ee") initTuneEE(modeNow.valNow);
-    if (keyLower == "tune:pp") initTunePP(modeNow.valNow);
-    if (keyLower == "vincia:tune") initTuneVincia(modeNow.valNow);
+    if (keyLower == "tune:ee") initTuneEE(modeNow.valNow, subrun);
+    if (keyLower == "tune:pp") initTunePP(modeNow.valNow, subrun);
+    if (keyLower == "vincia:tune") initTuneVincia(modeNow.valNow, subrun);
   }
   else if (force)
     addMode(keyIn, nowIn, false, false, 0, 0);
@@ -2054,14 +2065,13 @@ void Settings::printQuiet(bool quiet) {
 // Set the values related to a tune of e+e- data,
 // i.e. mainly for final-state radiation and hadronization.
 
-void Settings::initTuneEE(int eeTune) {
-
+void Settings::initTuneEE(int eeTune, int subrun) {
   // Map the tune files to integer values.
   vector<string> tunes = {
     "Reset-ee", "", "OldJETSET", "Montull2007", "Hoeth2009", "Skands2013",
     "Fischer2013-1", "Fischer2013-2", "Monash2013-ee"};
   if (eeTune + 1 < (int)tunes.size() && tunes[eeTune + 1] != "")
-    readString("include = tunes/" + tunes[eeTune + 1] + ".cmnd", true);
+    readString("include = tunes/" + tunes[eeTune + 1] + ".cmnd", true, subrun);
 
 }
 
@@ -2070,7 +2080,7 @@ void Settings::initTuneEE(int eeTune) {
 // Set the values related to a tune of pp/ppbar data,
 // i.e. mainly for initial-state radiation and multiparton interactions.
 
-void Settings::initTunePP(int ppTune) {
+void Settings::initTunePP(int ppTune, int subrun) {
 
   // Map the tune files to integer values.
   vector<string> tunes = {
@@ -2083,9 +2093,9 @@ void Settings::initTunePP(int ppTune) {
     "ATLAS-A14-NNPDF23LO", "ATLAS-A14-HERAPDF15LO", "ATLAS-A14-v+1",
     "ATLAS-A14-v-1", "ATLAS-A14-v+2", "ATLAS-A14-v-2", "ATLAS-A14-v+3a",
     "ATLAS-A14-v-3a", "ATLAS-A14-v+3b", "ATLAS-A14-v-3b", "ATLAS-A14-v+3c",
-    "ATLAS-A14-v-3c"};
+    "ATLAS-A14-v-3c", "Detroit2021"};
   if (ppTune + 1 < (int)tunes.size() && tunes[ppTune + 1] != "")
-    readString("include = tunes/" + tunes[ppTune + 1] + ".cmnd", true);
+    readString("include = tunes/" + tunes[ppTune + 1] + ".cmnd", true, subrun);
 
 }
 
@@ -2093,11 +2103,11 @@ void Settings::initTunePP(int ppTune) {
 
 // Set the values related to a tune of Vincia.
 
-void Settings::initTuneVincia(int vinciaTune) {
+void Settings::initTuneVincia(int vinciaTune, int subrun) {
 
   // Currently only a single tune.
   if (vinciaTune == 0)
-    readString("include = tunes/VinciaDefault.cmnd", true);
+    readString("include = tunes/VinciaDefault.cmnd", true, subrun);
 
 }
 

@@ -310,6 +310,7 @@ public:
   void   initBWmass();
   double constituentMass()        const { return constituentMassSave; }
   double mSel()                   const;
+  double mSelInRange( double mMinNow, double mMaxNow);
   double mRun(double mH)          const;
 
   // Give back other quantities.
@@ -729,6 +730,9 @@ public:
   double mSel(int idIn) const {
     const ParticleDataEntryPtr ptr = findParticle(idIn);
     return ( ptr ) ? ptr->mSel() : 0. ; }
+  double mSelInRange(int idIn, double mMinNow, double mMaxNow) const {
+    const ParticleDataEntryPtr ptr = findParticle(idIn);
+    return ( ptr ) ? ptr->mSelInRange( mMinNow, mMaxNow) : 0. ; }
   double mRun(int idIn, double mH) const {
     const ParticleDataEntryPtr ptr = findParticle(idIn);
     return ( ptr ) ? ptr->mRun(mH) : 0. ; }

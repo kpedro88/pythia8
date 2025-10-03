@@ -7,10 +7,10 @@
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8/ColourReconnection.h"
-#include "Pythia8/Dire.h"
 #include "Pythia8/HeavyIons.h"
 #include "Pythia8/History.h"
 #include "Pythia8/StringInteractions.h"
+#include "Pythia8/ThermalFragmentation.h"
 #include "Pythia8/Vincia.h"
 #include "Pythia8/Plugins.h"
 
@@ -24,7 +24,7 @@ namespace Pythia8 {
 
 // The current Pythia (sub)version number, to agree with XML version.
 const double Pythia::VERSIONNUMBERHEAD = PYTHIA_VERSION;
-const double Pythia::VERSIONNUMBERCODE = 8.315;
+const double Pythia::VERSIONNUMBERCODE = 8.316;
 
 //--------------------------------------------------------------------------
 
@@ -99,9 +99,12 @@ Pythia::Pythia(Settings& settingsIn, ParticleData& particleDataIn,
   // Copy XML path from existing Settings database.
   xmlPath = settingsIn.word("xmlPath");
 
+  // Copy particleData database.
+  particleData = particleDataIn;
+
   // Copy settings database and redirect pointers.
   settings = settingsIn;
-  settings.initPtrs(&logger, &particleDataIn, &particleDataBuffer);
+  settings.initPtrs(&logger, &particleData, &particleDataBuffer);
   isConstructed = settings.getIsInit();
   if (!isConstructed) {
     logger.ABORT_MSG("settings unavailable");
@@ -111,8 +114,7 @@ Pythia::Pythia(Settings& settingsIn, ParticleData& particleDataIn,
   // Check XML and header version numbers match code version number.
   if (!checkVersion()) return;
 
-  // Copy particleData database and redirect pointers.
-  particleData = particleDataIn;
+  // Redirect pointers in particleData.
   particleData.initPtrs( &infoPrivate);
   isConstructed = particleData.getIsInit();
   if (!isConstructed) {
@@ -180,6 +182,7 @@ void Pythia::initPtrs() {
   infoPrivate.setPtrs( &settings, &particleData, &logger, &rndm, &beamSetup,
     &coupSM, &coupSUSY, &partonSystems, &sigmaTot, &sigmaCmb,
     &hadronWidths, &weightContainer);
+  infoPrivate.mutexPtr = &mainMutex;
   registerPhysicsBase(processLevel);
   registerPhysicsBase(partonLevel);
   registerPhysicsBase(trialPartonLevel);
@@ -192,13 +195,25 @@ void Pythia::initPtrs() {
   registerPhysicsBase(junctionSplitting);
   registerPhysicsBase(beamSetup);
 
+}
+
+//--------------------------------------------------------------------------
+
+// Initialise new Pythia fragmentation objects (after settings have been read).
+
+void Pythia::initFragPtrs() {
+
   // Create the fragmentation model pointers (register the
   // fragmentation model vector after user interactions).
   rHadronsPtr = make_shared<RHadrons>();
   fragPtr = make_shared<LundFragmentation>();
   registerPhysicsBase(*rHadronsPtr);
   registerPhysicsBase(*fragPtr);
-  fragPtrs = {make_shared<HiddenValleyFragmentation>(), rHadronsPtr, fragPtr};
+  FragmentationModelPtr mainFragPtr = fragPtr;
+  if (settings.mode("Fragmentation:model") == 1)
+    mainFragPtr = make_shared<ThermalFragmentation>();
+  fragPtrs = {make_shared<HiddenValleyFragmentation>(), rHadronsPtr,
+              mainFragPtr};
 
 }
 
@@ -413,12 +428,18 @@ bool Pythia::init() {
     return false;
   }
 
+  // Set info that we are in the initialization stage.
+  infoPrivate.setInInit(true);
+
   // Check if this is the first call to init.
   if (isInit)
     logger.WARNING_MSG("be aware that successive "
       "calls to init() do not clear previous settings");
-  // Only create plugins the first time.
-  else initPlugins();
+  // Only create fragmentation models and plugins the first time.
+  else {
+    initFragPtrs();
+    initPlugins();
+  }
   isInit = false;
 
   // Early catching of heavy ion mode.
@@ -551,6 +572,18 @@ bool Pythia::init() {
 
   if ( userHooksPtr ) {
     infoPrivate.userHooksPtr = userHooksPtr;
+
+    // Register the individual user hooks so that when PythiaParallel
+    // calls onStat, it has access to them all. This should be migrated
+    // to UserHooksVector::onStat.
+    shared_ptr<UserHooksVector> uhv =
+      dynamic_pointer_cast<UserHooksVector>(userHooksPtr);
+    if ( uhv ) {
+      for (shared_ptr<UserHooks>& uhp : uhv->hooks)
+        registerPhysicsBase(*uhp);
+    }
+
+    // Register the vector itself.
     registerPhysicsBase(*userHooksPtr);
     pushInfo();
     if (!userHooksPtr->initAfterBeams()) {
@@ -699,7 +732,6 @@ bool Pythia::init() {
   // Set up and initialize the ShowerModel (if not provided by user).
   if ( !showerModelPtr ) {
     if ( showerModel == 2 ) showerModelPtr = make_shared<Vincia>();
-    else if (showerModel == 3 ) showerModelPtr = make_shared<Dire>();
     else showerModelPtr = make_shared<SimpleShowerModel>();
   }
 
@@ -794,7 +826,6 @@ bool Pythia::init() {
     string message = "Fail to initialize ";
     if      (showerModel==1) message += "default";
     else if (showerModel==2) message += "Vincia";
-    else if (showerModel==3) message += "Dire";
     message += " shower.";
     logger.ABORT_MSG(message);
     return false;
@@ -951,6 +982,12 @@ bool Pythia::next(int procType) {
     endEvent(PhysicsBase::INIT_FAILED);
     return false;
   }
+
+  // Set info that we are no longer in the initialization stage.
+  infoPrivate.setInInit(false);
+
+  // Save the random state for debugging purposes.
+  infoPrivate.currentEventRndmState = rndm.getState();
 
   // Flexible-use call at the beginning of each new event.
   beginEvent();
@@ -1421,20 +1458,6 @@ void Pythia::endEvent(PhysicsBase::Status status) {
   // Loop through all PhysicsBase-derived objects.
   for ( auto physicsPtr : physicsPtrs ) physicsPtr->endEvent(status);
 
-  // Update the event weight by the Dire shower weight when relevant.
-  // Code to be moved to the Dire endEvent method.
-  /*
-  if (useNewDire) {
-    // Retrieve the shower weight.
-    direPtr->weightsPtr->calcWeight(0.);
-    direPtr->weightsPtr->reset();
-    double pswt = direPtr->weightsPtr->getShowerWeight();
-    // Multiply the shower weight to the event weight.
-    double wt = infoPrivate.weight();
-    infoPrivate.updateWeight(wt * pswt);
-  }
-  */
-
   // Done.
   return;
 
@@ -1669,6 +1692,7 @@ void Pythia::stat() {
 
   if ( doHeavyIons ) {
     heavyIonsPtr->stat();
+    for ( auto physicsPtr : physicsPtrs ) physicsPtr->stat();
     return;
   }
 

@@ -1,7 +1,49 @@
+#include <Pythia8/Basics.h>
+#include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
+#include <Pythia8/FragmentationModel.h>
 #include <Pythia8/GammaKinematics.h>
+#include <Pythia8/HIInfo.h>
+#include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
+#include <Pythia8/Info.h>
+#include <Pythia8/LHEF3.h>
+#include <Pythia8/LesHouches.h>
+#include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
+#include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
+#include <Pythia8/PartonDistributions.h>
+#include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
+#include <Pythia8/ResonanceWidths.h>
+#include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
+#include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
+#include <Pythia8/SigmaTotal.h>
+#include <Pythia8/StandardModel.h>
+#include <Pythia8/SusyCouplings.h>
+#include <Pythia8/UserHooks.h>
+#include <Pythia8/Weights.h>
+#include <cwchar>
+#include <functional>
+#include <ios>
+#include <istream>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <sstream>
 #include <sstream> // __str__
+#include <streambuf>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 #include <functional>
@@ -22,7 +64,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
 #endif
 
-// Pythia8::PhaseSpace2to1tauy file:Pythia8/PhaseSpace.h line:299
+// Pythia8::PhaseSpace2to1tauy file:Pythia8/PhaseSpace.h line:310
 struct PyCallBack_Pythia8_PhaseSpace2to1tauy : public Pythia8::PhaseSpace2to1tauy {
 	using Pythia8::PhaseSpace2to1tauy::PhaseSpace2to1tauy;
 
@@ -195,9 +237,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to1tauy : public Pythia8::PhaseSpace2to1tau
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to1tauy *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to2tauyz file:Pythia8/PhaseSpace.h line:328
+// Pythia8::PhaseSpace2to2tauyz file:Pythia8/PhaseSpace.h line:339
 struct PyCallBack_Pythia8_PhaseSpace2to2tauyz : public Pythia8::PhaseSpace2to2tauyz {
 	using Pythia8::PhaseSpace2to2tauyz::PhaseSpace2to2tauyz;
 
@@ -370,9 +425,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to2tauyz : public Pythia8::PhaseSpace2to2ta
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to2tauyz *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to2elastic file:Pythia8/PhaseSpace.h line:376
+// Pythia8::PhaseSpace2to2elastic file:Pythia8/PhaseSpace.h line:387
 struct PyCallBack_Pythia8_PhaseSpace2to2elastic : public Pythia8::PhaseSpace2to2elastic {
 	using Pythia8::PhaseSpace2to2elastic::PhaseSpace2to2elastic;
 
@@ -545,9 +613,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to2elastic : public Pythia8::PhaseSpace2to2
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to2elastic *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to2diffractive file:Pythia8/PhaseSpace.h line:412
+// Pythia8::PhaseSpace2to2diffractive file:Pythia8/PhaseSpace.h line:423
 struct PyCallBack_Pythia8_PhaseSpace2to2diffractive : public Pythia8::PhaseSpace2to2diffractive {
 	using Pythia8::PhaseSpace2to2diffractive::PhaseSpace2to2diffractive;
 
@@ -720,9 +801,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to2diffractive : public Pythia8::PhaseSpace
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to2diffractive *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to3diffractive file:Pythia8/PhaseSpace.h line:459
+// Pythia8::PhaseSpace2to3diffractive file:Pythia8/PhaseSpace.h line:470
 struct PyCallBack_Pythia8_PhaseSpace2to3diffractive : public Pythia8::PhaseSpace2to3diffractive {
 	using Pythia8::PhaseSpace2to3diffractive::PhaseSpace2to3diffractive;
 
@@ -895,9 +989,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to3diffractive : public Pythia8::PhaseSpace
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to3diffractive *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to2nondiffractive file:Pythia8/PhaseSpace.h line:495
+// Pythia8::PhaseSpace2to2nondiffractive file:Pythia8/PhaseSpace.h line:506
 struct PyCallBack_Pythia8_PhaseSpace2to2nondiffractive : public Pythia8::PhaseSpace2to2nondiffractive {
 	using Pythia8::PhaseSpace2to2nondiffractive::PhaseSpace2to2nondiffractive;
 
@@ -1070,9 +1177,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to2nondiffractive : public Pythia8::PhaseSp
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to2nondiffractive *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to3tauycyl file:Pythia8/PhaseSpace.h line:520
+// Pythia8::PhaseSpace2to3tauycyl file:Pythia8/PhaseSpace.h line:531
 struct PyCallBack_Pythia8_PhaseSpace2to3tauycyl : public Pythia8::PhaseSpace2to3tauycyl {
 	using Pythia8::PhaseSpace2to3tauycyl::PhaseSpace2to3tauycyl;
 
@@ -1245,9 +1365,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to3tauycyl : public Pythia8::PhaseSpace2to3
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to3tauycyl *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpace2to3yyycyl file:Pythia8/PhaseSpace.h line:558
+// Pythia8::PhaseSpace2to3yyycyl file:Pythia8/PhaseSpace.h line:569
 struct PyCallBack_Pythia8_PhaseSpace2to3yyycyl : public Pythia8::PhaseSpace2to3yyycyl {
 	using Pythia8::PhaseSpace2to3yyycyl::PhaseSpace2to3yyycyl;
 
@@ -1420,9 +1553,22 @@ struct PyCallBack_Pythia8_PhaseSpace2to3yyycyl : public Pythia8::PhaseSpace2to3y
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace2to3yyycyl *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
-// Pythia8::PhaseSpaceLHA file:Pythia8/PhaseSpace.h line:594
+// Pythia8::PhaseSpaceLHA file:Pythia8/PhaseSpace.h line:605
 struct PyCallBack_Pythia8_PhaseSpaceLHA : public Pythia8::PhaseSpaceLHA {
 	using Pythia8::PhaseSpaceLHA::PhaseSpaceLHA;
 
@@ -1595,11 +1741,24 @@ struct PyCallBack_Pythia8_PhaseSpaceLHA : public Pythia8::PhaseSpaceLHA {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpaceLHA *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // Pythia8::PhaseSpace2to1tauy file:Pythia8/PhaseSpace.h line:299
+	{ // Pythia8::PhaseSpace2to1tauy file:Pythia8/PhaseSpace.h line:310
 		pybind11::class_<Pythia8::PhaseSpace2to1tauy, std::shared_ptr<Pythia8::PhaseSpace2to1tauy>, PyCallBack_Pythia8_PhaseSpace2to1tauy, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to1tauy", "");
 		pybind11::handle cl_type = cl;
 
@@ -1611,7 +1770,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("finalKin", (bool (Pythia8::PhaseSpace2to1tauy::*)()) &Pythia8::PhaseSpace2to1tauy::finalKin, "C++: Pythia8::PhaseSpace2to1tauy::finalKin() --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to1tauy & (Pythia8::PhaseSpace2to1tauy::*)(const class Pythia8::PhaseSpace2to1tauy &)) &Pythia8::PhaseSpace2to1tauy::operator=, "C++: Pythia8::PhaseSpace2to1tauy::operator=(const class Pythia8::PhaseSpace2to1tauy &) --> class Pythia8::PhaseSpace2to1tauy &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to2tauyz file:Pythia8/PhaseSpace.h line:328
+	{ // Pythia8::PhaseSpace2to2tauyz file:Pythia8/PhaseSpace.h line:339
 		pybind11::class_<Pythia8::PhaseSpace2to2tauyz, std::shared_ptr<Pythia8::PhaseSpace2to2tauyz>, PyCallBack_Pythia8_PhaseSpace2to2tauyz, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to2tauyz", "");
 		pybind11::handle cl_type = cl;
 
@@ -1626,7 +1785,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("weightGammaPDFApprox", (double (Pythia8::PhaseSpace2to2tauyz::*)()) &Pythia8::PhaseSpace2to2tauyz::weightGammaPDFApprox, "C++: Pythia8::PhaseSpace2to2tauyz::weightGammaPDFApprox() --> double");
 		cl.def("assign", (class Pythia8::PhaseSpace2to2tauyz & (Pythia8::PhaseSpace2to2tauyz::*)(const class Pythia8::PhaseSpace2to2tauyz &)) &Pythia8::PhaseSpace2to2tauyz::operator=, "C++: Pythia8::PhaseSpace2to2tauyz::operator=(const class Pythia8::PhaseSpace2to2tauyz &) --> class Pythia8::PhaseSpace2to2tauyz &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to2elastic file:Pythia8/PhaseSpace.h line:376
+	{ // Pythia8::PhaseSpace2to2elastic file:Pythia8/PhaseSpace.h line:387
 		pybind11::class_<Pythia8::PhaseSpace2to2elastic, std::shared_ptr<Pythia8::PhaseSpace2to2elastic>, PyCallBack_Pythia8_PhaseSpace2to2elastic, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to2elastic", "");
 		pybind11::handle cl_type = cl;
 
@@ -1639,7 +1798,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("isResolved", (bool (Pythia8::PhaseSpace2to2elastic::*)() const) &Pythia8::PhaseSpace2to2elastic::isResolved, "C++: Pythia8::PhaseSpace2to2elastic::isResolved() const --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to2elastic & (Pythia8::PhaseSpace2to2elastic::*)(const class Pythia8::PhaseSpace2to2elastic &)) &Pythia8::PhaseSpace2to2elastic::operator=, "C++: Pythia8::PhaseSpace2to2elastic::operator=(const class Pythia8::PhaseSpace2to2elastic &) --> class Pythia8::PhaseSpace2to2elastic &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to2diffractive file:Pythia8/PhaseSpace.h line:412
+	{ // Pythia8::PhaseSpace2to2diffractive file:Pythia8/PhaseSpace.h line:423
 		pybind11::class_<Pythia8::PhaseSpace2to2diffractive, std::shared_ptr<Pythia8::PhaseSpace2to2diffractive>, PyCallBack_Pythia8_PhaseSpace2to2diffractive, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to2diffractive", "");
 		pybind11::handle cl_type = cl;
 
@@ -1655,7 +1814,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("isResolved", (bool (Pythia8::PhaseSpace2to2diffractive::*)() const) &Pythia8::PhaseSpace2to2diffractive::isResolved, "C++: Pythia8::PhaseSpace2to2diffractive::isResolved() const --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to2diffractive & (Pythia8::PhaseSpace2to2diffractive::*)(const class Pythia8::PhaseSpace2to2diffractive &)) &Pythia8::PhaseSpace2to2diffractive::operator=, "C++: Pythia8::PhaseSpace2to2diffractive::operator=(const class Pythia8::PhaseSpace2to2diffractive &) --> class Pythia8::PhaseSpace2to2diffractive &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to3diffractive file:Pythia8/PhaseSpace.h line:459
+	{ // Pythia8::PhaseSpace2to3diffractive file:Pythia8/PhaseSpace.h line:470
 		pybind11::class_<Pythia8::PhaseSpace2to3diffractive, std::shared_ptr<Pythia8::PhaseSpace2to3diffractive>, PyCallBack_Pythia8_PhaseSpace2to3diffractive, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to3diffractive", "");
 		pybind11::handle cl_type = cl;
 
@@ -1668,7 +1827,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("isResolved", (bool (Pythia8::PhaseSpace2to3diffractive::*)() const) &Pythia8::PhaseSpace2to3diffractive::isResolved, "C++: Pythia8::PhaseSpace2to3diffractive::isResolved() const --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to3diffractive & (Pythia8::PhaseSpace2to3diffractive::*)(const class Pythia8::PhaseSpace2to3diffractive &)) &Pythia8::PhaseSpace2to3diffractive::operator=, "C++: Pythia8::PhaseSpace2to3diffractive::operator=(const class Pythia8::PhaseSpace2to3diffractive &) --> class Pythia8::PhaseSpace2to3diffractive &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to2nondiffractive file:Pythia8/PhaseSpace.h line:495
+	{ // Pythia8::PhaseSpace2to2nondiffractive file:Pythia8/PhaseSpace.h line:506
 		pybind11::class_<Pythia8::PhaseSpace2to2nondiffractive, std::shared_ptr<Pythia8::PhaseSpace2to2nondiffractive>, PyCallBack_Pythia8_PhaseSpace2to2nondiffractive, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to2nondiffractive", "");
 		pybind11::handle cl_type = cl;
 
@@ -1679,7 +1838,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("finalKin", (bool (Pythia8::PhaseSpace2to2nondiffractive::*)()) &Pythia8::PhaseSpace2to2nondiffractive::finalKin, "C++: Pythia8::PhaseSpace2to2nondiffractive::finalKin() --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to2nondiffractive & (Pythia8::PhaseSpace2to2nondiffractive::*)(const class Pythia8::PhaseSpace2to2nondiffractive &)) &Pythia8::PhaseSpace2to2nondiffractive::operator=, "C++: Pythia8::PhaseSpace2to2nondiffractive::operator=(const class Pythia8::PhaseSpace2to2nondiffractive &) --> class Pythia8::PhaseSpace2to2nondiffractive &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to3tauycyl file:Pythia8/PhaseSpace.h line:520
+	{ // Pythia8::PhaseSpace2to3tauycyl file:Pythia8/PhaseSpace.h line:531
 		pybind11::class_<Pythia8::PhaseSpace2to3tauycyl, std::shared_ptr<Pythia8::PhaseSpace2to3tauycyl>, PyCallBack_Pythia8_PhaseSpace2to3tauycyl, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to3tauycyl", "");
 		pybind11::handle cl_type = cl;
 
@@ -1691,7 +1850,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("finalKin", (bool (Pythia8::PhaseSpace2to3tauycyl::*)()) &Pythia8::PhaseSpace2to3tauycyl::finalKin, "C++: Pythia8::PhaseSpace2to3tauycyl::finalKin() --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to3tauycyl & (Pythia8::PhaseSpace2to3tauycyl::*)(const class Pythia8::PhaseSpace2to3tauycyl &)) &Pythia8::PhaseSpace2to3tauycyl::operator=, "C++: Pythia8::PhaseSpace2to3tauycyl::operator=(const class Pythia8::PhaseSpace2to3tauycyl &) --> class Pythia8::PhaseSpace2to3tauycyl &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpace2to3yyycyl file:Pythia8/PhaseSpace.h line:558
+	{ // Pythia8::PhaseSpace2to3yyycyl file:Pythia8/PhaseSpace.h line:569
 		pybind11::class_<Pythia8::PhaseSpace2to3yyycyl, std::shared_ptr<Pythia8::PhaseSpace2to3yyycyl>, PyCallBack_Pythia8_PhaseSpace2to3yyycyl, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpace2to3yyycyl", "");
 		pybind11::handle cl_type = cl;
 
@@ -1703,7 +1862,7 @@ void bind_Pythia8_PhaseSpace(std::function< pybind11::module &(std::string const
 		cl.def("finalKin", (bool (Pythia8::PhaseSpace2to3yyycyl::*)()) &Pythia8::PhaseSpace2to3yyycyl::finalKin, "C++: Pythia8::PhaseSpace2to3yyycyl::finalKin() --> bool");
 		cl.def("assign", (class Pythia8::PhaseSpace2to3yyycyl & (Pythia8::PhaseSpace2to3yyycyl::*)(const class Pythia8::PhaseSpace2to3yyycyl &)) &Pythia8::PhaseSpace2to3yyycyl::operator=, "C++: Pythia8::PhaseSpace2to3yyycyl::operator=(const class Pythia8::PhaseSpace2to3yyycyl &) --> class Pythia8::PhaseSpace2to3yyycyl &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::PhaseSpaceLHA file:Pythia8/PhaseSpace.h line:594
+	{ // Pythia8::PhaseSpaceLHA file:Pythia8/PhaseSpace.h line:605
 		pybind11::class_<Pythia8::PhaseSpaceLHA, std::shared_ptr<Pythia8::PhaseSpaceLHA>, PyCallBack_Pythia8_PhaseSpaceLHA, Pythia8::PhaseSpace> cl(M("Pythia8"), "PhaseSpaceLHA", "");
 		pybind11::handle cl_type = cl;
 

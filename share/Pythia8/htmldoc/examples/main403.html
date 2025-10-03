@@ -13,7 +13,6 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 
 // Keywords:
 //            <a href="../ExampleKeywords.html#vincia">Vincia</a>
-//            <a href="../ExampleKeywords.html#dire">Dire</a>
 //            <a href="../ExampleKeywords.html#top">Top</a>
 
 // This test program is a basic check of Vincia showers for pp &gt; tt at LHC.
@@ -53,7 +52,6 @@ int main() {
   // Histograms
   string modelName = &quot;Pythia&quot;;
   if (showerModel == 2) modelName = &quot;Vincia&quot;;
-  else if (showerModel == 3) modelName = &quot;Dire&quot;;
   double scale = 1;
   if (hadronisation) scale = 4;
   // Include stat uncertainties on histograms (last argument = true).

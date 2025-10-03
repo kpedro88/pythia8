@@ -5,7 +5,7 @@
 
 // Authors: Peter Skands <peter.skands@monash.edu>
 
-// Keywords: Vincia; Dire; top
+// Keywords: Vincia; top
 
 // This test program is a basic check of Vincia showers for pp > tt at LHC.
 // Also illustrates how various components of Vincia can be switched on/off
@@ -44,7 +44,6 @@ int main() {
   // Histograms
   string modelName = "Pythia";
   if (showerModel == 2) modelName = "Vincia";
-  else if (showerModel == 3) modelName = "Dire";
   double scale = 1;
   if (hadronisation) scale = 4;
   // Include stat uncertainties on histograms (last argument = true).

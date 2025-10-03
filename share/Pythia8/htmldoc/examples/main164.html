@@ -56,9 +56,6 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 #elif defined(HEPMC2)
 #include &quot;Pythia8Plugins/HepMC2.h&quot;
 #endif
-#ifdef RIVET
-#include &quot;Pythia8Plugins/Pythia8Rivet.h&quot;
-#endif
 #ifdef HDF5
 #include &quot;Pythia8Plugins/LHAHDF5v2.h&quot;
 #endif
@@ -102,15 +99,13 @@ int main(int argc, char** argv){
   // Generator.
   Pythia pythia;
 
+  // New settings for internal analysis.
+  pythia.settings.addFlag(&quot;Main:InternalAnalysis&quot;, false);
+  pythia.settings.addWord(&quot;InternalAnalysis:output&quot;, &quot;analysis.dat&quot;);
+
   // New settings for HepMC interface.
   pythia.settings.addFlag(&quot;Main:HepMC&quot;, false);
   pythia.settings.addWord(&quot;HepMC:output&quot;, &quot;events.hepmc&quot;);
-
-  // New settings for Rivet interface.
-  // Inactive if Rivet not used.
-  pythia.settings.addFlag(&quot;Main:Rivet&quot;, true);
-  pythia.settings.addWord(&quot;Rivet:output&quot;, &quot;analysis.yoda&quot;);
-  pythia.settings.addWVec(&quot;Rivet:analyses&quot;, vector&lt;string&gt;());
 
   // Input parameters:
   pythia.readFile(cmndFile, 0);
@@ -128,14 +123,6 @@ int main(int argc, char** argv){
     toHepMCPtr-&gt;set_store_pdf(false);
     toHepMCPtr-&gt;set_store_proc(false);
   }
-#endif
-
-  // Optionally Rivet interface if Pythia is linked to Rivet.
-#ifdef RIVET
-  const bool doRivet = pythia.flag(&quot;Main:Rivet&quot;);
-  Pythia8Rivet rivet(pythia, pythia.word(&quot;Rivet:output&quot;));
-  vector&lt;string&gt; analyses = pythia.settings.wvec(&quot;Rivet:analyses&quot;);
-  for (const string&amp; analysis : analyses) rivet.addAnalysis(analysis);
 #endif
 
   // Save which shower we are using.
@@ -164,12 +151,12 @@ int main(int argc, char** argv){
   if (doPowhegMatching) {
     // Set showers to start at the kinematical limit.
     if (pwhgVetoMode &gt; 0) {
-      if (showerModel == 1 || showerModel == 3) {
-        pythia.readString(&quot;SpaceShower:pTmaxMatch = 2&quot;);
-        pythia.readString(&quot;TimeShower:pTmaxMatch = 2&quot;);
-      } else if (showerModel == 2) {
+      if (showerModel == 2) {
         pythia.readString(&quot;Vincia:tune = 0&quot;);
         pythia.readString(&quot;Vincia:pTmaxMatch = 2&quot;);
+      } else {
+        pythia.readString(&quot;SpaceShower:pTmaxMatch = 2&quot;);
+        pythia.readString(&quot;TimeShower:pTmaxMatch = 2&quot;);
       }
     }
     // Set MPI to start at the kinematical limit.
@@ -203,12 +190,17 @@ int main(int argc, char** argv){
   }
 
   // Get number of subruns and information about external events.
-  int nMerge = pythia.mode(&quot;Main:numberOfSubruns&quot;);
-  if (nMerge == 0) nMerge = 1;
+  int nRuns = pythia.mode(&quot;Main:numberOfSubruns&quot;);
+  if (nRuns == 0) nRuns = 1;
   bool useLHA  = (pythia.mode(&quot;Beams:frameType&quot;) &gt;= 4);
 #ifdef HDF5
   bool useHDF5 = (pythia.mode(&quot;Beams:frameType&quot;) == 5);
 #endif
+
+  // Optionally calculate jet-resolution scales with  internal analysis.
+  bool doAnalysis = pythia.flag(&quot;Main:InternalAnalysis&quot;);
+  SlowJet slowJet(1, 0.4, 0., 4.4, 2, 2, nullptr, false);
+  vector&lt;Hist&gt; d01Hists, d12Hists, d23Hists, d34Hists;
 
   // Allow abort of run if many errors.
   int  nAbort  = pythia.mode(&quot;Main:timesAllowErrors&quot;);
@@ -216,10 +208,10 @@ int main(int argc, char** argv){
   bool doAbort = false;
 
   // Loop over subruns with varying number of jets.
-  for (int iMerge = 0; iMerge&lt;nMerge; ++iMerge) {
+  for (int iRun = 0; iRun&lt;nRuns; ++iRun) {
 
     // Read in name of LHE file for current subrun and initialize.
-    pythia.readFile(cmndFile, iMerge);
+    pythia.readFile(cmndFile, iRun);
 
     // Set number of events.
     long nEvent = pythia.mode(&quot;Main:numberOfEvents&quot;);
@@ -245,6 +237,14 @@ int main(int argc, char** argv){
     if (useLHA) {
       for (int i=0; i&lt;pythia.info.nProcessesLHEF(); ++i)
         xs += pythia.info.sigmaLHEF(i);
+    }
+
+    // Add histograms for internal analysis for this run.
+    if (doAnalysis) {
+      d01Hists.push_back(Hist(&quot;d01&quot;, 100., 0., 3.));
+      d12Hists.push_back(Hist(&quot;d12&quot;, 100., 0., 3.));
+      d23Hists.push_back(Hist(&quot;d23&quot;, 100., 0., 3.));
+      d34Hists.push_back(Hist(&quot;d34&quot;, 100., 0., 3.));
     }
 
     // Start generation loop.
@@ -287,6 +287,34 @@ int main(int argc, char** argv){
       // Accumulate cross section, including norm.
       pythia.info.weightContainerPtr-&gt;accumulateXsec(norm);
 
+      // Optionally perform internal analysis.
+      if (doAnalysis) {
+        Event jetInput;
+        jetInput.init(&quot;jet input&quot;, &amp;pythia.particleData);
+        jetInput.clear();
+        for (int i =0; i &lt; pythia.event.size(); ++i) {
+          if (!pythia.event[i].isFinal()) continue;
+          if (pythia.event[i].colType() != 0 || pythia.event[i].isHadron())
+            jetInput.append(pythia.event[i]);
+        }
+        slowJet.setup(jetInput);
+        // Run jet algorithm.
+        vector&lt;double&gt; result;
+        while (slowJet.sizeAll() - slowJet.sizeJet() &gt; 0 ) {
+          result.push_back(sqrt(slowJet.dNext()));
+          slowJet.doStep();
+        }
+        // Reorder by decreasing multiplicity.
+        vector&lt;double&gt; dij;
+        for (int i=int(result.size())-1; i&gt;=0; --i) dij.push_back(result[i]);
+        // Fill histograms.
+        double w = weight*norm;
+        if (dij.size() &gt; 0) d01Hists.back().fill(log10(dij[0]), w);
+        if (dij.size() &gt; 1) d12Hists.back().fill(log10(dij[1]), w);
+        if (dij.size() &gt; 2) d23Hists.back().fill(log10(dij[2]), w);
+        if (dij.size() &gt; 3) d34Hists.back().fill(log10(dij[3]), w);
+      }
+
 #if defined(HEPMC2) || defined(HEPMC3)
       // Optionally write HepMC events.
       if (doHepMC) {
@@ -297,14 +325,9 @@ int main(int argc, char** argv){
       }
 #endif
 
-#ifdef RIVET
-      // Optionally pass event to Rivet.
-      if (doRivet) rivet();
-#endif
-
     }
 
-    // Break out of loop over iMerge if aborting.
+    // Break out of loop over iRun if aborting.
     if (doAbort) break;
 
     // Print cross section and errors.
@@ -314,7 +337,7 @@ int main(int argc, char** argv){
     double sigmaSample = pythia.info.weightContainerPtr-&gt;getSampleXsec()[0];
     double errorSample = pythia.info.weightContainerPtr-&gt;getSampleXsecErr()[0];
 
-    cout &lt;&lt; endl &lt;&lt; &quot; Cross section of sample &quot; &lt;&lt; iMerge &lt;&lt; &quot;: &quot;
+    cout &lt;&lt; endl &lt;&lt; &quot; Cross section of sample &quot; &lt;&lt; iRun &lt;&lt; &quot;: &quot;
          &lt;&lt; scientific &lt;&lt; setprecision(8)
          &lt;&lt; sigmaSample &lt;&lt; &quot; +- &quot; &lt;&lt; errorSample  &lt;&lt; endl &lt;&lt; endl;
   }
@@ -334,15 +357,50 @@ int main(int argc, char** argv){
     cout &lt;&lt; &quot; Inclusive cross section:   &quot; &lt;&lt; scientific &lt;&lt; setprecision(8)
          &lt;&lt; sigmaTotal &lt;&lt; &quot;  +-  &quot; &lt;&lt; errorTotal &lt;&lt; &quot; mb&quot; &lt;&lt; endl &lt;&lt; endl;
 
-  // Optionally finalise Rivet analysis.
-#ifdef RIVET
-  if (doRivet) rivet.done();
-#endif
-
   // Optionally delete HepMC converter pointer.
 #if defined(HEPMC2) || defined(HEPMC3)
   if (doHepMC) delete toHepMCPtr;
 #endif
+
+  // Optionally print histograms of internal analysis.
+  if (doAnalysis) {
+    ofstream output;
+    string name = pythia.word(&quot;InternalAnalysis:output&quot;);
+    output.open((char*)(name).c_str());
+    output &lt;&lt; &quot;&lt;histfile&gt;\n&quot;;
+    for (int i=0; i&lt;nRuns; ++i){
+      // Construct a header for the run
+      output &lt;&lt; &quot;&lt;run id=\&quot;&quot; &lt;&lt; i &lt;&lt; &quot;\&quot;&quot; &lt;&lt; &quot;\&quot;&gt;\n&quot;;
+      // Print histograms.
+      output &lt;&lt; &quot;&lt;histogram name=\&quot;&quot; &lt;&lt; &quot;log10d01&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; unit=\&quot;&quot; &lt;&lt; &quot;[]&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; weight=\&quot;&quot; &lt;&lt; &quot;all&quot; &lt;&lt; &quot;\&quot;&gt;\n&quot;;
+      d01Hists[i].table(output, false, false);
+      output &lt;&lt; &quot;&lt;/histogram&gt;\n&quot;;
+
+      output &lt;&lt; &quot;&lt;histogram name=\&quot;&quot; &lt;&lt; &quot;log10d12&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; unit=\&quot;&quot; &lt;&lt; &quot;[]&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; weight=\&quot;&quot; &lt;&lt; &quot;all&quot; &lt;&lt; &quot;\&quot;&gt;\n&quot;;
+      d12Hists[i].table(output, false, false);
+      output &lt;&lt; &quot;&lt;/histogram&gt;\n&quot;;
+
+      output &lt;&lt; &quot;&lt;histogram name=\&quot;&quot; &lt;&lt; &quot;log10d23&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; unit=\&quot;&quot; &lt;&lt; &quot;[]&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; weight=\&quot;&quot; &lt;&lt; &quot;all&quot; &lt;&lt; &quot;\&quot;&gt;\n&quot;;
+      d23Hists[i].table(output, false, false);
+      output &lt;&lt; &quot;&lt;/histogram&gt;\n&quot;;
+
+      output &lt;&lt; &quot;&lt;histogram name=\&quot;&quot; &lt;&lt; &quot;log10d34&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; unit=\&quot;&quot; &lt;&lt; &quot;[]&quot; &lt;&lt; &quot;\&quot;&quot;
+             &lt;&lt; &quot; weight=\&quot;&quot; &lt;&lt; &quot;all&quot; &lt;&lt; &quot;\&quot;&gt;\n&quot;;
+      d34Hists[i].table(output, false, false);
+      output &lt;&lt; &quot;&lt;/histogram&gt;\n&quot;;
+
+      output &lt;&lt; &quot;&lt;/run&gt;\n&quot;;
+    }
+    output &lt;&lt; &quot;&lt;/histfile&gt;\n&quot;;
+    output.close();
+  }
 
   // Done.
   return 0;

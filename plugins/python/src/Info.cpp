@@ -79,6 +79,7 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def_readwrite("eCMSave", &Pythia8::Info::eCMSave);
 		cl.def_readwrite("sSave", &Pythia8::Info::sSave);
 		cl.def_readwrite("lowPTmin", &Pythia8::Info::lowPTmin);
+		cl.def_readwrite("inInitSave", &Pythia8::Info::inInitSave);
 		cl.def_readwrite("nTry", &Pythia8::Info::nTry);
 		cl.def_readwrite("nSel", &Pythia8::Info::nSel);
 		cl.def_readwrite("nAcc", &Pythia8::Info::nAcc);
@@ -143,6 +144,7 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def_readwrite("WDISSave", &Pythia8::Info::WDISSave);
 		cl.def_readwrite("xDISSave", &Pythia8::Info::xDISSave);
 		cl.def_readwrite("yDISSave", &Pythia8::Info::yDISSave);
+		cl.def_readwrite("isDISSave", &Pythia8::Info::isDISSave);
 		cl.def_readwrite("isVMDstateAEvent", &Pythia8::Info::isVMDstateAEvent);
 		cl.def_readwrite("isVMDstateBEvent", &Pythia8::Info::isVMDstateBEvent);
 		cl.def_readwrite("gammaModeEvent", &Pythia8::Info::gammaModeEvent);
@@ -168,6 +170,10 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def_readwrite("weakMomenta", &Pythia8::Info::weakMomenta);
 		cl.def_readwrite("weakDipoles", &Pythia8::Info::weakDipoles);
 		cl.def_readwrite("oniumShower", &Pythia8::Info::oniumShower);
+		cl.def_readwrite("currentEventRndmState", &Pythia8::Info::currentEventRndmState);
+		cl.def_readwrite("toponiumE", &Pythia8::Info::toponiumE);
+		cl.def_readwrite("toponiumm3", &Pythia8::Info::toponiumm3);
+		cl.def_readwrite("toponiumm4", &Pythia8::Info::toponiumm4);
 		cl.def("assign", (class Pythia8::Info & (Pythia8::Info::*)(const class Pythia8::Info &)) &Pythia8::Info::operator=, "C++: Pythia8::Info::operator=(const class Pythia8::Info &) --> class Pythia8::Info &", pybind11::return_value_policy::reference, pybind11::arg(""));
 		cl.def("list", (void (Pythia8::Info::*)() const) &Pythia8::Info::list, "C++: Pythia8::Info::list() const --> void");
 		cl.def("idA", (int (Pythia8::Info::*)() const) &Pythia8::Info::idA, "C++: Pythia8::Info::idA() const --> int");
@@ -245,6 +251,7 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def("WDIS", (double (Pythia8::Info::*)() const) &Pythia8::Info::WDIS, "C++: Pythia8::Info::WDIS() const --> double");
 		cl.def("xDIS", (double (Pythia8::Info::*)() const) &Pythia8::Info::xDIS, "C++: Pythia8::Info::xDIS() const --> double");
 		cl.def("yDIS", (double (Pythia8::Info::*)() const) &Pythia8::Info::yDIS, "C++: Pythia8::Info::yDIS() const --> double");
+		cl.def("isDIS", (bool (Pythia8::Info::*)() const) &Pythia8::Info::isDIS, "C++: Pythia8::Info::isDIS() const --> bool");
 		cl.def("xGammaA", (double (Pythia8::Info::*)() const) &Pythia8::Info::xGammaA, "C++: Pythia8::Info::xGammaA() const --> double");
 		cl.def("xGammaB", (double (Pythia8::Info::*)() const) &Pythia8::Info::xGammaB, "C++: Pythia8::Info::xGammaB() const --> double");
 		cl.def("Q2GammaA", (double (Pythia8::Info::*)() const) &Pythia8::Info::Q2GammaA, "C++: Pythia8::Info::Q2GammaA() const --> double");
@@ -395,6 +402,8 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def("setWeak2to2lines", (void (Pythia8::Info::*)(class std::vector<int, class std::allocator<int> >)) &Pythia8::Info::setWeak2to2lines, "C++: Pythia8::Info::setWeak2to2lines(class std::vector<int, class std::allocator<int> >) --> void", pybind11::arg("weak2to2linesIn"));
 		cl.def("setOniumShower", (void (Pythia8::Info::*)(bool)) &Pythia8::Info::setOniumShower, "C++: Pythia8::Info::setOniumShower(bool) --> void", pybind11::arg("oniumShowerIn"));
 		cl.def("getOniumShower", (bool (Pythia8::Info::*)() const) &Pythia8::Info::getOniumShower, "C++: Pythia8::Info::getOniumShower() const --> bool");
+		cl.def("setInInit", (void (Pythia8::Info::*)(bool)) &Pythia8::Info::setInInit, "C++: Pythia8::Info::setInInit(bool) --> void", pybind11::arg("inInitIn"));
+		cl.def("getInInit", (bool (Pythia8::Info::*)() const) &Pythia8::Info::getInInit, "C++: Pythia8::Info::getInInit() const --> bool");
 		cl.def("setBeamIDs", (void (Pythia8::Info::*)(int, int)) &Pythia8::Info::setBeamIDs, "C++: Pythia8::Info::setBeamIDs(int, int) --> void", pybind11::arg("idAin"), pybind11::arg("idBin"));
 		cl.def("setBeamA", (void (Pythia8::Info::*)(int, double, double, double)) &Pythia8::Info::setBeamA, "C++: Pythia8::Info::setBeamA(int, double, double, double) --> void", pybind11::arg("idAin"), pybind11::arg("pzAin"), pybind11::arg("eAin"), pybind11::arg("mAin"));
 		cl.def("setBeamB", (void (Pythia8::Info::*)(int, double, double, double)) &Pythia8::Info::setBeamB, "C++: Pythia8::Info::setBeamB(int, double, double, double) --> void", pybind11::arg("idBin"), pybind11::arg("pzBin"), pybind11::arg("eBin"), pybind11::arg("mBin"));
@@ -461,5 +470,9 @@ void bind_Pythia8_Info(std::function< pybind11::module &(std::string const &name
 		cl.def("weightNameByIndex", (std::string (Pythia8::Info::*)(int) const) &Pythia8::Info::weightNameByIndex, "C++: Pythia8::Info::weightNameByIndex(int) const --> std::string", pybind11::arg("key"));
 		cl.def("weightValueVector", (class std::vector<double, class std::allocator<double> > (Pythia8::Info::*)() const) &Pythia8::Info::weightValueVector, "C++: Pythia8::Info::weightValueVector() const --> class std::vector<double, class std::allocator<double> >");
 		cl.def("weightNameVector", (class std::vector<std::string, class std::allocator<std::string > > (Pythia8::Info::*)() const) &Pythia8::Info::weightNameVector, "C++: Pythia8::Info::weightNameVector() const --> class std::vector<std::string, class std::allocator<std::string > >");
+		cl.def("dumpRandomState", [](Pythia8::Info const &o) -> void { return o.dumpRandomState(); }, "");
+		cl.def("dumpRandomState", (void (Pythia8::Info::*)(std::string) const) &Pythia8::Info::dumpRandomState, "C++: Pythia8::Info::dumpRandomState(std::string) const --> void", pybind11::arg("fileName"));
+		cl.def("readRandomState", [](Pythia8::Info const &o) -> void { return o.readRandomState(); }, "");
+		cl.def("readRandomState", (void (Pythia8::Info::*)(std::string) const) &Pythia8::Info::readRandomState, "C++: Pythia8::Info::readRandomState(std::string) const --> void", pybind11::arg("fileName"));
 	}
 }

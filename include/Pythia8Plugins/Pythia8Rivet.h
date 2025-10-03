@@ -86,8 +86,8 @@ public:
   // Initialize Rivet. Will do nothing if Rivet was already initialized
   void init() {
     if ( rivet ) return;
-    rivet = new Rivet::AnalysisHandler(rname);
 #ifndef PYTHIA_USING_RIVET_4
+    rivet = new Rivet::AnalysisHandler(rname);
     rivet->setIgnoreBeams(igBeam);
     if (nDump > 0) {
       if (dumpFile == "")
@@ -96,6 +96,7 @@ public:
         rivet->dump(dumpFile, nDump);
     }
 #else
+    rivet = new Rivet::AnalysisHandler();
     rivet->setCheckBeams(!igBeam);
     if (nDump > 0) {
       if (dumpFile == "")

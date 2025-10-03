@@ -6,15 +6,73 @@
 the validation of Monte Carlo event generators <ref>Buc10</ref>. It 
 contains the results of many experimental analyses, so that generator 
 output can easily be compared to data, as well as providing a framework to 
-implement your own analyses.  Although using PYTHIA with RIVET is not 
+implement your own analyses. Although using PYTHIA with RIVET is not 
 officially supported, some helpful hints are given below. The full RIVET 
 manual is available <a href="http://arxiv.org/abs/1003.0694">online</a>. 
  
-<br/><br/> 
-<h3>Using PYTHIA with RIVET</h3> 
+<h3>PYTHIA with RIVET via plugin</h3> 
+ 
+A PYTHIA plugin is available, <code>RivetHooks</code> defined in 
+<code>Pythia8Plugins/RivetHooks.h</code>. This plugin can be loaded, 
+and analyses can then be easily added for processing. The plugin works with 
+<code>PythiaParallel</code>, and RIVET analyses can be run asynchronously. 
+For the plugin to be available, PYTHIA must be configured with the 
+<code>--with-rivet</code> flag before being built. 
+<pre> 
+  ./configure --with-rivet 
+</pre> 
+If successful, the plugin library <code>lib/pythia8rivet.so</code> 
+will be built. This requires the RIVET configuration to be available via the 
+<code>rivet-config</code> command and is only available for RIVET 4. 
+ 
+<p/>There are a number of examples which show how to work with this 
+plugin: <code>main144</code>, <code>main164</code>, 
+<code>main225</code>, and <code>main421</code>. The general usage is 
+as follows. First, load the plugin. 
+<pre> 
+  Init:plugins = {libpythia8rivet.so::RivetHooks} 
+</pre> 
+None of the options described below is available if the plugin is not 
+successfully loaded. Once the plugin is loaded, a number of additional 
+settings will be available. To begin, set the output YODA file name; 
+it must end in <code>.yoda</code> (this is a RIVET requirement, not 
+PYTHIA). 
+<pre> 
+  Rivet:fileName = NAME 
+</pre> 
+If directory structure is included in the YODA file name, an attempt 
+will be made to create that directory structure. 
+ 
+<p/>Next, define the analyses to run. This can be done with comma 
+separated lists, <code>{ANALYSIS1,ANALYSIS2,ANALYSIS3,...}</code>. The 
+list of analyses can be appended with the <code>+=</code> syntax. 
+<pre> 
+  Rivet:analyses  = {ANALYSIS1,ANALYSIS2} 
+  Rivet:analyses += {ANALYSIS3} 
+</pre> 
+Parameters for each analysis can be modified using the following syntax. 
+<pre> 
+  Rivet:analyses = {ANALYSIS1:PARM1=VALUE1:PARM2=VALUE2:...,ANALYSIS2} 
+</pre> 
+ 
+Finally, set any additional configuration for RIVET. 
+<pre> 
+  ! This is a list of YODA files which can be preloaded. 
+  Rivet:preloads = {YODA1,YODA2,YODA3,...} 
+  ! This is a temporary debugging output filename, which must end with .yoda. 
+  Rivet:dumpName = NAME 
+  ! If NUMBER > 0, dump RIVET output to Rivet:dumpName every NUMBER events. 
+  Rivet:dumpPeriod = NUMBER 
+  ! Flag to require RIVET to check the beam configuration. 
+  Rivet:checkBeams = off 
+  ! By default, zero weight events are skipped for analysis. 
+  Rivet:skipZeroWeights = on 
+</pre> 
+ 
+<h3>Using PYTHIA with RIVET via HEPMC</h3> 
 The following assumes that you already have RIVET installed. Instructions 
 for this may be found 
-<a href="http://projects.hepforge.org/rivet/trac/wiki/GettingStarted"> 
+<a href="https://gitlab.com/hepcedar/rivet/-/blob/main/README.md?ref_type=heads#getting-started"> 
 here</a>. 
  
 <br/><br/> 
@@ -53,7 +111,7 @@ where <code>ANALYSIS_NAME</code> is a
 analysis</a>, or one you have created yourself. The output of RIVET is in 
 the form of <code>.aida</code> files, containing the histograms for the 
 analysis, which can be processed further with RIVET (see the 
-<a href="http://projects.hepforge.org/rivet/trac/wiki/FirstRivetRun"> 
+<a href="https://gitlab.com/hepcedar/rivet/tree/release-4-1-x#getting-started"> 
 RIVET documentation</a> for more details). 
  
 <br/><br/> 
@@ -69,14 +127,15 @@ pipe. This is done with the <code>mkfifo</code> command
 </pre> 
 Note that <code>main132</code> is run in the background. 
  
-<h3>Compiling PYTHIA with RIVET </h3> 
+<h3>Compiling PYTHIA with RIVET</h3> 
  
-It is also possible to compile a PYTHIA main program together with the RIVET 
-library. To facilitate this, there is a header file called 
-<code>Pythia8Plugins/Pythia8Rivet.h</code> defining a helper class called 
-<code>Pythia8::Pythia8Rivet</code>. To use this class, a main program needs to 
-be modified as follows: 
- 
+It is also possible to compile a PYTHIA main program together with the 
+RIVET library. To facilitate this, there is a header file called 
+<code>Pythia8Plugins/Pythia8Rivet.h</code> defining a helper class 
+called <code>Pythia8::Pythia8Rivet</code>. This header class has been 
+deprecated in favor of the plugin structure above, and will be removed 
+in a future version of PYTHIA. To use this class, a main program needs 
+to be modified as follows: 
 <pre> 
   #include "Pythia8/Pythia.h" 
  
@@ -119,40 +178,6 @@ via the <code>rivet-config</code> script via the following.
   rivet-config --includedir --libdir --cppflags --libs 
  
 </pre> 
- 
-<p/> 
-The example program <code>main421.cc</code> includes optional analysis with 
-<code>Pythia8::Pythia8Rivet</code>. To use it configure Pythia with 
-the option <code>--with-rivet</code>. This will automatically use the 
-<code>rivet-config</code> script to determine all the necessary 
-paths. If one wishes to pass a specific config script, use the option 
-<code>--with-rivet-config=CONFIG</code> where <code>CONFIG</code> is 
-the Rivet configuration script. Note, a RIVET configuration script 
-must be available to compile the Rivet examples. 
- 
-<p/> 
-The most common user case (run PYTHIA with a run card, using one or 
-several RIVET analyses) is implemented in the example <code>main144</code>. 
-The sample command file <code>main144.cmnd</code> provides a good starting 
-point. The lines: 
-<pre> 
-    Main:runRivet = on 
-    Main:analyses = ATLAS_2010_S8817804,ALICE_2010_S8625980,CMS_2011_S8957746 
-    Main:writeHepMC = on 
- 
-</pre> 
-provides the switch to run RIVET, and gives the user the possibility 
-to add any number of (installed) RIVET analyses to the run, as a comma 
-separated list. The last line is the switch needed to write a HepMC 
-file.  The example is run with: 
-<pre> 
-  ./main144 -c main144.cmnd 
- 
-</pre> 
-and a .yoda file (the RIVET output) is then written. 
- 
-There are several other useful command line options to <code>main144</code>. 
-They are all displayed by running <code>./main144 -h</code>. 
  
 </chapter> 
  

@@ -192,7 +192,7 @@ When the rope quantum numbers have been determined, the effective string
 tension is calculated per individual breaking, using a lattice QCD 
 determination of the string tension <ref>Bal00</ref>. The effective 
 string tension is then used to rescale the hadronization parameters 
-described in the section on <aloc href="Fragmentation">String 
+described in the section on <aloc href="StringFragmentation">String 
 Fragmentation</aloc>. One point to note regarding the rescaling is the 
 fragmentation parameter <code>StringFlav:probQQtoQ</code>, describing 
 baryon relative to meson production. Baryon production is, as suggested 

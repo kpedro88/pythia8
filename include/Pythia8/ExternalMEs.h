@@ -39,9 +39,7 @@ public:
   virtual void initPtrs(Info* infoPtrIn);
 
   // Initialisers.
-  virtual bool init() {return false;}
-  virtual bool initVincia(Info* /*infoPtrIn*/) {return false;}
-  virtual bool initDire(Info* /*infoPtrIn*/, string /*card*/) {return false;}
+  virtual bool init(Info* /*infoPtrIn*/) {return false;}
 
   // Methods to check availability of matrix elements for list of in/out
   // ID codes, an event (ignoring any event entries before iBeg), or a vector

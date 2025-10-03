@@ -12,13 +12,13 @@ In version 8.240 (December 2018) a transformation was begun where
 this physics code was transferred to <code>SimpleTimeShower</code> 
 and <code>SimpleSpaceShower</code>, while <code>TimeShower</code> 
 and <code>SpaceShower</code> remained as bare-bones base classes. 
-This paved the way for the inclusion of the VINCIA and Dire showers 
-as core parts of the PYTHIA 8.3 distribution. 
+This paved the way for the inclusion of new shower models such as 
+VINCIA as core parts of the PYTHIA 8.3 distribution. 
  
 <p/> 
 The prepending of "simple" was a minimalistic choice under the 
 circumstances; more fancy names could have been chosen. What it 
-refers to is that showers like VINCIA and Dire aim higher, in 
+refers to is that showers like VINCIA aim higher, in 
 striving to achieve better coherence and higher-logarithmic accuracy, 
 whereas the simple ones operate in an improved LL approximation. In 
 other respects the  simple showers can do more different physics than 

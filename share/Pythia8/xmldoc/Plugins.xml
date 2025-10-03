@@ -422,6 +422,21 @@ starting XML file on the path specified by the environment variable
 this path is not valid, then the path <code>PYTHIA8DATA/../../</code> 
 will be tried, followed by the provided path itself. 
  
+Some plugins may be compatible with running through the 
+<code>PythiaParallel</code> framework. By default, it is assumed that 
+a plugin is not compatible with <code>PythiaParallel</code> and will 
+not be loaded inside such an instance. To enable a plugin with 
+parallel running, the following macro should be set, which takes a 
+boolean as an argument. 
+ 
+<p/> 
+<pre> 
+PYTHIA8_PLUGIN_PARALLEL(true) 
+</pre> 
+<p/> 
+ 
+It is also possible to explicitly set this to <code>false</code>. 
+ 
 Finally, it is required to define the versions of Pythia that the plugin 
 library is compatible with. This is done with the macro: 
  

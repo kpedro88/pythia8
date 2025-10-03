@@ -14,6 +14,9 @@
 
 namespace Pythia8 {
 
+// Forward declaration of Pythia class.
+class Pythia;
+
 //==========================================================================
 
 // Classes that implement physics models should inherit from the PhysicsBase
@@ -66,6 +69,11 @@ protected:
   // This function is called from the Pythia::stat() call.
   virtual void onStat() {}
 
+  // This function is called from the PythiaParallel::stat() call.
+  // The argument is all thread instances of this PhysicsBase.
+  // Each instance can be recast as dynamic_cast<DerivedClass*>(ptr).
+  virtual void onStat(vector<PhysicsBase*>, Pythia*) {}
+
   // Register a sub object that should have its information in sync with this.
   void registerSubObject(PhysicsBase& pb);
 
@@ -115,13 +123,17 @@ protected:
   // with This.
   set<PhysicsBase*> subObjects;
 
-  // Pointer to the UserHooks object (needs to be sett to null in
+  // Pointer to the UserHooks object (needs to be set to null in
   // classes deriving from UserHooks to avoid closed loop ownership).
   UserHooksPtr      userHooksPtr;
+
+  // Mutex that should be locked for thread-unsafe code.
+  mutex* mutexPtr;
 
 private:
 
   friend class Pythia;
+  friend class PythiaParallel;
 
   // Calls onBeginEvent, then propagates the call to all sub objects
   void beginEvent();

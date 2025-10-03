@@ -1454,7 +1454,9 @@ void PartonLevel::setupHardSys( Event& process, Event& event) {
   }
 
   // If incoming partons are massive then recalculate to put them massless.
-  if (process[inP].m() != 0. || process[inM].m() != 0.) {
+  // For DIS keep the massive kinematics to account for incoming lepton mass.
+  if ( (process[inP].m() != 0. || process[inM].m() != 0.)
+      && (!infoPtr->isDIS()) ) {
     double pPos = process[inP].pPos() + process[inM].pPos();
     double pNeg = process[inP].pNeg() + process[inM].pNeg();
     process[inP].pz( 0.5 * pPos);

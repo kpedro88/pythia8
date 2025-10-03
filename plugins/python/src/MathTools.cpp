@@ -1,27 +1,47 @@
 #include <Pythia8/Basics.h>
 #include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
+#include <Pythia8/HIInfo.h>
 #include <Pythia8/HadronWidths.h>
+#include <Pythia8/HeavyIons.h>
 #include <Pythia8/Info.h>
 #include <Pythia8/LHEF3.h>
+#include <Pythia8/LesHouches.h>
 #include <Pythia8/Logger.h>
 #include <Pythia8/MathTools.h>
+#include <Pythia8/Merging.h>
+#include <Pythia8/MergingHooks.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
+#include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonSystems.h>
+#include <Pythia8/PartonVertex.h>
+#include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
+#include <Pythia8/ResonanceWidths.h>
 #include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
 #include <Pythia8/SigmaLowEnergy.h>
+#include <Pythia8/SigmaProcess.h>
 #include <Pythia8/SigmaTotal.h>
 #include <Pythia8/StandardModel.h>
 #include <Pythia8/SusyCouplings.h>
+#include <Pythia8/UserHooks.h>
 #include <Pythia8/Weights.h>
+#include <cwchar>
 #include <functional>
+#include <ios>
 #include <istream>
 #include <iterator>
 #include <map>
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <sstream> // __str__
+#include <streambuf>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,7 +65,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
 #endif
 
-// Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:23
+// Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:26
 struct PyCallBack_Pythia8_PhysicsBase : public Pythia8::PhysicsBase {
 	using Pythia8::PhysicsBase::PhysicsBase;
 
@@ -100,6 +120,19 @@ struct PyCallBack_Pythia8_PhysicsBase : public Pythia8::PhysicsBase {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhysicsBase *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -165,7 +198,7 @@ void bind_Pythia8_MathTools(std::function< pybind11::module &(std::string const 
 		cl.def( pybind11::init( [](){ return new Pythia8::HungarianAlgorithm(); } ) );
 		cl.def("solve", (double (Pythia8::HungarianAlgorithm::*)(class std::vector<class std::vector<double, class std::allocator<double> >, class std::allocator<class std::vector<double, class std::allocator<double> > > > &, class std::vector<int, class std::allocator<int> > &)) &Pythia8::HungarianAlgorithm::solve, "C++: Pythia8::HungarianAlgorithm::solve(class std::vector<class std::vector<double, class std::allocator<double> >, class std::allocator<class std::vector<double, class std::allocator<double> > > > &, class std::vector<int, class std::allocator<int> > &) --> double", pybind11::arg("distMatrix"), pybind11::arg("assignment"));
 	}
-	{ // Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:23
+	{ // Pythia8::PhysicsBase file:Pythia8/PhysicsBase.h line:26
 		pybind11::class_<Pythia8::PhysicsBase, std::shared_ptr<Pythia8::PhysicsBase>, PyCallBack_Pythia8_PhysicsBase> cl(M("Pythia8"), "PhysicsBase", "");
 		pybind11::handle cl_type = cl;
 
@@ -207,6 +240,7 @@ void bind_Pythia8_MathTools(std::function< pybind11::module &(std::string const 
 		cl.def("onBeginEvent", (void (Pythia8::PhysicsBase::*)()) &Pythia8::PhysicsBase::onBeginEvent, "C++: Pythia8::PhysicsBase::onBeginEvent() --> void");
 		cl.def("onEndEvent", (void (Pythia8::PhysicsBase::*)(enum Pythia8::PhysicsBase::Status)) &Pythia8::PhysicsBase::onEndEvent, "C++: Pythia8::PhysicsBase::onEndEvent(enum Pythia8::PhysicsBase::Status) --> void", pybind11::arg(""));
 		cl.def("onStat", (void (Pythia8::PhysicsBase::*)()) &Pythia8::PhysicsBase::onStat, "C++: Pythia8::PhysicsBase::onStat() --> void");
+		cl.def("onStat", (void (Pythia8::PhysicsBase::*)(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> >, class Pythia8::Pythia *)) &Pythia8::PhysicsBase::onStat, "C++: Pythia8::PhysicsBase::onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> >, class Pythia8::Pythia *) --> void", pybind11::arg(""), pybind11::arg(""));
 		cl.def("registerSubObject", (void (Pythia8::PhysicsBase::*)(class Pythia8::PhysicsBase &)) &Pythia8::PhysicsBase::registerSubObject, "C++: Pythia8::PhysicsBase::registerSubObject(class Pythia8::PhysicsBase &) --> void", pybind11::arg("pb"));
 		cl.def("assign", (class Pythia8::PhysicsBase & (Pythia8::PhysicsBase::*)(const class Pythia8::PhysicsBase &)) &Pythia8::PhysicsBase::operator=, "C++: Pythia8::PhysicsBase::operator=(const class Pythia8::PhysicsBase &) --> class Pythia8::PhysicsBase &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}

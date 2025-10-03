@@ -37,18 +37,18 @@
 struct PyCallBack_Pythia8_AlphaStrong : public Pythia8::AlphaStrong {
 	using Pythia8::AlphaStrong::AlphaStrong;
 
-	void init(double a0, int a1, int a2, bool a3) override { 
+	void init(double a0, int a1, int a2, bool a3, double a4, double a5) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::AlphaStrong *>(this), "init");
 		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3, a4, a5);
 			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
 				static pybind11::detail::override_caster_t<void> caster;
 				return pybind11::detail::cast_ref<void>(std::move(o), caster);
 			}
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
-		return AlphaStrong::init(a0, a1, a2, a3);
+		return AlphaStrong::init(a0, a1, a2, a3, a4, a5);
 	}
 	void setThresholds(double a0, double a1, double a2) override { 
 		pybind11::gil_scoped_acquire gil;
@@ -65,7 +65,7 @@ struct PyCallBack_Pythia8_AlphaStrong : public Pythia8::AlphaStrong {
 	}
 };
 
-// Pythia8::AlphaSUN file:Pythia8/StandardModel.h line:226
+// Pythia8::AlphaSUN file:Pythia8/StandardModel.h line:233
 struct PyCallBack_Pythia8_AlphaSUN : public Pythia8::AlphaSUN {
 	using Pythia8::AlphaSUN::AlphaSUN;
 
@@ -129,7 +129,9 @@ void bind_Pythia8_StandardModel(std::function< pybind11::module &(std::string co
 		cl.def("init", [](Pythia8::AlphaStrong &o, double const & a0) -> void { return o.init(a0); }, "", pybind11::arg("valueIn"));
 		cl.def("init", [](Pythia8::AlphaStrong &o, double const & a0, int const & a1) -> void { return o.init(a0, a1); }, "", pybind11::arg("valueIn"), pybind11::arg("orderIn"));
 		cl.def("init", [](Pythia8::AlphaStrong &o, double const & a0, int const & a1, int const & a2) -> void { return o.init(a0, a1, a2); }, "", pybind11::arg("valueIn"), pybind11::arg("orderIn"), pybind11::arg("nfmaxIn"));
-		cl.def("init", (void (Pythia8::AlphaStrong::*)(double, int, int, bool)) &Pythia8::AlphaStrong::init, "C++: Pythia8::AlphaStrong::init(double, int, int, bool) --> void", pybind11::arg("valueIn"), pybind11::arg("orderIn"), pybind11::arg("nfmaxIn"), pybind11::arg("useCMWIn"));
+		cl.def("init", [](Pythia8::AlphaStrong &o, double const & a0, int const & a1, int const & a2, bool const & a3) -> void { return o.init(a0, a1, a2, a3); }, "", pybind11::arg("valueIn"), pybind11::arg("orderIn"), pybind11::arg("nfmaxIn"), pybind11::arg("useCMWIn"));
+		cl.def("init", [](Pythia8::AlphaStrong &o, double const & a0, int const & a1, int const & a2, bool const & a3, double const & a4) -> void { return o.init(a0, a1, a2, a3, a4); }, "", pybind11::arg("valueIn"), pybind11::arg("orderIn"), pybind11::arg("nfmaxIn"), pybind11::arg("useCMWIn"), pybind11::arg("valueMaxIn"));
+		cl.def("init", (void (Pythia8::AlphaStrong::*)(double, int, int, bool, double, double)) &Pythia8::AlphaStrong::init, "C++: Pythia8::AlphaStrong::init(double, int, int, bool, double, double) --> void", pybind11::arg("valueIn"), pybind11::arg("orderIn"), pybind11::arg("nfmaxIn"), pybind11::arg("useCMWIn"), pybind11::arg("valueMaxIn"), pybind11::arg("renormShiftIn"));
 		cl.def("setThresholds", (void (Pythia8::AlphaStrong::*)(double, double, double)) &Pythia8::AlphaStrong::setThresholds, "C++: Pythia8::AlphaStrong::setThresholds(double, double, double) --> void", pybind11::arg("mcIn"), pybind11::arg("mbIn"), pybind11::arg("mtIn"));
 		cl.def("alphaS", (double (Pythia8::AlphaStrong::*)(double)) &Pythia8::AlphaStrong::alphaS, "C++: Pythia8::AlphaStrong::alphaS(double) --> double", pybind11::arg("scale2"));
 		cl.def("alphaS1Ord", (double (Pythia8::AlphaStrong::*)(double)) &Pythia8::AlphaStrong::alphaS1Ord, "C++: Pythia8::AlphaStrong::alphaS1Ord(double) --> double", pybind11::arg("scale2"));
@@ -141,9 +143,11 @@ void bind_Pythia8_StandardModel(std::function< pybind11::module &(std::string co
 		cl.def("muThres", (double (Pythia8::AlphaStrong::*)(int)) &Pythia8::AlphaStrong::muThres, "C++: Pythia8::AlphaStrong::muThres(int) --> double", pybind11::arg("idQ"));
 		cl.def("muThres2", (double (Pythia8::AlphaStrong::*)(int)) &Pythia8::AlphaStrong::muThres2, "C++: Pythia8::AlphaStrong::muThres2(int) --> double", pybind11::arg("idQ"));
 		cl.def("facCMW", (double (Pythia8::AlphaStrong::*)(int)) &Pythia8::AlphaStrong::facCMW, "C++: Pythia8::AlphaStrong::facCMW(int) --> double", pybind11::arg("nFin"));
+		cl.def("alphaSmax", (double (Pythia8::AlphaStrong::*)()) &Pythia8::AlphaStrong::alphaSmax, "C++: Pythia8::AlphaStrong::alphaSmax() --> double");
+		cl.def("renormShift", (double (Pythia8::AlphaStrong::*)()) &Pythia8::AlphaStrong::renormShift, "C++: Pythia8::AlphaStrong::renormShift() --> double");
 		cl.def("assign", (class Pythia8::AlphaStrong & (Pythia8::AlphaStrong::*)(const class Pythia8::AlphaStrong &)) &Pythia8::AlphaStrong::operator=, "C++: Pythia8::AlphaStrong::operator=(const class Pythia8::AlphaStrong &) --> class Pythia8::AlphaStrong &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::AlphaEM file:Pythia8/StandardModel.h line:106
+	{ // Pythia8::AlphaEM file:Pythia8/StandardModel.h line:113
 		pybind11::class_<Pythia8::AlphaEM, std::shared_ptr<Pythia8::AlphaEM>> cl(M("Pythia8"), "AlphaEM", "");
 		pybind11::handle cl_type = cl;
 
@@ -153,7 +157,7 @@ void bind_Pythia8_StandardModel(std::function< pybind11::module &(std::string co
 		cl.def("alphaEM", (double (Pythia8::AlphaEM::*)(double)) &Pythia8::AlphaEM::alphaEM, "C++: Pythia8::AlphaEM::alphaEM(double) --> double", pybind11::arg("scale2"));
 		cl.def("assign", (class Pythia8::AlphaEM & (Pythia8::AlphaEM::*)(const class Pythia8::AlphaEM &)) &Pythia8::AlphaEM::operator=, "C++: Pythia8::AlphaEM::operator=(const class Pythia8::AlphaEM &) --> class Pythia8::AlphaEM &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::CoupSM file:Pythia8/StandardModel.h line:135
+	{ // Pythia8::CoupSM file:Pythia8/StandardModel.h line:142
 		pybind11::class_<Pythia8::CoupSM, std::shared_ptr<Pythia8::CoupSM>> cl(M("Pythia8"), "CoupSM", "");
 		pybind11::handle cl_type = cl;
 
@@ -196,7 +200,7 @@ void bind_Pythia8_StandardModel(std::function< pybind11::module &(std::string co
 		cl.def("V2CKMpick", (int (Pythia8::CoupSM::*)(int)) &Pythia8::CoupSM::V2CKMpick, "C++: Pythia8::CoupSM::V2CKMpick(int) --> int", pybind11::arg("id"));
 		cl.def("assign", (class Pythia8::CoupSM & (Pythia8::CoupSM::*)(const class Pythia8::CoupSM &)) &Pythia8::CoupSM::operator=, "C++: Pythia8::CoupSM::operator=(const class Pythia8::CoupSM &) --> class Pythia8::CoupSM &", pybind11::return_value_policy::reference, pybind11::arg(""));
 	}
-	{ // Pythia8::AlphaSUN file:Pythia8/StandardModel.h line:226
+	{ // Pythia8::AlphaSUN file:Pythia8/StandardModel.h line:233
 		pybind11::class_<Pythia8::AlphaSUN, std::shared_ptr<Pythia8::AlphaSUN>, PyCallBack_Pythia8_AlphaSUN> cl(M("Pythia8"), "AlphaSUN", "");
 		pybind11::handle cl_type = cl;
 

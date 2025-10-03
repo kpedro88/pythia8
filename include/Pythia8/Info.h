@@ -108,6 +108,9 @@ public:
   // Pointer to the UserHooks object set for the run.
   UserHooksPtr   userHooksPtr{};
 
+  // Mutex that should be locked for thread-unsafe code.
+  mutex*         mutexPtr{};
+
   // Pointer to information about a HeavyIons run and the current event.
   // (Is nullptr if HeavyIons object is inactive.)
   HIInfo*        hiInfo{};
@@ -187,6 +190,7 @@ public:
   double WDIS()               const {return WDISSave;}
   double xDIS()               const {return xDISSave;}
   double yDIS()               const {return yDISSave;}
+  bool   isDIS()              const {return isDISSave;}
 
   // Kinematics of photons from lepton beams.
   double xGammaA()            const {return x1GammaSave;}
@@ -514,6 +518,10 @@ public:
   void setOniumShower(bool oniumShowerIn) {oniumShower = oniumShowerIn;}
   bool getOniumShower() const {return oniumShower;}
 
+  // Check whether in initialization stage (init) or generating events (next).
+  void setInInit(bool inInitIn) {inInitSave = inInitIn;}
+  bool getInInit() const {return inInitSave;}
+
   // From here on what used to be the private part of the class.
 
   // Allow conversion from mb to pb.
@@ -525,7 +533,7 @@ public:
          eCMSave{}, sSave{};
 
   // Store initialization information.
-  bool   lowPTmin;
+  bool   lowPTmin, inInitSave{};
 
   // Store common integrated cross section quantities.
   long   nTry{}, nSel{}, nAcc{};
@@ -560,6 +568,7 @@ public:
 
   // DIS-specific kinematic variables.
   double Q2DISSave{}, WDISSave{}, xDISSave{}, yDISSave{};
+  bool   isDISSave{};
 
   // Variables related to photon kinematics.
   bool   isVMDstateAEvent{}, isVMDstateBEvent{};
@@ -587,7 +596,8 @@ public:
 
   // Set info on DIS-specific kinematic variables.
   void setDISKinematics(double Q2In, double WIn, double xIn, double yIn) {
-    Q2DISSave = Q2In; WDISSave = WIn; xDISSave = xIn; yDISSave = yIn;}
+    Q2DISSave = Q2In; WDISSave = WIn; xDISSave = xIn; yDISSave = yIn;
+    isDISSave = true;}
   // Set info related to gamma+gamma subcollision.
   void setX1Gamma( double x1GammaIn)     { x1GammaSave    = x1GammaIn;   }
   void setX2Gamma( double x2GammaIn)     { x2GammaSave    = x2GammaIn;   }
@@ -764,6 +774,15 @@ public:
     return weightContainerPtr->weightValueVector(); }
   vector<string> weightNameVector() const {
     return weightContainerPtr->weightNameVector(); }
+
+  // The random state is saved before the generation of an event
+  // starts. To be used for debugging purposes.
+  RndmState currentEventRndmState{};
+  void dumpRandomState(string fileName="EventRandomState.dat") const;
+  void readRandomState(string fileName="EventRandomState.dat") const;
+
+  // Special variables for (below-threshold) toponium production.
+  double toponiumE, toponiumm3, toponiumm4;
 
 };
 

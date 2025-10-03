@@ -12,7 +12,6 @@ Back to <a href="../ExampleKeywords.html" target="page">index.</a>
 //            Nadine Fischer
 
 // Keywords:
-//            <a href="../ExampleKeywords.html#dire">Dire</a>
 //            <a href="../ExampleKeywords.html#vincia">Vincia</a>
 //            <a href="../ExampleKeywords.html#hepmc">Hepmc</a>
 //            <a href="../ExampleKeywords.html#openmp">OpenMP</a>
@@ -48,7 +47,7 @@ int main( int argc, char* argv[] ) {
   InputParser ip(&quot;Visualize an event with graphivz.&quot;,
     {&quot;./main224 --nevents 50 --setting \&quot;WeakSingleBoson:ffbar2gmZ=on\&quot;&quot;,
         &quot;./main224 --input main224.cmnd --hepmc_output myfile.hepmc&quot;});
-  ip.add(&quot;v&quot;, &quot;false&quot;, &quot;Saves an event for visialization.&quot;,
+  ip.add(&quot;v&quot;, &quot;false&quot;, &quot;Saves an event for visualization.&quot;,
     {&quot;-visualize_event&quot;});
   ip.add(&quot;n&quot;, &quot;-1&quot;, &quot;Number of events to generate.&quot;,
     {&quot;-nevents&quot;});
@@ -185,8 +184,7 @@ int main( int argc, char* argv[] ) {
     string setting = settings[i];
     replace(setting.begin(), setting.end(), &apos;&quot;&apos;, &apos; &apos;);
 
-    // Skip Dire settings at this stage.
-    if (setting.find(&quot;Dire&quot;) != string::npos) continue;
+    // Skip enhance settings at this stage.
     if (setting.find(&quot;Enhance&quot;) != string::npos) continue;
 
     for (int j = 0; j &lt; int(pythiaPtr.size()); ++j) {
@@ -218,7 +216,6 @@ int main( int argc, char* argv[] ) {
   PDFPtr pdfAPtr = nullptr;
   PDFPtr pdfBPtr = nullptr;
 
-  // Allow Pythia to use Dire merging classes.
   for (int i = 0; i &lt; int(pythiaPtr.size()); ++i) {
     if (pdfAPtr != nullptr) pythiaPtr[i]-&gt;setPDFAPtr(pdfAPtr);
     if (pdfBPtr != nullptr) pythiaPtr[i]-&gt;setPDFBPtr(pdfBPtr);
@@ -486,9 +483,6 @@ int main( int argc, char* argv[] ) {
         if ( pythiaPtr[j]-&gt;info.atEndOfFile() ) break;
         else continue;
       }
-
-      // Do MEM.
-      if (pythiaPtr[j]-&gt;settings.flag(&quot;Dire:doMEM&quot;)) { ; }
 
       // Get event weight(s).
       double evtweight = pythiaPtr[j]-&gt;info.weight();

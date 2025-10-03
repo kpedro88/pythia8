@@ -51,9 +51,16 @@ int main() {
     //      are judged (according to the POWHEG settings) to double-count the
     //      POWHEG one.
     if (powhegVeto &gt; 0) {
-      if (showerModel == 1 || showerModel == 3) {
-        // For PYTHIA&apos;s simple shower (and also for Dire), the FSR and ISR
-        // shower starting scales are set by the respective pTmaxMatch values.
+      if (showerModel == 2) {
+        // Vincia has common settings that apply to both ISR and FSR.
+        pythia.readString(&quot;Vincia:pTmaxMatch = 2&quot;);
+        // Use undamped power showers, except for cases for which there could
+        // be an interplay with ISR branchings not simulated by the pure
+        // shower, like g-&gt;tt.
+        pythia.readString(&quot;Vincia:pTdampMatch = 3&quot;);
+      } else {
+        // PYTHIA&apos;s default is to set the FSR and ISR shower starting scales
+        // by the respective pTmaxMatch values.
         pythia.readString(&quot;TimeShower:pTmaxMatch = 2&quot;);
         pythia.readString(&quot;SpaceShower:pTmaxMatch = 2&quot;);
         // Use undamped power showers, except for cases for which there could
@@ -61,13 +68,6 @@ int main() {
         // shower, like ISR g-&gt;tt.
         pythia.readString(&quot;SpaceShower:pTdampMatch = 3&quot;);
         pythia.readString(&quot;TimeShower:pTdampMatch = 0&quot;);
-      } else if (showerModel == 2) {
-        // Vincia has common settings that apply to both ISR and FSR.
-        pythia.readString(&quot;Vincia:pTmaxMatch = 2&quot;);
-        // Use undamped power showers, except for cases for which there could
-        // be an interplay with ISR branchings not simulated by the pure
-        // shower, like g-&gt;tt.
-        pythia.readString(&quot;Vincia:pTdampMatch = 3&quot;);
       }
     }
 

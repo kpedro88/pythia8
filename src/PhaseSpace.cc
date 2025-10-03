@@ -162,6 +162,7 @@ void PhaseSpace::init(bool isFirst, SigmaProcessPtr sigmaProcessPtrIn) {
   pTHatMinDiverge      = parm("PhaseSpace:pTHatMinDiverge");
 
   // Special cut on DIS Q2 = -tHat.
+  Q2GlobalMax          = parm("PhaseSpace:Q2Max");
   Q2GlobalMin          = parm("PhaseSpace:Q2Min");
   hasQ2Min             = ( Q2GlobalMin >= pow2(pTHatMinDiverge) );
 
@@ -199,6 +200,13 @@ void PhaseSpace::init(bool isFirst, SigmaProcessPtr sigmaProcessPtrIn) {
   bias2SelPow      = parm("PhaseSpace:bias2SelectionPow");
   bias2SelRef      = parm("PhaseSpace:bias2SelectionRef");
   if (canBias2Sel) pTHatGlobalMin = max( pTHatGlobalMin, pTHatMinDiverge);
+
+  // Parameters for special top threshold handling in gg/qqbar -> ttbar.
+  int codeTmp       = sigmaProcessPtr->code();
+  doTopPair         = (codeTmp == 601 || codeTmp == 602);
+  topThresholdModel = (doTopPair) ? mode("TopThreshold:model") : 0;
+  topThresholdWidth = (topThresholdModel == 4)
+    ? parm("TopThreshold:width") : 0.;
 
   // Default event-specific kinematics properties.
   x1H             = 1.;
@@ -723,7 +731,6 @@ bool PhaseSpace::setupSampling123(bool is2, bool is3) {
     return false;
   }
 
-
   // Solve respective equation system for better phase space coefficients.
   if (!hasTwoPointParticles) solveSys( nTau, binTau, vecTau, matTau, tauCoef);
   if (!hasOnePointParticle && !hasTwoPointParticles)
@@ -1025,6 +1032,9 @@ bool PhaseSpace::trialKin123(bool is2, bool is3, bool inEvent) {
   }
   selectTau( iTau, rndmPtr->flat(), is2);
 
+  // Special case for ttbar production below threshold.
+  if (topThresholdModel == 4 && sqrt(sH) - m3 - m4 < MASSMARGIN) return false;
+
   // Choose y according to h2(y), where
   // h2(y) = (c0/I0) * 1/cosh(y)
   // + (c1/I1) * (y-ymin) + (c2/I2) * (ymax-y)
@@ -1146,6 +1156,8 @@ bool PhaseSpace::limitTau(bool is2, bool is3) {
   }
 
   // Requirements from allowed mHat range and allowed Q2Min.
+  // Notice that at this point quark flavour not sampled for DIS so
+  // masses not available. Masses accounted at finalKin().
   tauMin = sHatMin / s;
   if (is2 && hasQ2Min && Q2GlobalMin + s3 + s4 > sHatMin)
     tauMin = (Q2GlobalMin + s3 + s4) / s;
@@ -1156,7 +1168,8 @@ bool PhaseSpace::limitTau(bool is2, bool is3) {
     double mT3Min = sqrt(s3 + pT2HatMin);
     double mT4Min = sqrt(s4 + pT2HatMin);
     double mT5Min = (is3) ? sqrt(s5 + pT2HatMin) : 0.;
-    tauMin = max( tauMin, pow2(mT3Min + mT4Min + mT5Min) / s);
+    tauMin = max( tauMin, pow2(mT3Min + mT4Min + mT5Min
+      - 2. * topThresholdWidth) / s);
   }
 
   // Check that there is an open range.
@@ -1214,6 +1227,8 @@ bool PhaseSpace::limitZ() {
   zPosMax =  zMax;
 
   // Optionally introduce Q2 = -tHat cut.
+  // Notice that masses of particles 3 and 4 not known for DIS at this point
+  // but these are accounted in finalKin() below.
   if (hasQ2Min) {
     double zMaxQ2 = (sH - s3 - s4 - 2. * Q2GlobalMin) / (2. * pAbs * mHat);
     if (zMaxQ2 > zPosMin) {
@@ -1321,9 +1336,29 @@ void PhaseSpace::selectTau(int iTau, double tauVal, bool is2) {
       * tau / max( LEPTONTAUMIN, 1. - tau);
   wtTau = 1. / invWtTau;
 
-  // Calculate sHat and absolute momentum of outgoing partons.
+  // Calculate sHat. Save "original" quantities in case of new top masses.
   sH = tau * s;
   mHat = sqrt(sH);
+  if (doTopPair) {
+    eThreshold  = mHat - m3 - m4;
+    m3Threshold = m3;
+    m4Threshold = m4;
+    infoPtr->toponiumE  = eThreshold;
+    infoPtr->toponiumm3 = m3Threshold;
+    infoPtr->toponiumm4 = m4Threshold;
+
+    // For top pair production below threshold: pick new masses above it.
+    if (eThreshold <= 0.) {
+      do {
+        m3 = particleDataPtr->mSelInRange(6, 0., m3Threshold);
+        m4 = particleDataPtr->mSelInRange(6, 0., m4Threshold);
+      } while (m3 + m4 + MASSMARGIN > mHat);
+      s3 = m3 * m3;
+      s4 = m4 * m4;
+    }
+  }
+
+  // Calculate absolute momentum of outgoing partons.
   if (is2) {
     p2Abs = 0.25 * (pow2(sH - s3 - s4) - 4. * s3 * s4) / sH;
     pAbs = sqrtpos( p2Abs );
@@ -1405,6 +1440,7 @@ void PhaseSpace::selectY(int iY, double yVal) {
   // Calculate x1 and x2.
   x1H = sqrt(tau) * exp(y);
   x2H = sqrt(tau) * exp(-y);
+
 }
 
 //--------------------------------------------------------------------------
@@ -2106,7 +2142,7 @@ bool PhaseSpace2to2tauyz::finalKin() {
 
   // Check that phase space still open after new mass assignment.
   if (m3 + m4 + MASSMARGIN > mHat) {
-    loggerPtr->WARNING_MSG("failed after mass assignment");
+    if (m3 + m4 > mHat) loggerPtr->WARNING_MSG("failed after mass assignment");
     return false;
   }
   p2Abs = 0.25 * (pow2(sH - s3 - s4) - 4. * s3 * s4) / sH;
@@ -2133,23 +2169,71 @@ bool PhaseSpace2to2tauyz::finalKin() {
     pH[1] = Vec4( 0., 0.,  eCM1, eCM1);
     pH[2] = Vec4( 0., 0., -eCM2, eCM2);
 
-  // Special kinematics for DIS to preserve lepton mass.
+  // Special kinematics for internal DIS events to preserve lepton mass.
   } else if ( ( (beamAPtr->isLepton() && beamBPtr->isHadron())
-             || (beamBPtr->isLepton() && beamAPtr->isHadron()) )
-             && !(flag("PDF:beamA2gamma") || flag("PDF:beamB2gamma") ) ) {
-    mH[1] = mA;
-    mH[2] = mB;
-    double pzAcm = 0.5 * sqrtpos( (eCM + mA + mB) * (eCM - mA - mB)
-      * (eCM - mA + mB) * (eCM + mA - mB) ) / eCM;
-    double eAcm  = sqrt( mH[1]*mH[1] + pzAcm*pzAcm);
-    double pzBcm = -pzAcm;
-    double eBcm  = sqrt( mH[2]*mH[2] + pzBcm*pzBcm);
-    pH[1] = Vec4( 0., 0., pzAcm * x1H, eAcm * x1H);
-    pH[2] = Vec4( 0., 0., pzBcm * x2H, eBcm * x2H);
+      || (beamBPtr->isLepton() && beamAPtr->isHadron()) )
+      && (sigmaProcessPtr->code() == 211 || sigmaProcessPtr->code() == 212) ) {
+
+    // Find mass of incoming lepton, keep parton massless.
+    int leptonDir = beamAPtr->isLepton() ? 1 : -1;
+    mH[1] = leptonDir ==  1 ? particleDataPtr->m0(sigmaProcessPtr->id(1)) : 0.;
+    mH[2] = leptonDir == -1 ? particleDataPtr->m0(sigmaProcessPtr->id(2)) : 0.;
+    double s1 = pow2(mH[1]);
+    double s2 = pow2(mH[2]);
+    double sLepton = leptonDir == 1 ? s1 : s2;
+
+    // Derive 4-momenta for the incoming lepton and the in their CM frame.
+    double pzIn = 0.5 * (sH - sLepton) / mHat;
+    double eH1  = 0.5 * (sH + s1 - s2) / mHat;
+    double eH2  = 0.5 * (sH - s1 + s2) / mHat;
+    pH[1] = Vec4( 0., 0.,  pzIn, eH1);
+    pH[2] = Vec4( 0., 0., -pzIn, eH2);
+
+    // Derive 4-momentum for the outgoing particles accounting their masses
+    // that are known only at this point.
+    double pzOut = 0.5 * sqrtpos( (mHat + mH[3] + mH[4])*(mHat - mH[3] - mH[4])
+         * (mHat - mH[3] + mH[4]) * (mHat + mH[3] - mH[4]) ) / mHat;
+    double eH3 = 0.5 * (sH + s3 - s4) / mHat;
+    double eH4 = 0.5 * (sH - s3 + s4) / mHat;
+    pH[3] = Vec4( 0., 0.,  pzOut, eH3);
+    pH[4] = Vec4( 0., 0., -pzOut, eH4);
+
+    // Recalculate kinematics and check cuts now that masses are available.
+    // Calculate tHat from (p1-p3)^2, works also if lepton as the beam B.
+    tH = s1 + s3 - 2. * eH1 * eH3  + 2. * pzIn * pzOut * z;
+    if ( hasQ2Min && (-tH < Q2GlobalMin) ) return false;
+    if ( (Q2GlobalMax > Q2GlobalMin) && (-tH > Q2GlobalMax) ) return false;
+
+    // Then rotate and boost them to overall CM frame.
+    theta = acos(z);
+    phi   = 2. * M_PI * rndmPtr->flat();
+    pH[3].rot( theta, phi);
+    pH[4].rot( theta, phi);
+    pAbs = pzOut;
+    pTH = pAbs * sin(theta);
+
+    // Boost particles to beam CM frame.
+    double pCMS = 0.5 * sqrtpos( (eCM + mA - mB) * (eCM - mA + mB)
+                               * (eCM - mA - mB) * (eCM + mA + mB) ) / eCM ;
+    double eCMS = sqrt( pow2(pCMS) + sLepton );
+    double pSum = leptonDir == 1 ? pH[1].e() + pH[1].pz()
+      : pH[2].e() - pH[2].pz();
+    double gamma = ( eCMS + pCMS ) / pSum;
+    betaZ = leptonDir * ( pow2(gamma) - 1. ) / ( pow2(gamma) + 1. );
+    pH[1].bst( 0., 0., betaZ);
+    pH[2].bst( 0., 0., betaZ);
+    pH[3].bst( 0., 0., betaZ);
+    pH[4].bst( 0., 0., betaZ);
+
+    // Overwrite the kinematics with the recalculated ones.
+    sigmaProcessPtr->set2Kin( x1H, x2H, sH, tH, m3, m4, runBW3H, runBW4H);
+
+    // Done for DIS.
+    return true;
 
   // Default kinematics with incoming partons along beam axes.
   } else {
-    pH[1] = Vec4( 0., 0., 0.5 * eCM * x1H, 0.5 * eCM * x1H);
+    pH[1] = Vec4( 0., 0.,  0.5 * eCM * x1H, 0.5 * eCM * x1H);
     pH[2] = Vec4( 0., 0., -0.5 * eCM * x2H, 0.5 * eCM * x2H);
   }
 
@@ -2169,6 +2253,7 @@ bool PhaseSpace2to2tauyz::finalKin() {
 
   // Done.
   return true;
+
 }
 
 //--------------------------------------------------------------------------

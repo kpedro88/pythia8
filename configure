@@ -329,8 +329,7 @@ if [ "$ARCH" != "LINUX" ] && [ "$ARCH" != "DARWIN" ]; then
     warn "Unknown architecture $ARCH, set as LINUX."; ARCH="LINUX"; fi
 if [ -z "$CXX" ]; then warn "CXX not set, using g++."; CXX="g++"; fi
 if [ -z "$CXX_COMMON" ]; then
-    CXX_COMMON="${ENABLE_DEBUG}-std=c++11 -pedantic -W -Wall -Wshadow -fPIC"
-    CXX_COMMON="${CXX_COMMON} -pthread"; fi
+    CXX_COMMON="${ENABLE_DEBUG}-std=c++11 -pedantic -W -Wall -Wshadow -fPIC"; fi
 if [ -z "$CXX_SHARED" ]; then
     if [ "$ARCH" = "LINUX" ];  then CXX_SHARED="-shared"; fi
     if [ "$ARCH" = "DARWIN" ]; then CXX_SHARED="-dynamiclib"; fi; fi

@@ -460,6 +460,42 @@ double ParticleDataEntry::mSel() const {
 
 //--------------------------------------------------------------------------
 
+// Set a temporary mass range for BW selection.
+
+double ParticleDataEntry::mSelInRange(double mMinNowIn, double mMaxNowIn) {
+
+  // Save current range values and calculate new mass limits.
+  double atanLowSave = atanLow;
+  double atanDifSave = atanDif;
+  double mMinNow     = max( mMinSave, mMinNowIn);
+  double mMaxNow     = (mMaxSave > mMinSave) ? min( mMaxSave, mMaxNowIn)
+                     : mMaxNowIn;
+
+  // Find new atan expressions to be used in random mass selection.
+  if (modeBWnow < 3) {
+    atanLow = atan( 2. * (mMinNow - m0Save) / mWidthSave );
+    double atanHigh = (mMaxNow > mMinNow)
+      ? atan( 2. * (mMaxNow - m0Save) / mWidthSave ) : 0.5 * M_PI;
+    atanDif = atanHigh - atanLow;
+  } else {
+    atanLow = atan( (pow2(mMinNow) - pow2(m0Save))
+      / (m0Save * mWidthSave) );
+    double atanHigh = (mMaxNow > mMinNow)
+      ? atan( (pow2(mMaxNow) - pow2(m0Save)) / (m0Save * mWidthSave) )
+      : 0.5 * M_PI;
+    atanDif = atanHigh - atanLow;
+  }
+
+  // Call mSel for these limits, restore old range, and provide answer.
+  double mTemp = mSel();
+  atanLow = atanLowSave;
+  atanDif = atanDifSave;
+  return mTemp;
+
+}
+
+//--------------------------------------------------------------------------
+
 // Function to calculate running mass at given mass scale.
 
 double ParticleDataEntry::mRun(double mHat) const {
@@ -1099,8 +1135,7 @@ bool ParticleData::processXML(bool reset) {
 void ParticleData::listXML(string outFile) {
 
   // Convert file name to ofstream.
-  const char* cstring = outFile.c_str();
-  ofstream os(cstring);
+  ofstream os(outFile.c_str());
 
   // Iterate through the particle data table.
   for (auto pdtEntry = pdt.begin(); pdtEntry != pdt.end(); ++pdtEntry) {
@@ -1282,8 +1317,7 @@ bool ParticleData::readFF(string inFile, bool reset) {
 void ParticleData::listFF(string outFile) {
 
   // Convert file name to ofstream.
-    const char* cstring = outFile.c_str();
-    ofstream os(cstring);
+  ofstream os(outFile.c_str());
 
   // Iterate through the particle data table.
   for (auto pdtEntry = pdt.begin(); pdtEntry != pdt.end(); ++pdtEntry) {

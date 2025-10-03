@@ -2346,7 +2346,7 @@ Vec4 ColourReconnection::getVProd(int iJun, const ColourDipolePtr& dip,
 
 // ------------------------------------------------------------------
 
-// Check that the transverse distance between centres of two dipoles
+// Check that the transverse distance between centers of two dipoles
 // is not too large.
 bool ColourReconnection::checkDist(const ColourDipolePtr& dip1,
                                    const ColourDipolePtr& dip2) const {

@@ -36,6 +36,7 @@ void PhysicsBase::initInfoPtr(Info& infoIn) {
   sigmaTotPtr      = infoPtr->sigmaTotPtr;
   sigmaCmbPtr      = infoPtr->sigmaCmbPtr;
   userHooksPtr     = infoPtr->userHooksPtr;
+  mutexPtr         = infoPtr->mutexPtr;
 
   beamAPtr         = &beamSetupPtr->beamA;
   beamBPtr         = &beamSetupPtr->beamB;

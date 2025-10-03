@@ -285,7 +285,6 @@ double SuppressSmallPT::multiplySigmaBy( const SigmaProcess* sigmaProcessPtr,
 
 }
 
-
 //==========================================================================
 
 } // end namespace Pythia8

@@ -23,22 +23,22 @@ Merging:muFacInME           = 91.188
 Merging:muRenInME           = 91.188
 
 ! Optionally use same PDFs and alphaS as in ME calculation.
-! PDF:pSet                   = LHAPDF6:CT10nlo
-! SpaceShower:alphaSvalue    = 0.118
-! TimeShower:alphaSvalue     = 0.118
+! PDF:pSet                  = LHAPDF6:CT10nlo
+! SpaceShower:alphaSvalue   = 0.118
+! TimeShower:alphaSvalue    = 0.118
 
 ! Optionally switch off rapidity ordering.
 SpaceShower:rapidityOrder   = off
 
 ! Optionally write HepMC events.
-! (Pythia has to be configured with --with-hepmc3 or --with-rivet).
+! (Pythia has to be configured with --with-hepmc3).
 Main:HepMC                  = on
 HepMC:output                = main164ckkwl.hepmc
 
 ! Optionally include Rivet analyses.
 ! (Pythia has to be configured with --with-rivet).
-Main:Rivet                  = on
-Rivet:output                = main164ckkwl.yoda
+Init:plugins                = {libpythia8rivet.so::RivetHooks}
+Rivet:fileName              = main164ckkwl.yoda
 Rivet:analyses              = {MC_XS,MC_WEIGHTS}
 
 ! Subruns for CKKW-L merging.

@@ -4,7 +4,7 @@
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
 // Header file for the classes involved in the modelling of
-// fragmentation. A FragmentationModel has one main methd, fragment,
+// fragmentation. A FragmentationModel has one main method, fragment,
 // which takes the color subsystem, color configuration, and
 // event. Optional flags can be passed if the event is diffractive and
 // if system recoil should be used in some cases. The class hold
@@ -55,8 +55,8 @@ protected:
 
 //==========================================================================
 
-// Forward reference to StringFragmentation and
-// MiniStringFragmentation classes; needed in LundFragmentation class.
+// Forward reference to StringFragmentation and MiniStringFragmentation
+// classes; needed in LundFragmentation class.
 class StringFragmentation;
 class MiniStringFragmentation;
 

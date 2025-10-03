@@ -316,13 +316,26 @@ change the title of a histogram, but keep other properties unchanged.
 reset bin contents, but keep other histogram properties unchanged. 
 </method> 
  
-<method name="void Hist::fill(double xValue, double weight)"> 
+<method name="void Hist::fill(double xValue, double weight, double wstat)"> 
 fill the histogram, where 
 <argument name="xValue"> 
-is the <ei>x</ei> position where the filling should occur, and 
+is the <ei>x</ei> position where the filling should occur, 
 </argument> 
 <argument name="weight" default="1."> 
-is the amount of weight to be added at this <ei>x</ei> value. 
+is the amount of weight to be added at this <ei>x</ei> value, and 
+</argument> 
+<argument name="sigma" default="-1."> 
+allows to assign the weight being added a statistical uncertainty larger or 
+smaller than the weight itself. For values <code>sigma &gt; 0</code>, 
+the statistical uncertainty of the weight being added is interpreted 
+as an absolute value; i.e., <code>weight</code> &pm; 
+<code>sigma</code> is added to the histogram contents. 
+For values <code>sigma &lt; 0</code>, it is interpreted relative to 
+the weight itself, as &pm; <code>-sigma * weight</code>. 
+Thus, to add 
+<ei>100 &pm; 10</ei> to a histogram bin, one could call either 
+<code>fill( x, 100., 10. )</code> 
+or <code>fill( x, 100., -0.1 )</code>. 
 </argument> 
 </method> 
  
@@ -361,6 +374,21 @@ just below or above the regular histogram bins.)
 <ei>x</ei> value at the beginning of each bin printed, rather than the 
 default midpoint value. Finally, the optional <code>printError = 
 false</code> will force the values in the third column to be zero. 
+</methodmore> 
+ 
+<method name="void Hist::yodaTable(ostream&amp; os = cout, 
+string path = &quot;hist&quot;, double scaledBy = 1.0, 
+vector&lt;int&gt; maskedBins = {})"> 
+</method> 
+<methodmore name="void Hist::yodaTable(string fileName, 
+string path = &quot;hist&quot;, double scaledBy = 1.0, 
+vector&lt;int&gt; maskedBins = {})"> 
+print YODA <code>ESTIMATE1D_V3</code> histogram. Here, the arguments 
+provide additional information that can be stored in a YODA histogram: 
+<code>path</code> is the plotting path for the histogram, 
+<code>scaledBy</code> is the histogram scale, and <code>maskedBins</code> 
+is a vector of bin indices to mask. The choice between the two methods 
+is the same as above for the <code>table</code> methods. 
 </methodmore> 
  
 <method name="void Hist::rivetTable(ostream&amp; os = cout, 
@@ -476,6 +504,13 @@ Return median in X and its statistical error, ignoring underflow and
  median), but this can be switched off <code>(unbinned = false)</code>. 
 </methodmore> 
  
+<method name="double getXPercentile(double n, bool includeOverUnder = false)"> 
+Return <ei>n</ei>'th percentile in X, ignoring underflow and overflow 
+(default) or including them <code>(includeOverUnder = true)</code>. 
+The input value for <ei>n</ei> is assumed to be in percent. Thus, 
+e.g., for the 90th percentile, use <code>n = 90.0</code>. 
+</method> 
+ 
 <method name="double getYMean()"> 
 Return the average value in Y, calculated as the sum of weights inside 
 the histogram range divided by the number of times it was filled. 
@@ -499,9 +534,9 @@ which the bin granularity error is not estimated).
 <method name="double getXRMS(bool unbinned=true)"> 
 </method> 
 <methodmore name="double getXRMSErr(bool unbinned=true)"> 
-Wrapper of <code>getXRMN()</code> to return the root-mean-square 
-width (aka the root of the second central moment, aka the 
-root-mean-square deviation about the mean), and its error. If <code>unbinned = 
+Wrapper of <code>getXRMN()</code> to return the root-mean-square width 
+(aka the root of the second central moment, aka the root-mean-square 
+deviation about the mean), and its error. If <code>unbinned = 
 false</code> an estimate of the bin granularity error is added in 
 quadrature to the statistical error. 
 </methodmore> 
@@ -512,8 +547,25 @@ return the value in bin <code>iBin</code>, ranging from 1 through
 <code>numberOfBins + 1</code> for overflow. 
 </method> 
  
+<method name="double Hist::getBinError(int iBin)"> 
+return the error in bin <code>iBin</code>, ranging from 1 through 
+<code>numberOfBins</code>. Note: with the value defined as the sum of 
+weights in the bin, the error is defined the square root of the sum of 
+squared weights. 
+</method> 
+ 
+<method name="double Hist::getBinError2(int iBin)"> 
+return the error squared in bin <code>iBin</code>, ranging from 1 
+through <code>numberOfBins</code>. 
+</method> 
+ 
 <method name="double Hist::getBinEdge(int iBin)"> 
 return the lower edge of bin <code>iBin</code>, ranging from 1 through 
+<code>numberOfBins</code>. 
+</method> 
+ 
+<method name="double Hist::getBinCenter(int iBin)"> 
+return the center of bin <code>iBin</code>, ranging from 1 through 
 <code>numberOfBins</code>. 
 </method> 
  
@@ -523,11 +575,27 @@ return the width of bin <code>iBin</code>, ranging from 1 through
 </method> 
  
 <method name="vector&lt;double&gt; Hist::getBinContents()"> 
-return the bin contents. 
+the same as <code>getBinContent</code>, but for all bins. 
+</method> 
+ 
+<method name="vector&lt;double&gt; Hist::getBinErrors()"> 
+the same as <code>getBinError</code>, but for all bins. 
+</method> 
+ 
+<method name="vector&lt;double&gt; Hist::getBinError2s()"> 
+the same as <code>getBinError2</code>, but for all bins. 
 </method> 
  
 <method name="vector&lt;double&gt; Hist::getBinEdges()"> 
-return the bin edges. 
+the same as <code>getBinEdges</code>, but for all bins. 
+</method> 
+ 
+<method name="vector&lt;double&gt; Hist::getBinWidths()"> 
+the same as <code>getBinWidths</code>, but for all bins. 
+</method> 
+ 
+<method name="vector&lt;double&gt; Hist::getBinCenters()"> 
+the same as <code>getBinCenters</code>, but for all bins. 
 </method> 
  
 <method name="int Hist::getEntries(bool alsoNonFinite = true)"> 

@@ -112,6 +112,7 @@ bool PythiaParallel::init(function<bool(Pythia*)> customInit) {
     initThreads.emplace_back([=, &seeds, &initSuccess]() {
       Pythia* pythiaPtr = new Pythia(settings, particleData, false);
       pythiaObjects[iPythia] = unique_ptr<Pythia>(pythiaPtr);
+      pythiaObjects[iPythia]->infoPrivate.mutexPtr = &mainMutex;
       pythiaObjects[iPythia]->settings.flag("Print:quiet", true);
       pythiaObjects[iPythia]->settings.flag("Random:setSeed", true);
       pythiaObjects[iPythia]->settings.mode("Random:seed", seeds[iPythia]);
@@ -264,6 +265,42 @@ void PythiaParallel::foreachAsync(function<void(Pythia*)> action) {
     threads.emplace_back(action, pythiaPtr.get());
   for (thread& threadNow : threads)
     threadNow.join();
+
+}
+
+//--------------------------------------------------------------------------
+
+// Write final statistics, combining errors from each Pythia instance.
+// For all PhysicsBase objects, combine that PhysicsBase object across
+// all threads, if onStat is defined for that specific PhysicsBase
+// type.
+
+void PythiaParallel::stat(bool combine) {
+
+  // Loop through all PhysicsBase-derived objects.
+  if (combine && pythiaObjects.size() > 0) {
+    Pythia* pythiaFirst = pythiaObjects[0].get();
+    for (int iPtr = 0; iPtr < (int)pythiaFirst->physicsPtrs.size(); ++iPtr) {
+      vector<PhysicsBase*> ptrs;
+      for (int iPythia = 0; iPythia < (int)pythiaObjects.size(); ++iPythia) {
+
+        // Check the PhysicsBase objects are consistent.
+        if (pythiaObjects[iPythia]->physicsPtrs.size() !=
+          pythiaFirst->physicsPtrs.size()) {
+          logger.ERROR_MSG("inconsistent Pythia instance, skipping thread ",
+            toString(iPythia));
+          continue;
+        }
+
+        // Push back the PhysicsBase object.
+        ptrs.push_back(pythiaObjects[iPythia]->physicsPtrs[iPtr]);
+      }
+      pythiaFirst->physicsPtrs[iPtr]->onStat(ptrs, &pythiaHelper);
+    }
+  }
+
+  // Print the stats.
+  pythiaHelper.stat();
 
 }
 

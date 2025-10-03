@@ -29,9 +29,9 @@ formally of higher order), so do not necessarily expect perfect
 agreement, especially not at small <i>Q^2</i> scales. The starting 
 <i>alpha_strong</i> value is defined at the <i>M_Z</i> mass scale. 
 The <i>Lambda</i> values are matched at the <i>c</i>, <i>b</i> 
-and <i>t</i> flavour thresholds, 
-such that <i>alpha_strong</i> is continuous. 
-For second- or third-order matching an approximate iterative method is used. 
+and <i>t</i> flavour thresholds, such that <i>alpha_strong</i> is 
+continuous. For second- or third-order matching an approximate 
+iterative method is used. 
  
 <p/> 
 For backwards compatibility, 
@@ -94,6 +94,25 @@ be aware that the original CMW arguments were derived using two-loop running
 and that the CMW rescaling may need be taken into account in the context of 
 matrix-element matching. Note also that this option has only been made 
 available for timelike and spacelike showers, not for hard processes. 
+ 
+<p/> 
+Different approaches can be taken to handle the divergence of the strong 
+coupling as the scale argument approaches the 3-flavour value of 
+<i>Lambda_QCD</i>. At the most basic level, PYTHIA implementes a 
+protection against unphysical evaluations via a 
+safety margin, <i>scale &rarr; max(scale, SAFETY * 
+Lambda_QCD(NF=3)</i>, that prevents evaluations too close to 
+<i>Lambda_QCD(NF=3)</i>. Hardcoded values for the <i>SAFETY</i> 
+factor of 1.07 for first-order running and 1.33 for higher-order 
+running effectively freeze the coupling at a value of order 10, beyond 
+which any application of perturbation theory would be senseless 
+anyway. In some cases such as for timelike showers, additional options 
+may also be available, e.g., to shift the <i>scale</i> argument by 
+an amount of order <i>Lambda_QCD</i> and/or to freeze the effective 
+coupling at a lower value than that given by the hard limit above. 
+Where available, such options are documented on 
+the HTML page for the relevant physics model, cf., e.g., the one 
+on <a href="TimelikeShowers.html" target="page">Timelike Showers</a>. 
  
 <a name="section1"></a> 
 <h3>The electromagnetic coupling</h3> 

@@ -29,26 +29,6 @@ CXX_COMMON:=$(OBJ_COMMON) -I$(PREFIX_INCLUDE) $(CXX_COMMON) $(GZIP_LIB)
 CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl
 PYTHIA=$(PREFIX_LIB)/libpythia8$(LIB_SUFFIX)
 
-# Define RIVET options and fix C++ version, rpath, missing HDF5.
-ifeq ($(RIVET_USE),true)
-  COMMA=,
-  RIVET_VERSION=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --version)
-  RIVET_LPATH=$(filter -L%,$(shell $(RIVET_BIN)$(RIVET_CONFIG) --ldflags))
-  RIVET_FLAGS=$(subst -L,-Wl$(COMMA)-rpath$(COMMA),$(RIVET_LPATH))
-  RIVET_FLAGS+= $(shell $(RIVET_BIN)$(RIVET_CONFIG) --cppflags --libs)
-  RIVET_CSTD=c++14
-  ifeq ("4.0.0","$(word 1, $(sort 4.0.0 $(RIVET_VERSION)))")
-    RIVET_CSTD=c++17
-    RIVET_LDIR=$(shell $(RIVET_BIN)$(RIVET_CONFIG) --libdir)
-    RIVET_HDF5=$(shell nm $(RIVET_LDIR)/libRivet$(LIB_SUFFIX) | grep H5open)
-    ifneq ($(strip $(RIVET_HDF5)),)
-      RIVET_FLAGS+= -lhdf5
-    endif
-  endif
-  RIVET_OPTS=$(CXX_COMMON:c++11=$(RIVET_CSTD)) $(RIVET_FLAGS)
-  RIVET_OPTS+= $(CXX_DTAGS) -DRIVET
-endif
-
 # Define additional dependency options.
 EVTGEN_OPTS=$(EVTGEN_INCLUDE) $(EVTGEN_LIB) -DEVTGEN_PYTHIA -DEVTGEN_EXTERNAL
 HEPMC2_OPTS=$(HEPMC2_INCLUDE) $(HEPMC2_LIB) -DHEPMC2
@@ -59,6 +39,8 @@ FASTJET3_OPTS=$(FASTJET3_INCLUDE) $(FASTJET3_LIB)
 ifeq ($(ROOT_USE),true)
   ROOT_OPTS=$(ROOT_LIB) $(shell $(ROOT_CONFIG) --cflags --glibs) -DPY8ROOT
 endif
+YODA_OPTS=$(YODA_INCLUDE) $(YODA_LIB)
+YODA_OPTS+= $(shell $(YODA_BIN)/$(YODA_CONFIG) --libs)
 
 ################################################################################
 # RULES: Definition of the rules used to build the PYTHIA examples.
@@ -100,8 +82,7 @@ endif
 # YODA histogramming. Requires YODA version 2.0.0 or above.
 main114: $(PYTHIA) $$@.cc
 ifeq ($(YODA_USE),true)
-	$(CXX) $@.cc -o $@ -w $(CXX_COMMON:c++11=c++17)\
-	 $(YODA_INCLUDE) $(YODA_LIB)
+	$(CXX) $@.cc -o $@ -w $(CXX_COMMON:c++11=c++17) $(YODA_OPTS)
 else
 	$(error Error: $@ requires YODA)
 endif
@@ -142,10 +123,10 @@ else
 	$(error Error: $@ requires ROOT and FASTJET3)
 endif
 
-# RIVET with optional ROOT and ROOT user library.
+# Optional HEPMC3 or ROOT.
 main144: $(PYTHIA) $$@.cc $(if $(filter true,$(ROOT_USE)),$$@Dct.so)
-	$(CXX) $@.cc -o $@ -w\
-	 $(if $(filter true,$(RIVET_USE)),-w $(RIVET_OPTS),$(CXX_COMMON))\
+	$(CXX) $@.cc -o $@ -w $(CXX_COMMON)\
+	 $(if $(filter true,$(HEPMC3_USE)),$(HEPMC3_OPTS))\
 	 $(if $(filter true,$(ROOT_USE)),$@Dct.so $(ROOT_OPTS))
 
 # FASTJET3.
@@ -156,11 +137,12 @@ else
 	$(error Error: $@ requires FASTJET3)
 endif
 
-# Optional HDF5, HEPMC3, and RIVET.
+# Optional HDF5, HEPMC2, or HEPMC3.
 main164: $(PYTHIA) $$@.cc
-	$(CXX) $@.cc -o $@ $(if $(filter true,$(HDF5_USE)),$(HDF5_OPTS))\
-	 $(if $(filter true,$(HEPMC3_USE)),$(HEPMC3_OPTS))\
-	 $(if $(filter true,$(RIVET_USE)),-w $(RIVET_OPTS),$(CXX_COMMON))
+	$(CXX) $@.cc -o $@ $(CXX_COMMON)\
+	 $(if $(filter true,$(HDF5_USE)),$(HDF5_OPTS))\
+         $(if $(filter true,$(HEPMC2_USE)),$(HEPMC2_OPTS))\
+	 $(if $(filter true,$(HEPMC3_USE)),$(HEPMC3_OPTS))
 
 # FASTJET3 with recursive tools.
 main215: $(PYTHIA) $$@.cc
@@ -187,11 +169,6 @@ ifeq ($(EVTGEN_USE)$(HEPMC2_USE),truetrue)
 else
 	$(error Error: $@ requires EVTGEN)
 endif
-
-# Optional RIVET.
-main421: $(PYTHIA) $$@.cc
-	$(CXX) $@.cc -o $@ $(if $(filter true,$(RIVET_USE)),\
-	 -w $(RIVET_OPTS),$(CXX_COMMON))
 
 # Clean.
 clean:

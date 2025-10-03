@@ -19,8 +19,8 @@
 #include "Pythia8/HeavyIons.h"
 #include "Pythia8Plugins/InputParser.h"
 #include <chrono>
-#ifdef RIVET
-#include "Pythia8Plugins/Pythia8Rivet.h"
+#ifdef HEPMC3
+#include "Pythia8Plugins/HepMC3.h"
 #endif
 #ifdef PY8ROOT
 #include "TSystem.h"
@@ -101,26 +101,14 @@ int main(int argc, char* argv[]) {
     "\tMain:writeLog = on\n\t\tRedirect output to <-o prefix>.log.\n"
     "\tMain:writeHepMC = on \n\t\tWrite HepMC output, requires HepMC linked.\n"
     "\tMain:writeRoot = on \n\t\tWrite a ROOT tree declared in "
-    "RootEvent.h, requires ROOT linked.\n"
-    "\tMain:runRivet = on \n\t\tRun Rivet analyses, requires Rivet linked.\n"
-    "\tMain:rivetAnalyses = {ANALYSIS1,ANALYSIS2,...}\n "
-    "\t\tComma separated list of Rivet analyses to run.\n"
-    "\t\tAnalysis names can be post-fixed with analysis parameters.\n"
-    "\t\tANALYSIS:parm=value:parm2=value2:...\n"
-    "\tMain:rivetRunName = STRING \n\t\tAdd an optional run name to "
-    "the Rivet analysis.\n"
-    "\tMain:rivetIgnoreBeams = on\n\t\tIgnore beams in Rivet. \n"
-    "\tMain:rivetDumpPeriod = NUMBER\n\t\tDump Rivet histograms "
-    "to file evert NUMBER of events.\n"
-    "\tMain:rivetDumpFile = STRING\n\t\t Specify alternative "
-    "name for Rivet dump file. Default = OUT.\n");
+    "RootEvent.h, requires ROOT linked.\n");
 
   // Set up command line options.
   ip.require("c", "User-written command file, can use multiple times.",
     {"-cmnd"});
   ip.add("s", "-1", "Specify seed for the random number generator.",
     {"-seed"});
-  ip.add("o", "main144", "Output prefix for log file, Rivet, HepMC, and ROOT.",
+  ip.add("o", "main144", "Output prefix for log file, HepMC, and ROOT.",
     {"-out"});
   ip.add("n", "-1", "Number of events. Overrides the command files.",
     {"-nevents"});
@@ -174,13 +162,6 @@ int main(int argc, char* argv[]) {
   pythia.settings.addFlag("Main:writeLog", false);
   pythia.settings.addFlag("Main:writeHepMC", false);
   pythia.settings.addFlag("Main:writeRoot", false);
-  pythia.settings.addFlag("Main:runRivet", false);
-  pythia.settings.addFlag("Main:rivetIgnoreBeams", false);
-  pythia.settings.addMode("Main:rivetDumpPeriod", -1, true, false, -1, 0);
-  pythia.settings.addWord("Main:rivetDumpFile", "");
-  pythia.settings.addWord("Main:rivetRunName", "");
-  pythia.settings.addWVec("Main:rivetAnalyses", {});
-  pythia.settings.addWVec("Main:rivetPreload", {});
 
   // Read the command files.
   for (int iCmnd = 0; iCmnd < (int)cmnds.size(); ++iCmnd)
@@ -199,15 +180,12 @@ int main(int argc, char* argv[]) {
   bool writeLog                = pythia.flag("Main:writeLog");
   bool writeHepmc              = pythia.flag("Main:writeHepMC");
   bool writeRoot               = pythia.flag("Main:writeRoot");
-  bool runRivet                = pythia.flag("Main:runRivet");
   bool countErrors             = nError > 0;
 
-  // Check if Rivet, HepMC, and ROOT are requested and available.
+  // Check if HepMC, and ROOT are requested and available.
   bool valid = true;
-#ifndef RIVET
-  valid = valid && !runRivet && !writeHepmc;
-  if (runRivet)
-    cout << "Option Main::runRivet = on requires the Rivet library.\n";
+#ifndef HEPMC3
+  valid = valid && !writeHepmc;
   if (writeHepmc)
     cout << "Option Main::writeHepMC = on requires the HepMC library.\n";
 #endif
@@ -218,30 +196,11 @@ int main(int argc, char* argv[]) {
 #endif
   if (!valid) return 1;
 
-  // Rivet and HepMC initialization.
-#ifdef RIVET
+  // HepMC initialization.
+#ifdef HEPMC3
   // Initialize HepMC.
   Pythia8ToHepMC hepmc;
   if (writeHepmc) hepmc.setNewFile(out + ".hepmc");
-
-  // Initialize Rivet.
-  Pythia8Rivet rivet(pythia, out + ".yoda");
-  rivet.ignoreBeams(pythia.flag("Main:rivetIgnoreBeams"));
-  rivet.dump(pythia.settings.mode("Main:rivetDumpPeriod"),
-    pythia.settings.word("Main:rivetDumpFile"));
-
-  // Load the analyses.
-  vector<string> rivetAnalyses = pythia.settings.wvec("Main:rivetAnalyses");
-  for (int iAna = 0; iAna < (int)rivetAnalyses.size(); ++iAna)
-    rivet.addAnalysis(rivetAnalyses[iAna]);
-
-  // Pre-load the YODA histograms.
-  vector<string> rivetPreload = pythia.settings.wvec("Main:rivetPreload");
-  for (int iYoda = 0; iYoda < (int)rivetPreload.size(); ++iYoda)
-    rivet.addPreload(rivetPreload[iYoda]);
-
-  // Add the run name.
-  rivet.addRunName(pythia.settings.word("Main:rivetRunName"));
 #endif
 
   // ROOT initialization.
@@ -278,13 +237,6 @@ int main(int argc, char* argv[]) {
   // If Pythia fails to initialize, exit with error.
   if (!pythia.init()) return 1;
 
-  // Make a sanity check of initialized Rivet analyses.
-#ifdef RIVET
-  if (!runRivet && rivetAnalyses.size() > 0 )
-    cout << "Rivet analyses are set with Main:rivetAnalyses, "
-         << "but Main:runRivet = off.\n";
-#endif
-
   // Loop over events.
   auto startAllEvents = std::chrono::high_resolution_clock::now();
   for ( int iEvent = 0; iEvent < nEvent; ++iEvent ) {
@@ -308,12 +260,8 @@ int main(int argc, char* argv[]) {
       (stopThisEvent - startThisEvent);
     double tt = eventTime.count();
 
-    // Run the Rivet analyses.
-#ifdef RIVET
-    if (runRivet) {
-      if (writeTime) rivet.addAttribute("EventTime", tt);
-      rivet();
-    }
+    // Write to HEPMC file output.
+#ifdef HEPMC3
     if (writeHepmc) hepmc.writeNextEvent(pythia);
 #endif
 

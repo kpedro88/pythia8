@@ -4005,7 +4005,7 @@ bool VinciaISR::branch(Event& event) {
 // Initialise pointers to Vincia objects.
 
 void VinciaISR::initVinciaPtrs(
-  VinciaColour* colourPtrIn, shared_ptr<VinciaFSR> fsrPtrIn,
+  VinciaColour* colourPtrIn, VinciaFSR* fsrPtrIn,
   MECs* mecsPtrIn, Resolution* resolutionPtrIn,
   VinciaCommon* vinComPtrIn, VinciaWeights* vinWeightsPtrIn) {
   colourPtr     = colourPtrIn;

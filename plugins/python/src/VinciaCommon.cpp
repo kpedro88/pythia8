@@ -47,45 +47,6 @@
 
 void bind_Pythia8_VinciaCommon(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // Pythia8::VinciaClustering file:Pythia8/VinciaCommon.h line:278
-		pybind11::class_<Pythia8::VinciaClustering, std::shared_ptr<Pythia8::VinciaClustering>> cl(M("Pythia8"), "VinciaClustering", "");
-		pybind11::handle cl_type = cl;
-
-		cl.def( pybind11::init( [](){ return new Pythia8::VinciaClustering(); } ) );
-		cl.def( pybind11::init( [](Pythia8::VinciaClustering const &o){ return new Pythia8::VinciaClustering(o); } ) );
-		cl.def_readwrite("dau1", &Pythia8::VinciaClustering::dau1);
-		cl.def_readwrite("dau2", &Pythia8::VinciaClustering::dau2);
-		cl.def_readwrite("dau3", &Pythia8::VinciaClustering::dau3);
-		cl.def_readwrite("isFSR", &Pythia8::VinciaClustering::isFSR);
-		cl.def_readwrite("antFunType", &Pythia8::VinciaClustering::antFunType);
-		cl.def_readwrite("idMot1", &Pythia8::VinciaClustering::idMot1);
-		cl.def_readwrite("idMot2", &Pythia8::VinciaClustering::idMot2);
-		cl.def_readwrite("helDau", &Pythia8::VinciaClustering::helDau);
-		cl.def_readwrite("helMot", &Pythia8::VinciaClustering::helMot);
-		cl.def_readwrite("mDau", &Pythia8::VinciaClustering::mDau);
-		cl.def_readwrite("mMot", &Pythia8::VinciaClustering::mMot);
-		cl.def_readwrite("saj", &Pythia8::VinciaClustering::saj);
-		cl.def_readwrite("sjb", &Pythia8::VinciaClustering::sjb);
-		cl.def_readwrite("sab", &Pythia8::VinciaClustering::sab);
-		cl.def_readwrite("invariants", &Pythia8::VinciaClustering::invariants);
-		cl.def_readwrite("q2res", &Pythia8::VinciaClustering::q2res);
-		cl.def_readwrite("q2evol", &Pythia8::VinciaClustering::q2evol);
-		cl.def_readwrite("kMapType", &Pythia8::VinciaClustering::kMapType);
-		cl.def("setDaughters", (void (Pythia8::VinciaClustering::*)(const class Pythia8::Event &, int, int, int)) &Pythia8::VinciaClustering::setDaughters, "C++: Pythia8::VinciaClustering::setDaughters(const class Pythia8::Event &, int, int, int) --> void", pybind11::arg("state"), pybind11::arg("dau1In"), pybind11::arg("dau2In"), pybind11::arg("dau3In"));
-		cl.def("setDaughters", (void (Pythia8::VinciaClustering::*)(const class std::vector<class Pythia8::Particle, class std::allocator<class Pythia8::Particle> > &, int, int, int)) &Pythia8::VinciaClustering::setDaughters, "C++: Pythia8::VinciaClustering::setDaughters(const class std::vector<class Pythia8::Particle, class std::allocator<class Pythia8::Particle> > &, int, int, int) --> void", pybind11::arg("state"), pybind11::arg("dau1In"), pybind11::arg("dau2In"), pybind11::arg("dau3In"));
-		cl.def("setMothers", (void (Pythia8::VinciaClustering::*)(int, int)) &Pythia8::VinciaClustering::setMothers, "C++: Pythia8::VinciaClustering::setMothers(int, int) --> void", pybind11::arg("idMot1In"), pybind11::arg("idMot2In"));
-		cl.def("setAntenna", (void (Pythia8::VinciaClustering::*)(bool, enum Pythia8::AntFunType)) &Pythia8::VinciaClustering::setAntenna, "C++: Pythia8::VinciaClustering::setAntenna(bool, enum Pythia8::AntFunType) --> void", pybind11::arg("isFSRin"), pybind11::arg("antFunTypeIn"));
-		cl.def("init", (bool (Pythia8::VinciaClustering::*)()) &Pythia8::VinciaClustering::init, "C++: Pythia8::VinciaClustering::init() --> bool");
-		cl.def("setInvariantsAndMasses", (void (Pythia8::VinciaClustering::*)(const class Pythia8::Event &)) &Pythia8::VinciaClustering::setInvariantsAndMasses, "C++: Pythia8::VinciaClustering::setInvariantsAndMasses(const class Pythia8::Event &) --> void", pybind11::arg("state"));
-		cl.def("setInvariantsAndMasses", (void (Pythia8::VinciaClustering::*)(const class std::vector<class Pythia8::Particle, class std::allocator<class Pythia8::Particle> > &)) &Pythia8::VinciaClustering::setInvariantsAndMasses, "C++: Pythia8::VinciaClustering::setInvariantsAndMasses(const class std::vector<class Pythia8::Particle, class std::allocator<class Pythia8::Particle> > &) --> void", pybind11::arg("state"));
-		cl.def("swap13", (void (Pythia8::VinciaClustering::*)()) &Pythia8::VinciaClustering::swap13, "C++: Pythia8::VinciaClustering::swap13() --> void");
-		cl.def("isFF", (bool (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::isFF, "C++: Pythia8::VinciaClustering::isFF() const --> bool");
-		cl.def("isRF", (bool (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::isRF, "C++: Pythia8::VinciaClustering::isRF() const --> bool");
-		cl.def("isII", (bool (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::isII, "C++: Pythia8::VinciaClustering::isII() const --> bool");
-		cl.def("isIF", (bool (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::isIF, "C++: Pythia8::VinciaClustering::isIF() const --> bool");
-		cl.def("getAntName", (std::string (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::getAntName, "C++: Pythia8::VinciaClustering::getAntName() const --> std::string");
-		cl.def("is2to3", (bool (Pythia8::VinciaClustering::*)() const) &Pythia8::VinciaClustering::is2to3, "C++: Pythia8::VinciaClustering::is2to3() const --> bool");
-	}
 	{ // Pythia8::Resolution file:Pythia8/VinciaCommon.h line:382
 		pybind11::class_<Pythia8::Resolution, std::shared_ptr<Pythia8::Resolution>> cl(M("Pythia8"), "Resolution", "");
 		pybind11::handle cl_type = cl;

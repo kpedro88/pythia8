@@ -120,7 +120,7 @@ Decays of <ei>tau</ei> leptons can be performed using helicity
 information from the <ei>tau</ei> production process and with the 
 hadronic current of the <ei>tau</ei> decay modelled using form factors 
 fit to data. The <ei>tau</ei> decay framework is largely based on the 
-corresponding Herwig++ implementation <ref>Gre07</ref>, with some 
+corresponding Herwig++ implementation <ref>Bah08</ref>, with some 
 input from Tauola <ref>Jad90</ref>. A short summary can be found in 
 <ref>Ilt12</ref>, while the complete writeup is in 
 <ref>Ilt14</ref>. 

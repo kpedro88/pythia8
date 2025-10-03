@@ -13,9 +13,9 @@ formally of higher order), so do not necessarily expect perfect
 agreement, especially not at small <ei>Q^2</ei> scales. The starting 
 <ei>alpha_strong</ei> value is defined at the <ei>M_Z</ei> mass scale. 
 The <ei>Lambda</ei> values are matched at the <ei>c</ei>, <ei>b</ei> 
-and <ei>t</ei> flavour thresholds, 
-such that <ei>alpha_strong</ei> is continuous. 
-For second- or third-order matching an approximate iterative method is used. 
+and <ei>t</ei> flavour thresholds, such that <ei>alpha_strong</ei> is 
+continuous. For second- or third-order matching an approximate 
+iterative method is used. 
  
 <p/> 
 For backwards compatibility, 
@@ -76,6 +76,25 @@ be aware that the original CMW arguments were derived using two-loop running
 and that the CMW rescaling may need be taken into account in the context of 
 matrix-element matching. Note also that this option has only been made 
 available for timelike and spacelike showers, not for hard processes. 
+ 
+<p/> 
+Different approaches can be taken to handle the divergence of the strong 
+coupling as the scale argument approaches the 3-flavour value of 
+<ei>Lambda_QCD</ei>. At the most basic level, PYTHIA implementes a 
+protection against unphysical evaluations via a 
+safety margin, <ei>scale &rarr; max(scale, SAFETY * 
+Lambda_QCD(NF=3)</ei>, that prevents evaluations too close to 
+<ei>Lambda_QCD(NF=3)</ei>. Hardcoded values for the <ei>SAFETY</ei> 
+factor of 1.07 for first-order running and 1.33 for higher-order 
+running effectively freeze the coupling at a value of order 10, beyond 
+which any application of perturbation theory would be senseless 
+anyway. In some cases such as for timelike showers, additional options 
+may also be available, e.g., to shift the <ei>scale</ei> argument by 
+an amount of order <ei>Lambda_QCD</ei> and/or to freeze the effective 
+coupling at a lower value than that given by the hard limit above. 
+Where available, such options are documented on 
+the HTML page for the relevant physics model, cf., e.g., the one 
+on <aloc href="TimelikeShowers">Timelike Showers</aloc>. 
  
 <h3>The electromagnetic coupling</h3> 
  

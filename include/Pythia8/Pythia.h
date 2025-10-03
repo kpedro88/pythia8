@@ -10,8 +10,8 @@
 #define Pythia8_Pythia_H
 
 // Version number defined for use in macros and for consistency checks.
-#define PYTHIA_VERSION 8.315
-#define PYTHIA_VERSION_INTEGER 8315
+#define PYTHIA_VERSION 8.316
+#define PYTHIA_VERSION_INTEGER 8316
 
 // Header files for the Pythia class and for what else the user may need.
 #include "Pythia8/Analysis.h"
@@ -50,6 +50,7 @@
 #include "Pythia8/StringInteractions.h"
 #include "Pythia8/SusyCouplings.h"
 #include "Pythia8/SLHAinterface.h"
+#include "Pythia8/ThermalFragmentation.h"
 #include "Pythia8/TimeShower.h"
 #include "Pythia8/UserHooks.h"
 #include "Pythia8/VinciaCommon.h"
@@ -424,6 +425,7 @@ private:
 
   // Friend PythiaParallel to give full access to underlying info.
   friend class PythiaParallel;
+  friend class PhysicsBase;
 
   // The collector of all event generation weights that should eventually
   // be transferred to the final output.
@@ -436,6 +438,9 @@ private:
 
   // Initialise new Pythia object (called by constructors).
   void initPtrs();
+
+  // Initialise fragmentation model objects.
+  void initFragPtrs();
 
   // Initialise user provided plugins.
   void initPlugins();
@@ -516,8 +521,8 @@ private:
   // Pointers to external calculation of resonance widths.
   vector<ResonanceWidthsPtr> resonancePtrs = {};
 
-  // Pointers to timelike and spacelike showers, including Vincia and
-  // Dire. Note, the showerModelPtr must be declared before the
+  // Pointers to timelike and spacelike showers, including Vincia.
+  // Note, the showerModelPtr must be declared before the
   // individual shower pointers, partonLevel, and hadronLevel. This
   // ensures shared pointers that belong to showerModelPtr are
   // unloaded correctly.
@@ -592,6 +597,9 @@ private:
 
   // Keep track of and initialize all pointers to PhysicsBase-derived objects.
   vector<PhysicsBase*> physicsPtrs = {};
+
+  // Mutex that can be used by PhysicsBase-derived objects.
+  mutex mainMutex;
 
 };
 

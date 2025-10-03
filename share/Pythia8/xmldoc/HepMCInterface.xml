@@ -55,6 +55,54 @@ of the run, so the values associated with the last generated event
 should be the most accurate ones. If events also come with a dimensional 
 weight, like in some Les Houches strategies, this weight is in units of pb. 
  
+<h3>Direct output to HepMC via plugin</h3> 
+ 
+A PYTHIA plugin is available, <code>HepMC3Hooks</code> defined in 
+<code>Pythia8Plugins/HepMC3Hooks.h</code>, which allows for the easy 
+writing of PYTHIA output to HepMC3 files. The plugin works with 
+<code>PythiaParallel</code>, and HepMC3 output is written out to a 
+different text file for each thread. 
+ 
+For the plugin to be available, PYTHIA must be configured with the 
+<code>--with-hepmc3</code> flag before being built. 
+<pre> 
+  ./configure --with-hepmc3 
+</pre> 
+If successful, the plugin library <code>lib/pythia8hepmc3.so</code> 
+will be built. 
+ 
+<p/>The example <code>main225</code> and corresponding command file 
+<code>main225.cmnd</code> demonstrate how to use the plugin. The 
+general usage is as follows. First, load the plugin. 
+<pre> 
+  Init:plugins = {libpythia8hepmc3.so::HepMC3Hooks} 
+</pre> 
+None of the options described below is available if the plugin is not 
+successfully loaded. Once the plugin is loaded, a number of additional 
+settings will be available. To begin, set the output HepMC3 file name. 
+<pre> 
+  HepMC3:fileName = NAME 
+</pre> 
+If directory structure is included in the HepMC3 file name, an attempt 
+will be made to create that directory structure. If the 
+<code>HepMC3Hooks</code> are run with more than one thread in 
+<code>PythiaParallel</code>, the given file name will be appended by 
+the thread number. Multiple threads writing into a single HepMC3 file 
+is currently not supported. 
+ 
+Additional options control what is written to the HepMC file, as well 
+as warnings that are printed by HepMC. 
+<pre> 
+  ! Warn if there are inconsistencies. 
+  HepMC:printInconsistency = true 
+  ! Warn if there are final partons. 
+  HepMC:freePartonWarnings = true 
+  ! Flag to store the PDF information. 
+  HepMC:storePDF = true 
+  ! Flag to store the process information. 
+  HepMC:storeProcess = true 
+</pre> 
+ 
 <h3>Direct output to HepMC</h3> 
  
 Provided that PYTHIA is properly linked to HepMC, implementation of the 

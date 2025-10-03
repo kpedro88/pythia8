@@ -24,19 +24,19 @@ Vincia:pTmaxMatch           = 1
 Vincia:EWmode               = 0
 
 ! Optionally use same PDFs and alphaS as in ME calculation.
-! PDF:pSet                   = LHAPDF6:CT10nlo
-! SpaceShower:alphaSvalue    = 0.118
-! TimeShower:alphaSvalue     = 0.118
+! PDF:pSet                  = LHAPDF6:CT10nlo
+! SpaceShower:alphaSvalue   = 0.118
+! TimeShower:alphaSvalue    = 0.118
 
 ! Optionally write HepMC events.
-! (Pythia has to be configured with --with-hepmc3 or --with-rivet).
+! (Pythia has to be configured with --with-hepmc3).
 Main:HepMC                  = on
 HepMC:output                = main164dis.hepmc
 
 ! Optionally include Rivet analyses.
 ! (Pythia has to be configured with --with-rivet).
-Main:Rivet                  = on
-Rivet:output                = main164dis.yoda
+Init:plugins                = {libpythia8rivet.so::RivetHooks}
+Rivet:fileName              = main164dis.yoda
 Rivet:analyses              = {MC_XS,MC_WEIGHTS}
 
 ! Subruns for CKKW-L merging.

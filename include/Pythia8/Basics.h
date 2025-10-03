@@ -530,8 +530,9 @@ public:
   // Reset bin contents.
   void null() ;
 
-  // Fill bin with weight.
-  void fill(double x, double w = 1.) ;
+  // Fill bin with weight w and weight uncertainty sig.
+  // (Default sig < 0 => use sig = w, for pure stat counting.)
+  void fill(double x, double w = 1., double sig = -1.) ;
 
   // Print a histogram with overloaded << operator.
   friend ostream& operator<<(ostream& os, const Hist& h) ;
@@ -542,16 +543,24 @@ public:
     bool xMidBin = true, bool printError = false) const ;
   void table(string fileName, bool printOverUnder = false,
     bool xMidBin = true, bool printError = false) const {
-    ofstream streamName(fileName.c_str());
-    table(streamName, printOverUnder, xMidBin, printError);}
-  void rivetTable(ostream& os = cout, bool printError = true) const ;
+    ofstream fileStream(fileName.c_str());
+    table(fileStream, printOverUnder, xMidBin, printError);}
+  void yodaTable(ostream& os = cout, string path = "hist",
+    double scaledBy = 1.0, vector<int> maskedBins = {}) const;
+  void yodaTable(string fileName, string path, double scaledBy = 1.0,
+    vector<int> maskedBins = {}) const {
+    ofstream fileStream(fileName.c_str());
+    yodaTable(fileStream, path, scaledBy, maskedBins);}
+  void rivetTable(ostream& os = cout, bool printError = true) const;
   void rivetTable(string fileName, bool printError = true) const {
-    ofstream streamName(fileName.c_str()); rivetTable(streamName, printError);}
+    ofstream fileStream(fileName.c_str());
+    rivetTable(fileStream, printError);}
   void pyplotTable(ostream& os = cout, bool isHist = true,
-    bool printError = false) const ;
+    bool printError = false) const;
   void pyplotTable(string fileName, bool isHist = true,
-    bool printError = false) const {ofstream streamName(fileName.c_str());
-    pyplotTable(streamName, isHist, printError);}
+    bool printError = false) const {
+    ofstream fileStream(fileName.c_str());
+    pyplotTable(fileStream, isHist, printError);}
 
   // Fill contents of a two-column (x,y) table, e.g. written by table() above.
   void fillTable(istream& is = cin);
@@ -600,7 +609,9 @@ public:
   // overflow (default) or including them (includeOverUnder = true). By
   // default, error includes granularity estimate obtained by comparing binned
   // vs unbinned mean value, but this can be switched off (unbinned = false).
-  double getXMedian(bool includeOverUnder=false) const;
+  double getXPercentile(double n, bool includeOverUnder = false) const;
+  double getXMedian(bool includeOverUnder=false) const {
+    return getXPercentile(50.0, includeOverUnder);}
   double getXMedianErr(bool unbinned=true) const;
 
   // Return average <Y> value.
@@ -628,27 +639,48 @@ public:
   // Return content of specific bin: 0 gives underflow and nBin+1 overflow.
   double getBinContent(int iBin) const;
 
+  // Return the statistical uncertainty of the bin.
+  double getBinError(int iBin) const;
+
+  // Return the squared statistical uncertainty of the bin.
+  double getBinError2(int iBin) const;
+
   // Return the lower edge of the bin.
   double getBinEdge(int iBin) const;
 
   // Return the width of the bin.
   double getBinWidth(int iBin=1) const;
 
-  // Return bin contents.
+  // Return the center of the bin.
+  double getBinCenter(int iBin) const;
+
+  // Return the contents for all bins.
   vector<double> getBinContents() const;
 
-  // Return bin edges.
+  // Return the statitistical uncertainty for all bins.
+  vector<double> getBinErrors() const;
+
+  // Return the squared statitistical uncertainty for all bins.
+  vector<double> getBinError2s() const;
+
+  // Return the lower edges for all bins.
   vector<double> getBinEdges() const;
 
-  // Return number of entries.
+  // Return the widths for all bins.
+  vector<double> getBinWidths() const;
+
+  // Return the center for all bins.
+  vector<double> getBinCenters() const;
+
+  // Return total number of entries.
   int getEntries(bool alsoNonFinite = true) const {
     return alsoNonFinite ? nNonFinite + nFill : nFill; }
 
-  // Return sum of weights.
+  // Return total sum of weights.
   double getWeightSum(bool alsoOverUnder = true) const {
     return alsoOverUnder ? inside + over + under : inside; }
 
-  // Return effective entries (for weighted histograms = number
+  // Return total effective entries (for weighted histograms = number
   // of equivalent unweighted events for same statistical power).
   double getNEffective() const {
     double sumw2 = 0.;
@@ -754,7 +786,7 @@ public:
   // Constructor requires name of Python program (and adds .py).
   HistPlot(string pythonName, bool useLegacyIn = false)
     : nFrame(), nTable(), useLegacy(useLegacyIn) {
-    toPython.open( (pythonName + ".py").c_str() );
+    toPython.open((pythonName + ".py").c_str());
     toPython << "from matplotlib import pyplot as plt" << endl
              << "from matplotlib.backends.backend_pdf import PdfPages" << endl;
     nPDF = 0; }

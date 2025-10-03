@@ -25,7 +25,7 @@ PDF:lepton = off
 SpaceShower:QEDshowerByL = off
 
 ! 4) VINCIA settings
-PartonShowers:model   = 2   ! 1:old showers, 2:vincia, 3:dire
+PartonShowers:model   = 2   ! 1:old showers, 2:vincia
 Vincia:tune           = 0   ! use the VINCIA tune
 Vincia:sectorShower   = on  ! whether the sector shower should be used
 Vincia:ewMode         = 2   ! 0: off, 1: QED dipoles, 2: QED multipoles, 3: EW.

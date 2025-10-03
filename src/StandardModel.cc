@@ -40,7 +40,7 @@ const double AlphaStrong::FACCMW6         = 1.513;
 // Initialize alpha_strong calculation by finding Lambda values etc.
 
 void AlphaStrong::init( double valueIn, int orderIn, int nfmaxIn,
-  bool useCMWIn) {
+  bool useCMWIn, double valueMaxIn, double renormShiftIn) {
 
   // Set default mass thresholds if not already done
   if (mt <= 1.) setThresholds(1.5, 4.8, 171.0);
@@ -152,6 +152,18 @@ void AlphaStrong::init( double valueIn, int orderIn, int nfmaxIn,
     Lambda6Save *= FACCMW6;
   }
 
+  // Maximum return value (to freeze effective coupling at max value).
+  // Negative values => do not impose any specific uppper bound.
+  valueMax = valueMaxIn;
+
+  // Optionally shift renormalisation scale2 -> scale2 + x * Lambda3^2.
+  // A value of x = 1 shifts the pole to input scale 0.
+  // Values greater than 1 produce finite alphaS values at zero input scale.
+  // Changes for perturbative input scales (>> Lambda3) are small since the
+  // input scale is only shifted by O(Lambda3).
+  renormShiftSave = 0.;
+  if (renormShiftIn > 0.) renormShiftSave = renormShiftIn * pow2(Lambda3Save);
+
   // Impose SAFETYMARGINs to prevent getting too close to LambdaQCD.
   if (order == 1) scale2Min = pow2(SAFETYMARGIN1 * Lambda3Save);
   else if (order > 1) scale2Min = pow2(SAFETYMARGIN2 * Lambda3Save);
@@ -178,6 +190,9 @@ double AlphaStrong::alphaS( double scale2) {
 
   // Check for initialization and ensure minimal scale2 value.
   if (!isInit) return 0.;
+  // Optionally shift argument to avoid pole.
+  if (renormShiftSave > 0.) scale2 += renormShiftSave;
+  // Freeze below minimum scale.
   if (scale2 < scale2Min) scale2 = scale2Min;
 
   // If equal to old scale then same answer.
@@ -232,7 +247,7 @@ double AlphaStrong::alphaS( double scale2) {
   }
 
   // Done.
-  return valueNow;
+  return (valueMax <= 0. || valueNow < valueMax) ? valueNow : valueMax;
 
 }
 

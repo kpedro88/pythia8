@@ -223,6 +223,65 @@ resonance has to be added to the permanent
 to <code>include/ResonanceWidths.h</code> and 
 <code>src/ResonanceWidths.cc</code>. 
  
+<h3>Phase-Space Sampling and Kinematics</h3> 
+ 
+The base-class <code>ResonanceDecays::pickKinematics()</code> method 
+samples n-body decays isotropically in phase space. 2- and 3-body 
+decays are implemented as explicit special cases. For higher-body 
+decays, the algorithm relies on the so-called M-generator, see 
+<ref>Bie22</ref>. 
+ 
+<p/> 
+PYTHIA also contains an implementation of the RAMBO phase-space 
+generator <ref>Kle86</ref>. This is not used in the base-class 
+<code>ResonanceDecays::pickKinematics()</code> method but could be 
+used in derived classes (or directly from a main program). It is 
+implemented as a standalone class <code>Rambo</code>, declared in 
+<code>PhaseSpace.h</code>. Its main methods are briefly summarised below. 
+ 
+<h4>RAMBO Generator</h4> 
+ 
+An instance of the Rambo generator can be constructed and intialised 
+using either 
+<pre> 
+  Rambo rambo; 
+  rambo.initPtr( Rndm* rndmPtr ); 
+</pre> 
+or 
+<pre> 
+  Rambo rambo( Rndm* rnmdPtr ); 
+</pre> 
+where, in both cases, the argument, <code>rnmdPtr</code> should be a 
+pointer to an instance of PYTHIA's <code>Rndm</code> class. 
+ 
+<p/> 
+You can then use the methods 
+<pre> 
+  double weightMassless = rambo.genPoint(double eCM, int nOut, 
+    vector&lt;Vec4&gt;&amp; pOut); 
+  double weightMassive  = rambo.genPoint(double eCM, vector&lt;double&gt; 
+    mIn, vector&lt;Vec4&gt;&amp; pOut); 
+</pre> 
+to sample n-particle final-state phase spaces for massless and massive 
+particles, respectively. The 
+<code>double</code> output value of the methods is the relative weight 
+of the sampled configuration, which is always unity if all the 
+final-state particles are massless but can be non-unity for massive ones. 
+ 
+<p/> 
+In both cases, the input argument 
+<code>eCM</code> denotes the total CM energy of the system of 
+particles and, after each call, the output argument <code>pOut</code> 
+will contain the set of generated 4-vectors, given in the 
+overall CM frame of the particle system. In the massless case, the 
+number of final-state momenta are specified by the input argument 
+<code>nOut</code>, while in the massive case, the number of 
+final-state particles is given by the size of the input vector 
+<code>mIn</code> which should contain the masses (including any that 
+are zero) for all of the particles. The momenta in the output vector 
+<code>pOut</code> then follow the same ordering as that in 
+<code>mIn</code>. 
+ 
 </chapter> 
  
 <!-- Copyright (C) 2025 Torbjorn Sjostrand --> 

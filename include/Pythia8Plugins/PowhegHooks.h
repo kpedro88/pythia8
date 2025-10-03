@@ -63,9 +63,7 @@ public:
     // VINCIA pT definition.
     if (showerModel == 2)
       return pTvincia(e, RadAfterBranch, EmtAfterBranch, RecAfterBranch);
-    // DIRE pT definition.
-    if (showerModel == 3)
-      return pTdire(e, RadAfterBranch, EmtAfterBranch, RecAfterBranch);
+    // Simple-shower pT definition.
     return pTpythia(e, RadAfterBranch, EmtAfterBranch, RecAfterBranch, FSR);
   }
 
@@ -182,60 +180,6 @@ public:
 
     // Return pT.
     return sqrt(pT2now);
-  }
-
-  //--------------------------------------------------------------------------
-
-  // Compute the Dire pT as in
-  // DireTimes::pT2_FF, DireTimes::pT2_FI,
-  // DireSpace::pT2_IF, DireSpace::pT2_II.
-  inline double pTdire(const Event& event, int iRad, int iEmt, int iRec) {
-
-    // Shorthands.
-    const Particle& rad = event[iRad];
-    const Particle& emt = event[iEmt];
-    const Particle& rec = event[iRec];
-
-    // Calculate pT2 depending on dipole configuration.
-    double pT2 = -1.;
-    if (rad.isFinal() && rec.isFinal()) {
-      // FF -- copied from DireTimes::pT2_FF.
-      const double sij = 2.*rad.p()*emt.p();
-      const double sik = 2.*rad.p()*rec.p();
-      const double sjk = 2.*rec.p()*emt.p();
-      pT2 = sij*sjk/(sij+sik+sjk);
-    } else if (rad.isFinal() && !rec.isFinal()) {
-      // FI.
-      const double sij =  2.*rad.p()*emt.p();
-      const double sai = -2.*rec.p()*rad.p();
-      const double saj = -2.*rec.p()*emt.p();
-      pT2 = sij*saj/(sai+saj)*(sij+saj+sai)/(sai+saj);
-      if (sij+saj+sai < 1e-5 && abs(sij+saj+sai) < 1e-5) pT2 = sij;
-    } else if (!rad.isFinal() && rec.isFinal()) {
-      // IF.
-      const double sai = -2.*rad.p()*emt.p();
-      const double sik =  2.*rec.p()*emt.p();
-      const double sak = -2.*rad.p()*rec.p();
-      pT2 = sai*sik/(sai+sak)*(sai+sik+sak)/(sai+sak);
-    } else if (!rad.isFinal() || !rec.isFinal()) {
-      // II.
-      const double sai = -2.*rad.p()*emt.p();
-      const double sbi = -2.*rec.p()*emt.p();
-      const double sab =  2.*rad.p()*rec.p();
-      pT2 = sai*sbi/sab*(sai+sbi+sab)/sab;
-    } else {
-      loggerPtr->ABORT_MSG("could not determine branching type");
-      exit(1);
-    }
-
-    // Sanity check.
-    if (pT2 < 0.) {
-      loggerPtr->WARNING_MSG("negative pT");
-      return -1.;
-    }
-
-    // Return pT.
-    return sqrt(pT2);
   }
 
   //--------------------------------------------------------------------------
@@ -526,7 +470,7 @@ public:
     int iRadAft = -1, iEmt = -1, iRecAft = -1;
     for (int i = e.size() - 1; i > 0; i--) {
       if (showerModel == 1) {
-        // Pythia.
+        // Pythia default.
         if      (iRadAft == -1 && e[i].status() == -41) iRadAft = i;
         else if (iEmt    == -1 && e[i].status() ==  43) iEmt    = i;
         else if (iRecAft == -1 && e[i].status() == -42) iRecAft = i;
@@ -536,13 +480,6 @@ public:
         else if (iEmt    == -1 && e[i].status() ==  43) iEmt    = i;
         else if (iRecAft == -1
           && (e[i].status() == -41 || e[i].status() == 44)) iRecAft = i;
-      } else if (showerModel == 3) {
-        // Dire.
-        if      (iRadAft == -1 && e[i].status() == -41) iRadAft = i;
-        else if (iEmt    == -1 && e[i].status() ==  43) iEmt    = i;
-        else if (iRecAft == -1
-          && (e[i].status() == -41
-            || e[i].status() == 44 || e[i].status() == 48)) iRecAft = i;
       }
       if (iRadAft != -1 && iEmt != -1 && iRecAft != -1) break;
     }
@@ -602,13 +539,13 @@ public:
     int iRadAft = e.size() - 3;
     int iRadBef = e[iEmt].mother1();
     bool stop = false;
-    if (showerModel == 1 || showerModel == 3) {
-      // Pythia or Dire.
-      if ( (e[iRecAft].status() != 52 && e[iRecAft].status() != -53) ||
-        e[iEmt].status() != 51 || e[iRadAft].status() != 51) stop = true;
-    } else if (showerModel == 2) {
+    if (showerModel == 2) {
       // Vincia.
       if ( (e[iRecAft].status() != 51 && e[iRecAft].status() != 52) ||
+        e[iEmt].status() != 51 || e[iRadAft].status() != 51) stop = true;
+    } else {
+      // Pythia default.
+      if ( (e[iRecAft].status() != 52 && e[iRecAft].status() != -53) ||
         e[iEmt].status() != 51 || e[iRadAft].status() != 51) stop = true;
     }
     if (stop) {

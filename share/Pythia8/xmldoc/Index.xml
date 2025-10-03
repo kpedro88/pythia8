@@ -124,11 +124,6 @@ Hard Processes</button>
 <aidx href="VinciaEW">QED/EW Showers</aidx><br/> 
 &nbsp;&nbsp;--&nbsp;&nbsp; 
 <aidx href="VinciaMECs">ME Corrections</aidx><br/> 
-<aidx href="DireShowers">The Dire Shower</aidx><br/> 
-&nbsp;&nbsp;--&nbsp;&nbsp; 
-<aidx href="DireWeights">Enhancements</aidx><br/> 
-&nbsp;&nbsp;--&nbsp;&nbsp; 
-<aidx href="DireExpert">Expert Settings</aidx><br/> 
 <aidx href="ImplementNewShowers">Implement New Showers</aidx><br/> 
 </div> 
  
@@ -165,18 +160,21 @@ Hard Processes</button>
  
 <button class="expand" style="font-size:20px;">Hadronization</button> 
 <div class="panel"> 
+<aidx href="HadronizationOverview">Hadronization Overview</aidx><br/> 
 <aidx href="BeamRemnants">Beam Remnants</aidx><br/> 
 <aidx href="ColourReconnection">Colour Reconnection</aidx><br/> 
-<aidx href="Fragmentation">String Fragmentation</aidx><br/> 
+<aidx href="PartonVertexInformation">Parton Vertex Information</aidx><br/> 
+<aidx href="StringFragmentation">Lund String Fragmentation</aidx><br/> 
 &nbsp;&nbsp;--&nbsp;&nbsp; 
 <aidx href="FlavourSelection">Flavour Selection</aidx><br/> 
 &nbsp;&nbsp;--&nbsp;&nbsp; 
+<aidx href="PTSelection">pT Selection</aidx><br/> 
+&nbsp;&nbsp;--&nbsp;&nbsp; 
+<aidx href="ZSelection">z Selection</aidx><br/> 
+<aidx href="ThermalFragmentation">Thermal Fragmentation</aidx><br/> 
 <aidx href="HadronizationVariations">Hadronization Variations</aidx><br/> 
-&nbsp;&nbsp;--&nbsp;&nbsp; 
 <aidx href="RopeHadronization">Rope Hadronization</aidx><br/> 
-&nbsp;&nbsp;--&nbsp;&nbsp; 
-<aidx href="ClosePacking">Close Packing</aidx><br/> 
-<aidx href="PartonVertexInformation">Parton Vertex Information</aidx><br/> 
+<aidx href="ClosePacking">Close-Packing</aidx><br/> 
 <aidx href="HadronVertexInformation">Hadron Vertex Information</aidx><br/> 
 <aidx href="HadronicRescattering">Hadronic Rescattering</aidx><br/> 
 <aidx href="RHadrons">R-hadrons</aidx><br/> 

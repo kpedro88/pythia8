@@ -224,7 +224,7 @@ public:
 
     // Store cross-section information in pb.
     if (m_store_xsec && pyinfo != 0) {
-      // First set atribute to event, such that
+      // First set attribute to event, such that
       // GenCrossSection::set_cross_section knows how many weights the
       // event has and sets the number of cross sections accordingly.
       GenCrossSectionPtr xsec = make_shared<GenCrossSection>();
@@ -418,7 +418,7 @@ public:
   // Add an additional attribute derived from HepMC3::Attribute
   // to the current event.
   template<class T>
-  void addAtribute(const string& name, T& attribute) {
+  void addAttribute(const string& name, T& attribute) {
     shared_ptr<HepMC3::Attribute> att = make_shared<T>(attribute);
     geneve->add_attribute(name, att);
   }
@@ -429,6 +429,15 @@ public:
     auto dAtt = HepMC3::DoubleAttribute(attribute);
     shared_ptr<HepMC3::Attribute> att =
       make_shared<HepMC3::DoubleAttribute>(dAtt);
+    geneve->add_attribute(name, att);
+  }
+
+  // Add an attribute of integer type.
+  template<class T=int>
+  void addAttribute(const string& name, int& attribute) {
+    auto iAtt = HepMC3::IntAttribute(attribute);
+    shared_ptr<HepMC3::Attribute> att =
+      make_shared<HepMC3::IntAttribute>(iAtt);
     geneve->add_attribute(name, att);
   }
 

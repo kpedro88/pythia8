@@ -1,26 +1,56 @@
 #include <Pythia8/Basics.h>
 #include <Pythia8/BeamParticle.h>
+#include <Pythia8/BeamSetup.h>
+#include <Pythia8/BeamShape.h>
 #include <Pythia8/Event.h>
 #include <Pythia8/FragmentationFlavZpT.h>
+#include <Pythia8/FragmentationModel.h>
 #include <Pythia8/GammaKinematics.h>
+#include <Pythia8/HIInfo.h>
+#include <Pythia8/HadronWidths.h>
 #include <Pythia8/HardDiffraction.h>
+#include <Pythia8/HeavyIons.h>
+#include <Pythia8/Info.h>
+#include <Pythia8/LHEF3.h>
 #include <Pythia8/LesHouches.h>
+#include <Pythia8/Logger.h>
+#include <Pythia8/Merging.h>
 #include <Pythia8/MergingHooks.h>
 #include <Pythia8/ParticleData.h>
+#include <Pythia8/ParticleDecays.h>
 #include <Pythia8/PartonDistributions.h>
 #include <Pythia8/PartonLevel.h>
+#include <Pythia8/PartonSystems.h>
 #include <Pythia8/PartonVertex.h>
 #include <Pythia8/PhaseSpace.h>
 #include <Pythia8/PhysicsBase.h>
+#include <Pythia8/Pythia.h>
 #include <Pythia8/RHadrons.h>
 #include <Pythia8/ResonanceDecays.h>
+#include <Pythia8/ResonanceWidths.h>
+#include <Pythia8/Settings.h>
+#include <Pythia8/ShowerModel.h>
+#include <Pythia8/SigmaLowEnergy.h>
 #include <Pythia8/SigmaProcess.h>
+#include <Pythia8/SigmaTotal.h>
 #include <Pythia8/SpaceShower.h>
+#include <Pythia8/StandardModel.h>
 #include <Pythia8/StringInteractions.h>
+#include <Pythia8/SusyCouplings.h>
 #include <Pythia8/TimeShower.h>
+#include <Pythia8/UserHooks.h>
+#include <Pythia8/Weights.h>
+#include <cwchar>
+#include <functional>
+#include <ios>
+#include <istream>
 #include <iterator>
+#include <map>
 #include <memory>
+#include <ostream>
+#include <sstream>
 #include <sstream> // __str__
+#include <streambuf>
 #include <string>
 #include <utility>
 #include <vector>
@@ -100,6 +130,19 @@ struct PyCallBack_Pythia8_HardDiffraction : public Pythia8::HardDiffraction {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::HardDiffraction *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::ResonanceDecays file:Pythia8/ResonanceDecays.h line:28
@@ -157,6 +200,19 @@ struct PyCallBack_Pythia8_ResonanceDecays : public Pythia8::ResonanceDecays {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::ResonanceDecays *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -216,6 +272,19 @@ struct PyCallBack_Pythia8_PartonLevel : public Pythia8::PartonLevel {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PartonLevel *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 // Pythia8::GammaKinematics file:Pythia8/GammaKinematics.h line:23
@@ -273,6 +342,19 @@ struct PyCallBack_Pythia8_GammaKinematics : public Pythia8::GammaKinematics {
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return PhysicsBase::onStat();
+	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::GammaKinematics *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
 	}
 };
 
@@ -449,6 +531,19 @@ struct PyCallBack_Pythia8_PhaseSpace : public Pythia8::PhaseSpace {
 		}
 		return PhysicsBase::onStat();
 	}
+	void onStat(class std::vector<class Pythia8::PhysicsBase *, class std::allocator<class Pythia8::PhysicsBase *> > a0, class Pythia8::Pythia * a1) override { 
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::PhaseSpace *>(this), "onStat");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return PhysicsBase::onStat(a0, a1);
+	}
 };
 
 void bind_Pythia8_HardDiffraction(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -570,6 +665,7 @@ void bind_Pythia8_HardDiffraction(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("pTHatGlobalMin", &Pythia8::PhaseSpace::pTHatGlobalMin);
 		cl.def_readwrite("pTHatGlobalMax", &Pythia8::PhaseSpace::pTHatGlobalMax);
 		cl.def_readwrite("Q2GlobalMin", &Pythia8::PhaseSpace::Q2GlobalMin);
+		cl.def_readwrite("Q2GlobalMax", &Pythia8::PhaseSpace::Q2GlobalMax);
 		cl.def_readwrite("pTHatMinDiverge", &Pythia8::PhaseSpace::pTHatMinDiverge);
 		cl.def_readwrite("minWidthBreitWigners", &Pythia8::PhaseSpace::minWidthBreitWigners);
 		cl.def_readwrite("minWidthNarrowBW", &Pythia8::PhaseSpace::minWidthNarrowBW);
@@ -694,6 +790,12 @@ void bind_Pythia8_HardDiffraction(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("nTau", &Pythia8::PhaseSpace::nTau);
 		cl.def_readwrite("nY", &Pythia8::PhaseSpace::nY);
 		cl.def_readwrite("nZ", &Pythia8::PhaseSpace::nZ);
+		cl.def_readwrite("doTopPair", &Pythia8::PhaseSpace::doTopPair);
+		cl.def_readwrite("topThresholdModel", &Pythia8::PhaseSpace::topThresholdModel);
+		cl.def_readwrite("topThresholdWidth", &Pythia8::PhaseSpace::topThresholdWidth);
+		cl.def_readwrite("eThreshold", &Pythia8::PhaseSpace::eThreshold);
+		cl.def_readwrite("m3Threshold", &Pythia8::PhaseSpace::m3Threshold);
+		cl.def_readwrite("m4Threshold", &Pythia8::PhaseSpace::m4Threshold);
 		cl.def("init", (void (Pythia8::PhaseSpace::*)(bool, class std::shared_ptr<class Pythia8::SigmaProcess>)) &Pythia8::PhaseSpace::init, "C++: Pythia8::PhaseSpace::init(bool, class std::shared_ptr<class Pythia8::SigmaProcess>) --> void", pybind11::arg("isFirst"), pybind11::arg("sigmaProcessPtrIn"));
 		cl.def("updateBeamIDs", (void (Pythia8::PhaseSpace::*)()) &Pythia8::PhaseSpace::updateBeamIDs, "C++: Pythia8::PhaseSpace::updateBeamIDs() --> void");
 		cl.def("newECM", (void (Pythia8::PhaseSpace::*)(double)) &Pythia8::PhaseSpace::newECM, "C++: Pythia8::PhaseSpace::newECM(double) --> void", pybind11::arg("eCMin"));

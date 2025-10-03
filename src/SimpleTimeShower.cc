@@ -49,7 +49,7 @@ const double SimpleTimeShower::THRESHM2      = 4.004;
 
 // Never pick pT so low that alphaS is evaluated too close to Lambda_3.
 const double SimpleTimeShower::LAMBDA3MARGIN1ORD = 1.1;
-const double SimpleTimeShower::LAMBDA3MARGIN2ORD = 1.6;
+const double SimpleTimeShower::LAMBDA3MARGIN2ORD = 1.4;
 
 // Max loop counter
 const int    SimpleTimeShower::NLOOPMAX = 10000;
@@ -116,6 +116,24 @@ void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
   recoilRFUseParents = flag("TimeShower:recoilRFUseParents");
   allowMPIdipole     = flag("TimeShower:allowMPIdipole");
 
+  // Option to add explicit 2nd-order terms to the splitting kernels.
+  cEmitQ             = parm("TimeShower:cEmitQ");
+  cEmitC             = cEmitQ + parm("TimeShower:cEmitC");
+  cEmitB             = cEmitQ + parm("TimeShower:cEmitB");
+  cEmitG             = parm("TimeShower:cEmitG");
+  cSplit             = parm("TimeShower:cSplit");
+  cSplitC            = cSplit + parm("TimeShower:cSplitC");
+  cSplitB            = cSplit + parm("TimeShower:cSplitB");
+  doLOT              = ( cEmitQ != 0. || cEmitC != 0. || cEmitB != 0. ||
+    cEmitG != 0. || cSplit != 0. || cSplitC != 0. || cSplitB != 0);
+  hEmitHard          = parm("TimeShower:hEmitHard");
+  hEmitColl          = parm("TimeShower:hEmitColl");
+  hEmitSoft          = parm("TimeShower:hEmitSoft");
+  hSplitHard         = parm("TimeShower:hSplitHard");
+  hSplitColl         = parm("TimeShower:hSplitColl");
+  doHOT              = (hEmitHard != 0. || hEmitColl != 0. || hEmitSoft != 0.
+    || hSplitHard != 0. || hSplitColl != 0.);
+
   // If SimpleSpaceShower does dipole recoil then SimpleTimeShower must adjust.
   doDipoleRecoil     = flag("SpaceShower:dipoleRecoil");
   if (doDipoleRecoil) {allowBeamRecoil  = true; dampenBeamRecoil = false;}
@@ -141,14 +159,17 @@ void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
   pdfModeSave       = mode("TimeShower:pdfMode");
 
   // Parameters of alphaStrong generation.
-  alphaSvalue        = parm("TimeShower:alphaSvalue");
-  alphaSorder        = mode("TimeShower:alphaSorder");
-  alphaSnfmax        = mode("StandardModel:alphaSnfmax");
-  alphaSuseCMW       = flag("TimeShower:alphaSuseCMW");
-  alphaS2pi          = 0.5 * alphaSvalue / M_PI;
+  alphaSvalue         = parm("TimeShower:alphaSvalue");
+  alphaSorder         = mode("TimeShower:alphaSorder");
+  alphaSnfmax         = mode("StandardModel:alphaSnfmax");
+  alphaSuseCMW        = flag("TimeShower:alphaSuseCMW");
+  alphaSmax           = parm("TimeShower:alphaSmax");
+  alphaS2pi           = 0.5 * alphaSvalue / M_PI;
+  double alphaSrenormShift = parm("TimeShower:alphaSrenormShift");
 
   // Initialize alphaStrong generation.
-  alphaS.init( alphaSvalue, alphaSorder, alphaSnfmax, alphaSuseCMW);
+  alphaS.init( alphaSvalue, alphaSorder, alphaSnfmax, alphaSuseCMW,
+    alphaSmax, alphaSrenormShift );
 
   // Lambda for 5, 4 and 3 flavours.
   Lambda3flav        = alphaS.Lambda3();
@@ -158,25 +179,28 @@ void SimpleTimeShower::init( BeamParticle* beamAPtrIn,
   Lambda4flav2       = pow2(Lambda4flav);
   Lambda3flav2       = pow2(Lambda3flav);
 
-  // Parameters of QCD evolution. Warn if pTmin must be raised.
+  // Parameters of QCD evolution.
   nGluonToQuark      = mode("TimeShower:nGluonToQuark");
   weightGluonToQuark = mode("TimeShower:weightGluonToQuark");
   scaleGluonToQuark  = parm("TimeShower:scaleGluonToQuark");
   extraGluonToQuark  = (weightGluonToQuark%4 == 3) ? WG2QEXTRA : 1.;
   pTcolCutMin        = parm("TimeShower:pTmin");
-  double lambdaMarg  = (alphaSorder < 2) ? LAMBDA3MARGIN1ORD
-                     : LAMBDA3MARGIN2ORD;
-  if (pTcolCutMin > lambdaMarg * Lambda3flav / sqrt(renormMultFac))
-    pTcolCut         = pTcolCutMin;
-  else {
-    pTcolCut         = lambdaMarg * Lambda3flav / sqrt(renormMultFac);
+  pTcolCut           = pTcolCutMin;
+  pT2colCut          = pow2(pTcolCut);
+
+  // Check if pTmin is too close to the (effective) pole and must be raised.
+  double LambdaMarg2 = (alphaSorder < 2) ? pow2(LAMBDA3MARGIN1ORD)
+    : pow2(LAMBDA3MARGIN2ORD);
+  double pT2marg = Lambda3flav2 / renormMultFac
+    * (LambdaMarg2 - alphaSrenormShift);
+  if ( pT2colCut < pT2marg) {
+    pT2colCut = pT2marg;
+    pTcolCut  = sqrt(pT2colCut);
     ostringstream newPTcolCut;
     newPTcolCut << fixed << setprecision(3) << pTcolCut;
-    loggerPtr->WARNING_MSG("pTmin too low",
-                      ", raised to " + newPTcolCut.str() );
+    loggerPtr->WARNING_MSG("pTmin too low",", raised to " + newPTcolCut.str());
     infoPtr->setTooLowPTmin(true);
   }
-  pT2colCut          = pow2(pTcolCut);
 
   // Parameters of alphaEM generation.
   alphaEMorder       = mode("TimeShower:alphaEMorder");
@@ -2551,7 +2575,6 @@ double SimpleTimeShower::noEmissionProbability( double pTbegAll,
 
   // Calculate the value of the no-emssion probabilty.
   wt /= nTrials;
-  if (wt < settingsPtr->parm("Dire:Sudakov:Min")) wt = 0.;
 
   // Clean up, done.
   beamAPtr->clear();
@@ -2690,12 +2713,18 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
   double overFac       = doUncertaintiesNow ? overFactor : 1.0;
   // Include also the possibility of oversampling for enhancements
   overFac             *= canEnhanceET ? overFactorEnhance : 1.0;
+  double overFacEmit(0), overFacSplit(0);
 
   // Set default values for enhanced emissions.
   bool isEnhancedQ2QG, isEnhancedG2QQ, isEnhancedG2GG;
   double enhanceNow(1.), enhanceFacQqbar(1.), enhanceLocal;
   string nameNow = "";
   bool canEnhanceETnow = canEnhanceET;
+  double overFacLog{0.}, overFacLin{0.}, overFacLinQ{0.};
+
+  // Increased overestimates for nonsingular and higher-order terms.
+  if ( doHOT || doLOT )
+    finiteOversample(colTypeAbs, overFacLog, overFacLin, overFacLinQ);
 
   // Begin evolution loop towards smaller pT values.
   do {
@@ -2733,9 +2762,11 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
       zMinAbs = 0.5 - sqrtpos( 0.25 - pT2min / dip.m2DipCorr );
       if (zMinAbs < SIMPLIFYROOT) zMinAbs = pT2min / dip.m2DipCorr;
       if (zMinAbs > 0.499) { dip.pT2 = 0.; return; }
+      double zLog = log(1./zMinAbs - 1.);
 
       // Find emission coefficient for X -> X g.
-      emitCoefGlue = overFac * wtPSglue * colFac * log(1. / zMinAbs - 1.);
+      overFacEmit  = 1. + overFacLog/wtPSglue + overFacLin/wtPSglue/zLog;
+      emitCoefGlue = overFac * overFacEmit * wtPSglue * colFac * zLog;
       // Optionally enhanced branching rate.
       if (canEnhanceETnow && colTypeAbs == 2)
         emitCoefGlue *= enhanceFactor("fsr:G2GG");
@@ -2749,7 +2780,9 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
       // Find emission coefficient for g -> q qbar.
       emitCoefTot  = emitCoefGlue;
       if (colTypeAbs == 2 && event[dip.iRadiator].id() == 21) {
-        emitCoefQqbar = overFac * wtPSqqbar * (1. - 2. * zMinAbs);
+        overFacSplit  = 1. + overFacLinQ / wtPSqqbar;
+        emitCoefQqbar = overFac * overFacSplit * wtPSqqbar
+          * (1. - 2. * zMinAbs);
         // Optionally enhanced branching rate.
         if (canEnhanceETnow) {
           enhanceFacQqbar = enhanceFactor("fsr:G2QQ");
@@ -2800,8 +2833,13 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
       // Pick kind of branching: X -> X g or g -> q qbar.
       dip.flavour  = 21;
       dip.mFlavour = 0.;
+      double overFacLocal = overFacEmit;
       if (colTypeAbs == 2 && emitCoefQqbar > rndmPtr->flat()
-        * emitCoefTot) dip.flavour = 0;
+        * emitCoefTot) {
+        dip.flavour = 0;
+        overFacLocal = overFacSplit;
+      }
+      overFacLocal *= overFac;
 
       // Pick z: either dz/(1-z) or flat dz.
       if (dip.flavour == 21) {
@@ -2870,13 +2908,14 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
           if (dip.flavour < 10 && dip.m2 < THRESHM2 * pow2(dip.mFlavour))
             wt = 0.;
 
-        // z weight for X -> X g.
+        // z weight for X -> X g
         } else if (dip.flavour == 21
           && (colTypeAbs == 1 || colTypeAbs == 3) ) {
           wt = (1. + pow2(dip.z)) / wtPSglue;
 
         // z weight for g -> g g; optional suppression for massive recoiler.
         } else if (dip.flavour == 21) {
+          // Full Pgg[z] partitioned into two z<->1-z colour-dipole terms.
           wt = (1. + pow3(dip.z)) / wtPSglue;
           if (recoilDeadCone && dip.mRec > 0.) {
             double r2G = dip.m2Rec / dip.m2Dip;
@@ -2907,9 +2946,6 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
             wt *= log(dip.pT2 / Lambda2)
                 / log(scaleGluonToQuark * dip.m2 / Lambda2);
         }
-
-        // Cancel out extra uncertainty-band headroom and enhancement factors.
-        wt /= overFac*enhanceLocal;
 
         // Suppression factors for dipole to beam remnant.
         if (dip.isrType != 0 && useLocalRecoilNow) {
@@ -2953,6 +2989,17 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
         // Optional dampening of large pT values in hard system.
         if (dopTdamp && dip.system == 0 && dip.MEtype == 0)
           wt *= pT2damp / (dip.pT2 + pT2damp);
+
+        // Cancel out extra uncertainty-band headroom and enhancement factors.
+        wt /= overFacLocal * enhanceLocal;
+
+        // PS March 2025.
+        // Option to add non-singular & higher-order terms.
+        // 1) First-order (LO) terms (LOT) only if/when not doing MECs:
+        //      Hard (NS): P(z)/Q2 -> P(z)/Q2 + const/m2Dip.
+        bool doLOTNow = doLOT && (!applyMECsNow || dip.MEtype == 0);
+        wt *= (doLOTNow || doHOT) ?
+          finiteCorrection(dip, event, doLOTNow, colTypeAbs) : 1.0;
       }
     }
 
@@ -2965,9 +3012,8 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
       wt          = 1.0;
     }
 
-    // if wt = 1, should we skip the random number pull?
   // Iterate until acceptable pT (or have fallen below pTmin).
-  } while (wt < rndmPtr->flat());
+  } while (wt < 1. && wt < rndmPtr->flat());
 
   // Store outcome of enhanced branching rate analysis.
   splittingNameNow = nameNow;
@@ -2977,6 +3023,87 @@ void SimpleTimeShower::pT2nextQCD(double pT2begDip, double pT2sel,
     if (isEnhancedG2GG) storeEnhanceFactor(dip.pT2, nameNow, enhanceNow);
   }
 
+}
+
+//--------------------------------------------------------------------------
+
+// Oversample when using finite corrections to the QCD shower.
+
+void SimpleTimeShower::finiteOversample(int colTypeAbs,
+  double& overFacLog, double& overFacLin, double& overFacSplit) {
+  const double facQ2 = 0.5/M_PI;
+  if (doLOT) {
+    if (colTypeAbs == 1) {
+      overFacLin   = max( 0., max( {cEmitQ, cEmitC, cEmitB} ) );
+    } else {
+      overFacLin   = max( 0., cEmitG );
+      overFacSplit = facQ2 * max( 0., max( {cSplit, cSplitC, cSplitB} ));
+    }
+  }
+  if (doHOT) {
+    overFacLin  += facQ2 * max(0., hEmitHard);
+    overFacLin  += facQ2 * max(0., hEmitColl) * 0.5;
+    overFacLog   = facQ2 * max(0., hEmitSoft);
+    if (colTypeAbs == 2) {
+      overFacSplit += facQ2 * max(0., hSplitHard);
+      overFacSplit += facQ2 * max(0., hSplitColl);
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+
+// Return weight for different finite corrections to the QCD shower.
+
+double SimpleTimeShower::finiteCorrection(TimeDipoleEnd& dip, Event& event,
+       bool doLOTNow, int colTypeAbs) {
+  // 1) First-order (LO) terms (LOT) only if/when not doing MECs:
+  //      Hard (NS): P(z)/Q2 -> P(z)/Q2 + const/m2Dip.
+  // 2) Higher-order (HO) terms (HOT):
+  //    Allow separate coefficients for emissions and splittings,
+  //    in 3 phase-space regions:
+  //      Hard (NS)    : P(z)/Q2 + aS/(2pi)*hHard/m2Dip,
+  //      Soft (emit)  : P(z)/Q2 + aS/(2pi)*hEmitSoft*z/(1-z)/Q2,
+  //      Collinear (emit) : P(z)/Q2 + aS/(2pi)*(1-z)*hEmitColl/Q2,
+  //      Collinear (split): P(z)/Q2 + aS/(2pi)*hSplitColl/Q2,
+  //    (Note: when using CMW scheme, soft should be ~ zero.)
+
+  // Branching variables (use Q2 = offshellness for massive radiators).
+  double Q2 = dip.m2;
+  if (dip.m2Rad >= m2c) Q2 = max(1., Q2 - dip.m2Rad);
+  const double z = dip.z;
+  // Dimensionless Q2/m2Dip.
+  const double yQ = Q2 / dip.m2Dip;
+  // Overall normalisation factor for 2nd-order terms.
+  const double hotFac = alphaS.alphaS(dip.m2Dip/4.) / (2. * M_PI);
+  double denom = 1./yQ;
+  double corr  = 0.;
+  if (dip.flavour == 21) {
+    // G->GG and Q->QG.
+    const int idRad = event[dip.iRadiator].idAbs();
+    if (doLOTNow) {
+      if ( colTypeAbs == 2 ) corr += cEmitG;
+      else if ( idRad == 5 ) corr += cEmitB;
+      else if ( idRad == 4 ) corr += cEmitC;
+      else corr += cEmitQ;
+    }
+    if (doHOT) corr += hotFac * ( hEmitHard + hEmitColl * (1.-z) / yQ
+                                  + hEmitSoft * z / yQ / (1. - z) );
+    denom *= (colTypeAbs == 2 ?  pow2(1. + pow3(z)) / (1.-z)
+              : (1. + pow2(z)) / (1. - z) );
+  } else {
+    // G->QQ: only allow hard and collinear, no soft.
+    if (doLOTNow) {
+      if (dip.flavour == 5) corr += cSplitB;
+      else if (dip.flavour == 4) corr += cSplitC;
+      else corr += cSplit;
+    }
+    if (doHOT) corr += hotFac * ( hSplitHard + hSplitColl / yQ );
+    denom *= pow2(z) + pow2(1. - z);
+  }
+  // Apply reweight ratio.
+  double wtLocal = 1. + corr / denom;
+  return wtLocal;
 }
 
 //--------------------------------------------------------------------------
@@ -3233,9 +3360,8 @@ void SimpleTimeShower::pT2nextQED(double pT2begDip, double pT2sel,
       wt = 1.;
     }
 
-    // if wt = 1, should we skip the random number pull?
   // Iterate until acceptable pT (or have fallen below pTmin).
-  } while (wt < rndmPtr->flat());
+  } while (wt < 1. && wt < rndmPtr->flat());
 
   // Store outcome of enhanced branching rate analysis.
   splittingNameNow = nameNow;
@@ -3406,8 +3532,8 @@ void SimpleTimeShower::pT2nextWeak(double pT2begDip, double pT2sel,
       wt = 1.;
     }
 
-    // Iterate until acceptable pT (or have fallen below pTmin).
-  } while (wt < rndmPtr->flat());
+  // Iterate until acceptable pT (or have fallen below pTmin).
+  } while (wt < 1. && wt < rndmPtr->flat());
 
   // Store outcome of enhanced branching rate analysis.
   splittingNameNow = nameNow;
@@ -3523,7 +3649,7 @@ void SimpleTimeShower::pT2nextHV(double pT2begDip, double pT2sel,
     }
 
   // Iterate until acceptable pT (or have fallen below pTmin).
-  } while (wt < rndmPtr->flat());
+  } while (wt < 1. && wt < rndmPtr->flat());
 
   // Store outcome of enhanced branching rate analysis.
   splittingNameNow = nameNow;
@@ -3726,7 +3852,7 @@ void SimpleTimeShower::pT2nextOnium(double pT2begDip, double pT2sel,
     }
 
   // Iterate until acceptable pT (or have fallen below pTmin).
-  } while (wt < rndmPtr->flat());
+  } while (wt < 1. && wt < rndmPtr->flat());
 
   // Store outcome of enhanced branching rate analysis.
   if (canEnhanceETnow && dip.emissionPtr->isEnhanced())
@@ -4080,7 +4206,7 @@ bool SimpleTimeShower::branch( Event& event, bool isInterleaved) {
       wtPhi = ( 1. + dipSel->asymPol * (2. * pow2(cosPhi) - 1.) )
         / ( 1. + abs(dipSel->asymPol) );
     }
-  } while (wtPhi < rndmPtr->flat()) ;
+  } while (wtPhi < 1. && wtPhi < rndmPtr->flat()) ;
 
   // Kinematics when recoiler is initial-state parton.
   int isrTypeNow  = dipSel->isrType;

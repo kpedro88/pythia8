@@ -19,12 +19,13 @@ using namespace Pythia8;
 int main() {
 
   // Number of events. Histograms in line printer mode or as pdf file.
-  int nEvent = 2000;
-  bool histAsPDF = true;
+  const int nEvent = 2000;
+  const int nModel = 4;
+  const bool histAsPDF = true;
 
   // Histogram multiplicities and pT spectra.
-  Hist nCh[3], pTpi[3], pTK[3], pTp[3];
-  for (int iModel = 0; iModel < 3; ++iModel) {
+  Hist nCh[nModel], pTpi[nModel], pTK[nModel], pTp[nModel];
+  for (int iModel = 0; iModel < nModel; ++iModel) {
     nCh[iModel].book("charged multiplicity", 100, 1., 401.);
     pTpi[iModel].book("pT for pi+-", 100, 0., 5.);
     pTK[iModel].book("pT for K+-", 100, 0., 5.);
@@ -36,10 +37,10 @@ int main() {
     "rho0,omega", "K*+-0", "phi0", "p(bar)", "n(bar)", "Lambda(bar)",
     "Sigma(bar)", "Xi(bar)", "Delta(bar)", "Sigma*(bar)", "Xi*(bar)",
     "Omega(bar)"};
-  int rates[3][18] = {{0}};
+  int rates[nModel][18] = {{0}};
 
   // Loop over normal and thermal generation.
-  for (int iModel = 0; iModel < 3; ++iModel) {
+  for (int iModel = 0; iModel < nModel; ++iModel) {
 
     // Generator. Common process selection. Reduce printout. pi0 stable.
     Pythia pythia;
@@ -51,8 +52,9 @@ int main() {
     pythia.readString("111:mayDecay = off");
 
     // Model-specific setup. Initialization.
-    if (iModel == 1) pythia.readString("StringPT:thermalModel = on");
-    if (iModel == 2) pythia.readString("StringPT:mT2suppression = on");
+    if (iModel == 1) pythia.readString("Fragmentation:model = 1");
+    if (iModel == 2) pythia.readString("StringPT:widthPreStrange = 1.5");
+    if (iModel == 3) pythia.readString("StringPT:widthPreQQ0 = 1.5");
 
     // If Pythia fails to initialize, exit with error.
     if (!pythia.init()) return 1;
@@ -119,10 +121,10 @@ int main() {
 
   // Print historams.
   if (!histAsPDF) {
-    for (int iModel = 0; iModel < 3; ++iModel) cout << nCh[iModel];
-    for (int iModel = 0; iModel < 3; ++iModel) cout << pTpi[iModel];
-    for (int iModel = 0; iModel < 3; ++iModel) cout << pTK[iModel];
-    for (int iModel = 0; iModel < 3; ++iModel) cout << pTp[iModel];
+    for (int iModel = 0; iModel < nModel; ++iModel) cout << nCh[iModel];
+    for (int iModel = 0; iModel < nModel; ++iModel) cout << pTpi[iModel];
+    for (int iModel = 0; iModel < nModel; ++iModel) cout << pTK[iModel];
+    for (int iModel = 0; iModel < nModel; ++iModel) cout << pTp[iModel];
 
   // Alternatively plot histograms.
   } else {
@@ -130,37 +132,44 @@ int main() {
     hpl.frame("fig443", "charged multiplicity",
       "$n_{\\mathrm{charged}}$", "Probability", 8.0, 5.4);
     hpl.add( nCh[0], "-,black",  "default");
+    hpl.add( nCh[2], "-,blue",   "enh-pTstrange");
+    hpl.add( nCh[3], "-,cyan",   "enh-pTqq0");
     hpl.add( nCh[1], "-,red",    "thermal");
-    hpl.add( nCh[2], "-,blue",   "$m_{\\perp}^2$-suppressed");
     hpl.plot();
     hpl.frame("", "$\\pi^{\\pm}$ transverse momentum spectrum",
       "$p_{\\perp}$", "$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$", 8.0, 5.4);
-    hpl.add( pTpi[0], "-,black",  "default");
-    hpl.add( pTpi[1], "-,red",    "thermal");
-    hpl.add( pTpi[2], "-,blue",   "$m_{\\perp}^2$-suppressed");
+    hpl.add( pTpi[0], "-,black", "default");
+    hpl.add( pTpi[2], "-,blue",  "enh-pTstrange");
+    hpl.add( pTpi[3], "-,cyan",  "enh-pTqq0");
+    hpl.add( pTpi[1], "-,red",   "thermal");
     hpl.plot();
     hpl.frame("", "K$^{\\pm}$ transverse momentum spectrum",
       "$p_{\\perp}$", "$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$", 8.0, 5.4);
     hpl.add( pTK[0], "-,black",  "default");
+    hpl.add( pTK[2], "-,blue",   "enh-pTstrange");
+    hpl.add( pTK[3], "-,cyan",   "enh-pTqq0");
     hpl.add( pTK[1], "-,red",    "thermal");
-    hpl.add( pTK[2], "-,blue",   "$m_{\\perp}^2$-suppressed");
     hpl.plot();
     hpl.frame("", "p,$\\overline{\\mathrm{p}}$ transverse momentum spectrum",
       "$p_{\\perp}$", "$\\mathrm{d}n/\\mathrm{d}p_{\\perp}$", 8.0, 5.4);
     hpl.add( pTp[0], "-,black",  "default");
+    hpl.add( pTp[2], "-,blue",   "enh-pTstrange");
+    hpl.add( pTp[3], "-,cyan",   "enh-pTqq0");
     hpl.add( pTp[1], "-,red",    "thermal");
-    hpl.add( pTp[2], "-,blue",   "$m_{\\perp}^2$-suppressed");
     hpl.plot();
   }
 
   // Print table.
   double norm = 1. / double(nEvent);
   cout << "\n\n Particle composition per event, including unstable"
-       << "\n    Particle     default     thermal     mT2-suppressed" << endl
-       << fixed << setprecision(3);
-  for (int i = 0; i < 18; ++i) cout << setw(12) << nameHad[i]
-       << setw(12) << norm * rates[0][i] << setw(12) << norm * rates[1][i]
-       << setw(12) << norm * rates[2][i] << endl;
+       << "\n    Particle     default     thermal    enh-strange  enh-qq0"
+       << endl << fixed << setprecision(3);
+  for (int i = 0; i < 18; ++i) {
+    cout << setw(12) << nameHad[i];
+    for (int iModel = 0; iModel < nModel; ++iModel)
+      cout << setw(12) << norm * rates[iModel][i];
+    cout << endl;
+  }
 
   // Done.
   return 0;
