@@ -743,9 +743,10 @@ void WeightsFragmentation::init() {
 
   // Read weight groups into a dictionary.
   map<string, map<string, double> > weightGroups;
-  parse("VariationFrag:list", weightGroups);
+  parse(getParmName(), weightGroups);
 
   // Define the ordering of the parameters and key mapping.
+  const auto& keyOrder = getKeyOrder();
   weightParms.resize(keyOrder.size());
 
   // Initialize the flavor selector.
@@ -766,7 +767,16 @@ void WeightsFragmentation::init() {
     flavBase.push_back(flavSel.getFlavourSpinRatios(0, idx));
   for (int iFac = 0; iFac < (int)keyOrder.size(); ++iFac) {
     for(auto &key : keyOrder[iFac]) {
-      baseParms[iFac][key.first] = settingsPtr->parm(key.second);
+      if (settingsPtr->isParm(key.second)) {
+        baseParms[iFac][key.first] = settingsPtr->parm(key.second);
+      }
+      else if (settingsPtr->isPVec(key.second)) {
+        // extract the index from the key
+        size_t pos_start = key.first.find("[");
+        size_t pos_end = key.first.find("]");
+        int key_ind = stoi(key.first.substr(pos_start+1, pos_end-pos_start));
+        baseParms[iFac][key.first] = settingsPtr->pvec(key.second)[key_ind];
+      }
       if (iFac == Flav) flavBase.push_back(baseParms[iFac][key.first]);
     }
   }
@@ -861,6 +871,7 @@ vector<double> WeightsFragmentation::flavParms(
 
   // Pass the primary parameters to settings.
   Settings* settingsPtr = infoPtr->settingsPtr;
+  const auto& keyOrder = getKeyOrder();
   for (int idx = 0; idx < (int)keyOrder[Flav].size(); ++idx)
     settingsPtr->parm(keyOrder[Flav][idx].second,
       parms[offset + idx], true);
@@ -974,7 +985,8 @@ void WeightContainer::setWeightNominal(double weightNow) {
 double WeightContainer::collectWeightNominal() {
   return weightNominal * weightsShowerPtr->getWeightsValue(0)
                        * weightsMerging.getWeightsValue(0)
-                       * weightsFragmentation.getWeightsValue(0);
+                       * weightsFragmentation.getWeightsValue(0)
+                       * weightsFragmentationHV.getWeightsValue(0);
 }
 
 
@@ -1012,6 +1024,7 @@ vector<double> WeightContainer::weightValueVector() {
     weightsLHEF.collectWeightValues(ret,collWgtNom);
     weightsShowerPtr->collectWeightValues(ret,collWgtNom);
     weightsFragmentation.collectWeightValues(ret,collWgtNom);
+    weightsFragmentationHV.collectWeightValues(ret,collWgtNom);
   }
   weightsUserHooks.collectWeightValues(ret,collWgtNom);
   weightsMerging.collectWeightValues(ret,collWgtNom);
@@ -1037,6 +1050,7 @@ vector<string> WeightContainer::weightNameVector() {
     weightsLHEF.collectWeightNames(ret);
     weightsShowerPtr->collectWeightNames(ret);
     weightsFragmentation.collectWeightNames(ret);
+    weightsFragmentationHV.collectWeightNames(ret);
   }
   weightsUserHooks.collectWeightNames(ret);
   weightsMerging.collectWeightNames(ret);
@@ -1055,6 +1069,7 @@ void WeightContainer::clear() {
   weightsLHEF.clear();
   if (weightsShowerPtr != nullptr) weightsShowerPtr->clear();
   weightsFragmentation.clear();
+  weightsFragmentationHV.clear();
   weightsUserHooks.clear();
   weightsMerging.clear();
 }
@@ -1081,6 +1096,7 @@ void WeightContainer::initPtrs(Info* infoPtrIn) {
   weightsLHEF.setPtrs(infoPtrIn);
   weightsShowerPtr->setPtrs(infoPtrIn);
   weightsFragmentation.setPtrs(infoPtrIn);
+  weightsFragmentationHV.setPtrs(infoPtrIn);
   weightsUserHooks.setPtrs(infoPtrIn);
   weightsMerging.setPtrs(infoPtrIn);
 }
@@ -1092,6 +1108,7 @@ void WeightContainer::initPtrs(Info* infoPtrIn) {
 void WeightContainer::init( bool doMerging ) {
   weightsShowerPtr->init(doMerging);
   weightsFragmentation.init();
+  weightsFragmentationHV.init();
   weightsUserHooks.init();
   weightsMerging.init();
   doSuppressAUXweights = infoPtr->settingsPtr->

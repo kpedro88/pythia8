@@ -214,8 +214,21 @@ bool HVStringZ::init() {
   stopNF = parm("StringFragmentation:stopNewFlav");
   stopS  = parm("StringFragmentation:stopSmear");
 
+  // Set the fragmentation weights container.
+  if (!infoPtr->weightContainerPtr->weightsFragmentationHV.weightParms[
+      WeightsFragmentation::Z].empty())
+    wgtsPtr = &infoPtr->weightContainerPtr->weightsFragmentationHV;
+
   // Initialization succeeded.
   return true;
+}
+
+//--------------------------------------------------------------------------
+
+// obtain the correct rFact value for weight variations
+
+double HVStringZ::getRFact(int id) const {
+  return rFactBowler[ abs(id) % 10 ];
 }
 
 //--------------------------------------------------------------------------
@@ -226,9 +239,13 @@ double HVStringZ::zFrag( int idOld, int , double mT2) {
 
   // Shape parameters of Lund symmetric fragmentation function.
   double bShape = bLund * mT2;
-  double rFactNow = rFactBowler[ abs(idOld) % 10 ];
+  double rFactNow = getRFact(idOld);
   double cShape = 1. + rFactNow * bLund * pow2(particleDataPtr->m0( idOld));
-  return zLund( aLund, bShape, cShape);
+  double head = 1.;
+  if (!infoPtr->weightContainerPtr->weightsFragmentationHV.weightParms[
+      WeightsFragmentation::Z].empty())
+    head = 10.;
+  return zLund( aLund, bShape, cShape, head, 0., idOld, false, false, false, false, true);
 
 }
 

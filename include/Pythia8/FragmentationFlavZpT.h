@@ -241,7 +241,8 @@ public:
   virtual double zLund( double a, double b, double c = 1.,
     double head = 1., double bNow = 0., int idFrag = 0,
     bool isOldSQuark = false, bool isNewSQuark = false,
-    bool isOldDiquark = false, bool isNewDiquark = false);
+    bool isOldDiquark = false, bool isNewDiquark = false,
+    bool isHidden = false);
   virtual double zPeterson( double epsilon);
   virtual double zLundMax( double a, double b, double c = 1.);
 
@@ -249,6 +250,10 @@ public:
   virtual double stopMass() {return stopM;}
   virtual double stopNewFlav() {return stopNF;}
   virtual double stopSmear() {return stopS;}
+
+  // obtain the correct rFact value for weight variations;
+  // overloaded for Hidden Valley
+  virtual double getRFact(int id) const;
 
   // a and b fragmentation parameters needed in some operations.
   virtual double aAreaLund() {return aLund;}

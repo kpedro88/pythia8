@@ -968,6 +968,40 @@ Local rescaled parameters are also defined from the constants
 <code>StringEnd::TINY</code>, 
 <code>StringEnd::PT2SAME</code>, and 
 <code>StringFragmentation::CLOSEDM2MAX</code>. 
+
+<h3>Variations</h3>
+
+<wvec name="HiddenValley:VariationFrag" default="{}">
+Vector of uncertainty-variation strings defining groups of parameter
+variations for HV string fragmentation. The groups are separated by commas,
+and the elements of the group are separated by spaces, where the first
+element is the group name, and the following elements are the varied
+parameters of the form <code>parameter=value</code>.
+</wvec>
+
+<p/>
+For completeness, we note that an example command-file specification
+could look as follows:
+<pre>
+    HiddenValley:VariationFrag = {
+        kinVars0 hvfrag:ptsigma=0.3 hvfrag:alund=0.6 hvfrag:rFact[0]=1.0,
+        kinVars1 hvfrag:ptsigma=0.3 hvfrag:alund=0.6 hvfrag:rFact[1]=1.0,
+    }
+</pre>
+
+The following keywords adjust the Lund string fragmentation function:
+<ul>
+<li><code>hvfrag:aLund</code> : value for <code>HiddenValley:aLund</code>,
+the <ei>a</ei> parameter of the Lund symmetric fragmentation
+function.</li>
+<li><code>hvfrag:bLund</code> : value for <code>HiddenValley:bLund</code>,
+the <ei>b</ei> parameter of the Lund symmetric fragmentation
+function.</li>
+<li><code>hvfrag:rFact[i]</code> : value for element <ei>i</ei> of <code>HiddenValley:rFact</code>,
+<ei>r_i</ei>, i.e. the Bowler parameter for dark quark flavor <ei>i</ei>.</li>
+<li><code>hvfrag:ptSigma</code> : value for <code>HiddenValley:sigmaLund</code>,
+the width sigma in the fragmentation process.</li>
+</ul>
  
 <h3>Event information</h3> 
  

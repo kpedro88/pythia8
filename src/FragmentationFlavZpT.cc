@@ -1141,6 +1141,18 @@ double StringZ::zFrag( int idOld, int idNew, double mT2) {
 
 }
 
+
+//--------------------------------------------------------------------------
+
+// obtain the correct rFact value for weight variations
+
+double StringZ::getRFact(int id) const {
+  if (id == 4) return rFactC;
+  else if (id == 5) return rFactB;
+  else if (id > 5) return rFactH;
+  else return 0.;
+}
+
 //--------------------------------------------------------------------------
 
 // Determine the maximum for zLund.
@@ -1172,7 +1184,7 @@ double StringZ::zLundMax( double a, double b, double c) {
 
 double StringZ::zLund( double a, double b, double c,
   double head, double bNow, int idFrag, bool isOldSQuark, bool isNewSQuark,
-  bool isOldDiquark, bool isNewDiquark) {
+  bool isOldDiquark, bool isNewDiquark, bool isHidden) {
 
   // Special cases for c = 1, a = 0 and a = c.
   bool cIsUnity = (abs( c - 1.) < CFROMUNITY);
@@ -1278,8 +1290,12 @@ double StringZ::zLund( double a, double b, double c,
 
         // When b is changed, so is c.
         double rFactmsq = 0.;
-        if (idFrag == 4) rFactmsq = (vals[2] > 0 ? vals[2] : rFactC)*mc2;
-        else if (idFrag == 5) rFactmsq = (vals[3] > 0 ? vals[3] : rFactB)*mb2;
+        if (idFrag == 4) rFactmsq = (vals[2] > 0 ? vals[2] : getRFact(idFrag))*mc2;
+        else if (idFrag == 5) rFactmsq = (vals[3] > 0 ? vals[3] : getRFact(idFrag))*mb2;
+        else if (isHidden) {
+          int ind = abs(idFrag) % 10;
+          rFactmsq = (vals[2+ind] > 0 ? vals[2+ind] : getRFact(idFrag)) * pow2(particleDataPtr->m0(idFrag));
+        }
         double cp = 1 + rFactmsq * bp;
         if (isOldSQuark)  cp -= aExtraSQuark;
         if (isNewSQuark)  cp += aExtraSQuark;
@@ -1301,9 +1317,11 @@ double StringZ::zLund( double a, double b, double c,
         if( wgt*fPrb > 1 ) {
           stringstream msg;
           msg << "proposed variation in zFrag is too extreme for "
-              << "parameters " << fixed << setprecision(2) << vals[0]
-              << setw(5) << vals[1] << setw(5) << vals[2] << setw(5)
-              << vals[3] << ";  weight reduced.";
+              << "parameters " << fixed << setprecision(2) << vals[0];
+          for (size_t i = 1; i < vals.size(); ++i) {
+            msg << setw(5) << vals[i];
+          }
+          msg << ";  weight reduced.";
           loggerPtr->WARNING_MSG(msg.str());
           wgt = 0.95 / fPrb;
         }

@@ -110,6 +110,8 @@ public:
   virtual double stopNewFlav() override {return stopNF;}
   virtual double stopSmear()   override {return stopS;}
 
+  double getRFact(int id) const override;
+
 private:
 
   // Initialization data, from preinit, Settings and ParticleData.

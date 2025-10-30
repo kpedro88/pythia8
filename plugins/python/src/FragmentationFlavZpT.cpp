@@ -309,11 +309,11 @@ struct PyCallBack_Pythia8_StringZ : public Pythia8::StringZ {
 		}
 		return StringZ::zFrag(a0, a1, a2);
 	}
-	double zLund(double a0, double a1, double a2, double a3, double a4, int a5, bool a6, bool a7, bool a8, bool a9) override { 
+	double zLund(double a0, double a1, double a2, double a3, double a4, int a5, bool a6, bool a7, bool a8, bool a9, bool a10) override { 
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const Pythia8::StringZ *>(this), "zLund");
 		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9);
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
 			if (pybind11::detail::cast_is_temporary_value_reference<double>::value) {
 				static pybind11::detail::override_caster_t<double> caster;
 				return pybind11::detail::cast_ref<double>(std::move(o), caster);

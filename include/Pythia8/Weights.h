@@ -22,6 +22,7 @@ class PartonLevel;
 class Merging;
 class WeightContainer;
 class StringFlav;
+class HVStringFlav;
 
 //==========================================================================
 
@@ -402,10 +403,16 @@ public:
   // Factorization indices.
   enum FactIndex{Z, Flav, PT};
 
+protected:
+
+  virtual const vector<vector< pair<string, string> > >& getKeyOrder() const { return keyOrderSM; }
+
+  virtual string getParmName() const { return "VariationFrag:list"; }
+
 private:
 
   // Ordering of the fragmentation weight keys.
-  const vector<vector< pair<string, string> > > keyOrder{
+  const vector<vector< pair<string, string> > > keyOrderSM{
     {{"frag:alund", "StringZ:aLund"}, {"frag:blund", "StringZ:bLund"},
      {"frag:rfactc", "StringZ:rFactC"}, {"frag:rfactb", "StringZ:rFactB"}},
     {{"frag:xi", "StringFlav:ProbQQtoQ"}, {"frag:rho", "StringFlav:ProbStoUD"},
@@ -421,6 +428,36 @@ private:
 
   // Count the flavor breaks for variations.
   void flavCount(int idIn, bool early, bool noChoice);
+
+};
+
+//==========================================================================
+
+// This is a version of the above class for Hidden Valley.
+
+class HVWeightsFragmentation : public WeightsFragmentation {
+
+public:
+
+  friend class HVStringZ;
+
+protected:
+
+  const vector<vector< pair<string, string> > >& getKeyOrder() const override { return keyOrderHV; }
+
+  virtual string getParmName() const { return "HiddenValley:VariationFrag"; }
+
+private:
+
+  // Ordering of the fragmentation weight keys.
+  const vector<vector< pair<string, string> > > keyOrderHV{
+    {{"hvfragalund", "HiddenValley:aLund"}, {"hvfragblund", "HiddenValley:bLund"},
+     {"hvfragrfact[0]", "HiddenValley:rFact"}, {"hvfragrfact[1]", "HiddenValley:rFact"},
+     {"hvfragrfact[2]", "HiddenValley:rFact"}, {"hvfragrfact[3]", "HiddenValley:rFact"},
+     {"hvfragrfact[4]", "HiddenValley:rFact"}, {"hvfragrfact[5]", "HiddenValley:rFact"},
+     {"hvfragrfact[6]", "HiddenValley:rFact"}, {"hvfragrfact[7]", "HiddenValley:rFact"}},
+    {},
+    {{"hvfragptsigma", "HiddenValley:sigmaLund"}}};
 
 };
 
@@ -458,6 +495,7 @@ public:
 
   // Fragmentation weights.
   WeightsFragmentation weightsFragmentation{};
+  HVWeightsFragmentation weightsFragmentationHV{};
 
   // Userhooks weights.
   WeightsBase          weightsUserHooks{};
