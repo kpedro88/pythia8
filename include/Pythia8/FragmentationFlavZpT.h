@@ -320,7 +320,7 @@ protected:
   bool   closePacking;
   double enhancePT, exponentMPI, exponentNSP;
 
-private:
+//private:
 
   // Fragmentation weights container.
   WeightsFragmentation* wgtsPtr{};

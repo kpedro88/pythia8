@@ -451,13 +451,13 @@ private:
 
   // Ordering of the fragmentation weight keys.
   const vector<vector< pair<string, string> > > keyOrderHV{
-    {{"hvfragalund", "HiddenValley:aLund"}, {"hvfragblund", "HiddenValley:bLund"},
-     {"hvfragrfact[0]", "HiddenValley:rFact"}, {"hvfragrfact[1]", "HiddenValley:rFact"},
-     {"hvfragrfact[2]", "HiddenValley:rFact"}, {"hvfragrfact[3]", "HiddenValley:rFact"},
-     {"hvfragrfact[4]", "HiddenValley:rFact"}, {"hvfragrfact[5]", "HiddenValley:rFact"},
-     {"hvfragrfact[6]", "HiddenValley:rFact"}, {"hvfragrfact[7]", "HiddenValley:rFact"}},
+    {{"hvfrag:alund", "HiddenValley:aLund"}, {"hvfrag:blund", "HiddenValley:bLund"},
+     {"hvfrag:rfact[0]", "HiddenValley:rFact"}, {"hvfrag:rfact[1]", "HiddenValley:rFact"},
+     {"hvfrag:rfact[2]", "HiddenValley:rFact"}, {"hvfrag:rfact[3]", "HiddenValley:rFact"},
+     {"hvfrag:rfact[4]", "HiddenValley:rFact"}, {"hvfrag:rfact[5]", "HiddenValley:rFact"},
+     {"hvfrag:rfact[6]", "HiddenValley:rFact"}, {"hvfrag:rfact[7]", "HiddenValley:rFact"}},
     {},
-    {{"hvfragptsigma", "HiddenValley:sigmaLund"}}};
+    {{"hvfrag:ptsigma", "HiddenValley:sigmaLund"}}};
 
 };
 

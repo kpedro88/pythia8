@@ -177,6 +177,12 @@ void HVStringPT::init() {
   sigma2Had        = 2. * pow2( max( particleDataPtr->m0( 4900111), sigma) );
   closePacking     = false;
 
+  // Set the fragmentation weights container.
+  if ( !infoPtr->weightContainerPtr->
+      weightsFragmentationHV.weightParms[WeightsFragmentation::PT].empty())
+    wgtsPtr = &infoPtr->weightContainerPtr->weightsFragmentationHV;
+
+
 }
 
 //==========================================================================
@@ -245,7 +251,7 @@ double HVStringZ::zFrag( int idOld, int , double mT2) {
   if (!infoPtr->weightContainerPtr->weightsFragmentationHV.weightParms[
       WeightsFragmentation::Z].empty())
     head = 10.;
-  return zLund( aLund, bShape, cShape, head, 0., idOld, false, false, false, false, true);
+  return zLund( aLund, bShape, cShape, head, bLund, idOld, false, false, false, false, true);
 
 }
 
