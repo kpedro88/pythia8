@@ -158,6 +158,8 @@ int HVStringFlav::combine(FlavContainer& flav1, FlavContainer& flav2) {
 void HVStringPT::preinit( int setabsigmaIn, double rescalebsigmaIn) {
   setabsigma    = setabsigmaIn;
   rescalebsigma = rescalebsigmaIn;
+  if (setabsigma != 2)
+    settingsPtr->parm("HiddenValley:sigmaLund", rescalebsigma*parm("StringPT:sigma"));
 }
 
 //--------------------------------------------------------------------------
@@ -167,11 +169,7 @@ void HVStringPT::preinit( int setabsigmaIn, double rescalebsigmaIn) {
 void HVStringPT::init() {
 
   // Parameter of the pT width. No enhancement, since this is finetuning.
-  double sigma  = (setabsigma == 2) ? parm("HiddenValley:sigmaLund")
-    : rescalebsigma * parm("StringPT:sigma");
-  // define internal parameter for variations
-  if (setabsigma != 2)
-    settingsPtr->parm("HiddenValley:sigmaLund", rescalebsigma*parm("StringPT:sigma"));
+  double sigma  = parm("HiddenValley:sigmaLund");
   sigmaQ           = sigma / sqrt(2.);
   enhancedFraction = 0.;
   enhancedWidth    = 0.;
@@ -203,6 +201,11 @@ void HVStringZ::preinit( int setabsigmaIn, double rescalebsigmaIn,
   rescalebsigma = rescalebsigmaIn;
   mVecRatio     = mVecRatioIn;
 
+  if (setabsigma != 2) {
+    settingsPtr->parm("HiddenValley:aLund", parm("StringZ:aLund"));
+    settingsPtr->parm("HiddenValley:bLund",
+                      parm("StringZ:bLund") / pow2(rescalebsigma));
+  }
 }
 
 //--------------------------------------------------------------------------
@@ -212,15 +215,8 @@ void HVStringZ::preinit( int setabsigmaIn, double rescalebsigmaIn,
 bool HVStringZ::init() {
 
   // Paramaters of Lund/Bowler symmetric fragmentation function.
-  aLund        = (setabsigma == 2) ? parm("HiddenValley:aLund")
-    : parm("StringZ:aLund");
-  if (setabsigma != 2)
-    settingsPtr->parm("HiddenValley:aLund",parm("StringZ:aLund"));
-  bLund        = (setabsigma == 2) ? parm("HiddenValley:bLund")
-    : parm("StringZ:bLund") / pow2(rescalebsigma);
-  if (setabsigma != 2)
-    settingsPtr->parm("HiddenValley:bLund",
-                      parm("StringZ:bLund") / pow2(rescalebsigma));
+  aLund        = parm("HiddenValley:aLund");
+  bLund        = parm("HiddenValley:bLund");
   rFactBowler  = settingsPtr->pvec("HiddenValley:rFact");
 
   // Vector meson ratio used to rescale stop scale for fragmentation iteration.
