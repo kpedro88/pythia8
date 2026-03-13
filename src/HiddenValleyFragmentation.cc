@@ -169,6 +169,9 @@ void HVStringPT::init() {
   // Parameter of the pT width. No enhancement, since this is finetuning.
   double sigma  = (setabsigma == 2) ? parm("HiddenValley:sigmaLund")
     : rescalebsigma * parm("StringPT:sigma");
+  // define internal parameter for variations
+  if (setabsigma != 2)
+    settingsPtr->parm("HiddenValley:sigmaLund", rescalebsigma*parm("StringPT:sigma"));
   sigmaQ           = sigma / sqrt(2.);
   enhancedFraction = 0.;
   enhancedWidth    = 0.;
@@ -211,8 +214,13 @@ bool HVStringZ::init() {
   // Paramaters of Lund/Bowler symmetric fragmentation function.
   aLund        = (setabsigma == 2) ? parm("HiddenValley:aLund")
     : parm("StringZ:aLund");
+  if (setabsigma != 2)
+    settingsPtr->parm("HiddenValley:aLund",parm("StringZ:aLund"));
   bLund        = (setabsigma == 2) ? parm("HiddenValley:bLund")
     : parm("StringZ:bLund") / pow2(rescalebsigma);
+  if (setabsigma != 2)
+    settingsPtr->parm("HiddenValley:bLund",
+                      parm("StringZ:bLund") / pow2(rescalebsigma));
   rFactBowler  = settingsPtr->pvec("HiddenValley:rFact");
 
   // Vector meson ratio used to rescale stop scale for fragmentation iteration.
