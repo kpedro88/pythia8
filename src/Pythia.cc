@@ -887,6 +887,9 @@ bool Pythia::init() {
     return false;
   }
 
+  weightContainer.init(doMerging);
+
+
   // Optionally check particle data table for inconsistencies.
   if ( flag("Check:particleData") )
     particleData.checkTable( mode("Check:levelParticleData") );
